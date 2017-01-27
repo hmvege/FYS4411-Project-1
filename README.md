@@ -1,1 +1,1 @@
-# FYS4411-Project-1
+# Project 1 for FYS4411: Computation Physics II
