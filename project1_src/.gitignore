@@ -70,7 +70,3 @@ Thumbs.db
 # --------
 *.dll
 *.exe
-
-
-# Ignore files in folders:
-bin/
