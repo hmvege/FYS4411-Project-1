@@ -1,6 +1,12 @@
-#include "singlestate.h"
 #include <iostream>
 #include <vector>
+#include "singlestate.h"
+#include "basis.h"
+#include "hermitepolynomials.h"
+
+#include "unittests.h"
+//#include <iomanip>
+//#include <time.h>
 
 using namespace std;
 
@@ -8,45 +14,23 @@ void *getStatesArray();
 
 int main(int nargs, char *args[])
 {
-//    SingleState state1;
-//    state1.setN_x(0);
-//    state1.setN_y(0);
-//    state1.setSpin(-0.5);
-//    state1.setEnergy(1);
-//    state1.printSystem();
+    Basis basis;
+    basis.initializeBasis(10);
 
-    getStatesArray();
+    cout <<"Shell 4:" << endl;
+    cout <<"ShellPar: "<< basis.getShellParticles(4) << endl;
+    cout <<"ShellDeg: "<< basis.getShellDegeneracy(4) << endl;
+    cout <<"ShellEne: "<< basis.getShellEnergy(4) << endl;
 
-    return 0;
-}
-
-void * getStatesArray()
-{
-    vector<SingleState *> statesArray;
-    int maxShell = 10;
-
-    for (int i = 0; i < maxShell; i++) // Running over variations of nx
-    {
-        for (int j = 0; j < maxShell; j++) // Running over variations of ny
-        {
-            for (double k = -0.5; k < 1; k++) // Running over the two possible spin configurations
-            {
-                if (i+j < maxShell)
-                {
-                SingleState * state = new SingleState();
-                state->set(i, j, k);
-                statesArray.push_back(state);
-                }
-            }
-        }
-    }
+    cout <<"Total:" << endl;
+    cout <<"TotalPar: "<< basis.getTotalParticleNumber() << endl;
+    cout <<"TotalDeg: "<< basis.getTotalDegeneracy() << endl;
+    cout <<"TotalEne: "<< basis.getTotalEnergy() << endl;
 
 
-    cout << statesArray.size() << endl;
-//    for (SingleState * state : statesArray)
-//    {
-//        state->printSystem();
-//    }
+    // Tests
+    runHermiteTimer(1e3, 5.5);
+//    checkCorrectHermitePolynoms(6);
 
     return 0;
 }

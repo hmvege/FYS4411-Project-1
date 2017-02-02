@@ -5,18 +5,17 @@ using std::endl;
 
 SingleState::SingleState()
 {
-    int n_x = 0;
-    int n_y = 0;
-    double spin = 0;
-    double energy = 0;
+    n_x = 0;
+    n_y = 0;
+    spin = 0;
 }
 
 
 SingleState::SingleState(int initN_x, int initN_y, double initSpin)
 {
-    int n_x = initN_x;
-    int n_y = initN_y;
-    double spin = initSpin;
+    n_x = initN_x;
+    n_y = initN_y;
+    spin = initSpin;
 }
 
 void SingleState::printSystem()

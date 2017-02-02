@@ -5,9 +5,13 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     function.cpp \
-    state.cpp \
-    singlestate.cpp
+    singlestate.cpp \
+    basis.cpp \
+    hermitepolynomials.cpp \
+    unittests.cpp
 
 HEADERS += \
-    state.h \
-    singlestate.h
+    singlestate.h \
+    basis.h \
+    hermitepolynomials.h \
+    unittests.h

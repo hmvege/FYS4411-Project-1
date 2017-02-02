@@ -5,11 +5,11 @@
 
 class SingleState
 {
-public:
+private:
     int n_x;
     int n_y;
     double spin;
-
+public:
     SingleState();
     SingleState(int initN_x, int initN_y, double initSpin);
 
