@@ -21,14 +21,11 @@ typedef double (*polyArr) (double x);
 
 double HermitePolynomials::getPolynomRecursive(double x, int n)
 {
+    // Elegant recursion
     if (n <= 0)
     {
         return 1;
     }
-//    else if (n == 1)
-//    {
-//        return H0(x);
-//    }
     else
     {
         return 2*(x*getPolynomRecursive(x, n-1) - (((double) n)-1)*getPolynomRecursive(x, n-2));

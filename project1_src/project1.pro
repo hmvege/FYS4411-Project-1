@@ -8,10 +8,12 @@ SOURCES += main.cpp \
     singlestate.cpp \
     basis.cpp \
     hermitepolynomials.cpp \
-    unittests.cpp
+    unittests.cpp \
+    gaussianhermitequadrature.cpp
 
 HEADERS += \
     singlestate.h \
     basis.h \
     hermitepolynomials.h \
-    unittests.h
+    unittests.h \
+    gaussianhermitequadrature.h
