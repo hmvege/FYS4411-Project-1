@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int nargs, char *args[])
 {
-   
+
 
     // TEST: Setting up basis
 //    Basis basis;
@@ -35,20 +35,3 @@ int main(int nargs, char *args[])
 
     return 0;
 }
-
-//double GaussianHermiteIntegral(int n)
-//{
-//    /*
-//     * n: number of integration points
-//     */
-//    double * x = new double[n]; // Integration points
-//    double * w = new double[n]; // Weights
-
-////    getWeightsGaussianHermiteQuadrature
-//}
-
-
-//double integrand(double x1, double x2, double x3, double x4)
-//{
-
-//}
