@@ -74,7 +74,6 @@ int checkCorrectHermitePolynoms(int maxHermite)
     {
         for (double x = 0; x < 10; x = x + 0.1)
         {
-            cout << abs(Hermite.getPolynomRecursive(x,i) - Hermite.getPolynom(i)(x)) << endl;
             if (abs(Hermite.getPolynomRecursive(x,i) - Hermite.getPolynom(i)(x)) < eps)
             {
                 correct++;

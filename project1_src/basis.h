@@ -22,6 +22,7 @@ public:
     double getTotalEnergy();
     double getShellEnergy(int shellNumber);
 
+    SingleState * getState(int state);
 
     // getDegeneracyOfShell
     // getTotalEnergy

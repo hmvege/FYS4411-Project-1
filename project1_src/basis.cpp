@@ -41,6 +41,12 @@ void Basis::initializeBasis(int ECutoff)
     }
 }
 
+SingleState *Basis::getState(int state)
+{
+//    cout << statesArray << endl;
+    return statesArray[state];
+}
+
 int Basis::getShellDegeneracy(int shellNumber)
 {
     int degeneracy = 0;

@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    function.cpp \
+    functions.cpp \
     singlestate.cpp \
     basis.cpp \
     hermitepolynomials.cpp \
@@ -16,4 +16,11 @@ HEADERS += \
     basis.h \
     hermitepolynomials.h \
     unittests.h \
-    gaussianhermitequadrature.h
+    gaussianhermitequadrature.h \
+    functions.h
+
+LIBS += -llapack -lblas -larmadillo
+
+#INCLUDEPATH += -I/usr/local/include
+#INCLUDEPATH += -L/usr/local/lib
+#compileCommand-I/usr/local/include -L/usr/local/lib -llapack -lblas -larmadillo
