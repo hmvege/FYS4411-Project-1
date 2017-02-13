@@ -1,9 +1,11 @@
 #include <iostream>
 #include <iomanip>
 #include <time.h>
-#include "hermitepolynomials.h"
 #include <cmath>
 #include <vector>
+#include "hermitepolynomials.h"
+#include "gaussianhermitequadrature.h"
+#include "functions.h"
 
 using std::cout;
 using std::endl;
@@ -11,6 +13,7 @@ using std::setw;
 using std::setprecision;
 using std::vector;
 
+double PI = 3.14159265358979323846;
 
 int runHermiteTimer(int N, double X)
 {
@@ -68,7 +71,6 @@ int checkCorrectHermitePolynoms(int maxHermite)
     int overflowN = 0;
 
     int correct = 0;
-//    int wrong = 0;
     double eps = 1e-15;
     for (int i = 0; i < maxHermite + 1; i++)
     {
@@ -82,17 +84,85 @@ int checkCorrectHermitePolynoms(int maxHermite)
             {
                 overflowX = x;
                 overflowN = i;
-//                wrong++;
                 break;
             }
         }
     }
     cout << "Correct Hermite polynoms: " << correct << endl;
-//    cout << "Wrong Hermite polynoms:   " << wrong << endl;
     if (overflowN > 0)
     {
         cout << "Most likely overflow encountered at Hermite polynomial N=" << overflowN << " and value x=" << overflowX << endl;
     }
 
     return 0;
+}
+
+double testFunction(double x)
+{
+    return 4*x*x;
+}
+
+double emptyFunction(double x)
+{
+    return 1;
+}
+
+double emptyPotentialFunction(double x1, double x2, double x3, double x4)
+{
+    return 1;
+}
+
+double testIntegrand(double x1, double x2, double x3, double x4)
+{
+    return testFunction(x1);
+}
+
+void testIntegratorClass(int NIntPoints, double eps=1e-10)
+{
+    /*
+     * Small function for testing my integration class.
+     */
+    double analyticalSolution = 2*PI*PI;
+
+    GaussianHermiteQuadrature integrator;
+    integrator.setIntegrand(testIntegrand);
+    double numericalSolution = integrator.solve(NIntPoints);
+
+    printf("  Integration points: %d \n", NIntPoints);
+    printf("  Numerical:  %.10f \n", numericalSolution);
+    printf("  Analytical: %.10f \n", analyticalSolution);
+
+    if (fabs(analyticalSolution - numericalSolution) < eps)
+    {
+        printf("  TEST PASSED \n");
+    }
+    else
+    {
+        printf("  TEST FAILED \n");
+    }
+}
+
+void testIntegratorFunction(int NIntPoints, double eps=1e-10)
+{
+    /*
+     * Small function for testing my integration function
+     */
+
+    double analyticalSolution = 2*PI*PI;
+
+    // Not a pretty method
+    double numericalSolution = solveGaussianHermiteQuadrature(NIntPoints, testFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyPotentialFunction);
+
+    printf("  Integration points: %d \n", NIntPoints);
+    printf("  Numerical:  %.10f \n", numericalSolution);
+    printf("  Analytical: %.10f \n", analyticalSolution);
+
+    if (fabs(analyticalSolution - numericalSolution) < eps)
+    {
+        printf("  TEST PASSED \n");
+    }
+    else
+    {
+        printf("  TEST FAILED \n");
+    }
 }

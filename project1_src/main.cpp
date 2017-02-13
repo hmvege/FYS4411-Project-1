@@ -6,6 +6,10 @@
 #include "hermitepolynomials.h"
 #include "functions.h"
 
+#include "quantumdot.h"
+
+#include "hartreefock.h"
+
 #include <armadillo>
 #include "unittests.h"
 #include <iomanip>
@@ -15,25 +19,27 @@ using namespace std;
 
 double potentialV(double x1, double x2, double y1, double y2);
 void printMatrix(double ** A, int N);
-int index(int i, int j, int k, int l, int N);
+void setMatrixZero(double ** A, int N);
 
 int main(int nargs, char *args[])
 {
     int N = 2; // Number of electrons, should be magic number: 2, 6, 12, 20
     int maxShell = 4;
 
+//    testIntegratorClass(2); // Works
+//    testIntegratorFunction(2); // Works
+
     HermitePolynomials hermite;
 
     Basis basis;
     basis.initializeBasis(maxShell);
-    int N_SPS = basis.getTotalParticleNumber(); // Number of single particle states, GET THIS FROM BASIS CLASS AFTERWARDS!
+    int N_SPS = basis.getTotalParticleNumber();
 
     // HF setup
+    double * interactionMatrix = new double[(int) pow(N_SPS,4)];
     double ** densityMatrix     = new double * [N_SPS];
     double ** C                 = new double * [N_SPS];
-//    double * C = new double [N*N]; // Contiguous allocation
 
-    double * interactionMatrix = new double[(int) pow(N_SPS,4)];
     for (int i = 0; i < N_SPS; i++)
     {
         C[i]                    = new double[N_SPS];
@@ -44,10 +50,7 @@ int main(int nargs, char *args[])
     for (int i = 0; i < N_SPS; i++)
     {
         C[i][i] = 1;
-//        C[i*N+i] = 1;
     }
-
-//    printMatrix(C,N_SPS);
 
     // Setting up the density matrix
     for (int gamma = 0; gamma < N_SPS; gamma++)
@@ -63,10 +66,7 @@ int main(int nargs, char *args[])
         }
     }
 
-//    printMatrix(densityMatrix, N_SPS);
-
-    // Need to set up interaction matrix!!
-    //interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)]
+    // Setting up interaction matrix
     for (int alpha = 0; alpha < N_SPS; alpha++)
     {
         double (*alphaHerm_x)(double) = hermite.getPolynom(basis.getState(alpha)->getN_x());
@@ -105,6 +105,7 @@ int main(int nargs, char *args[])
         }
     }
 
+//    cout << interactionMatrix[0] << endl;
 
     // For loop will run till max HF iteration is reached, or we get a convergence for epsilon(NOT IMPLEMENTED YET)
     int maxHFiterations = 100;
@@ -142,6 +143,9 @@ int main(int nargs, char *args[])
             }
         }
 
+        // Finding eigenvalues
+        arma::mat A = arma::zeros<arma::mat>(N_SPS,N_SPS);
+        // When if we have convergence, rather than checking everyone, find the max element
 
         // De-allocating memory
         for (int i = 0; i < N_SPS; i++) {
@@ -200,12 +204,18 @@ void printMatrix(double ** A, int N)
     }
 }
 
-int index(int i, int j, int k, int l, int N)
-{
-    return (N*(N*(N*i + j) + k) + l);
-}
-
 double potentialV(double x1, double x2, double y1, double y2)
 {
     return 1.0/sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+}
+
+void setMatrixZero(double ** A, int N)
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            A[i][j] = 0;
+        }
+    }
 }

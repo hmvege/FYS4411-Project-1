@@ -32,9 +32,9 @@ void Basis::initializeBasis(int ECutoff)
             {
                 if (i+j < ECutoff) // If-test to prevent counting outside of the shell
                 {
-                SingleState * state = new SingleState();
-                state->set(i, j, k);
-                statesArray.push_back(state);
+                    SingleState * state = new SingleState();
+                    state->set(i, j, k);
+                    statesArray.push_back(state);
                 }
             }
         }

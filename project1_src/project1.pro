@@ -9,7 +9,9 @@ SOURCES += main.cpp \
     basis.cpp \
     hermitepolynomials.cpp \
     unittests.cpp \
-    gaussianhermitequadrature.cpp
+    gaussianhermitequadrature.cpp \
+    hartreefock.cpp \
+    quantumdot.cpp
 
 HEADERS += \
     singlestate.h \
@@ -17,7 +19,9 @@ HEADERS += \
     hermitepolynomials.h \
     unittests.h \
     gaussianhermitequadrature.h \
-    functions.h
+    functions.h \
+    hartreefock.h \
+    quantumdot.h
 
 LIBS += -llapack -lblas -larmadillo
 

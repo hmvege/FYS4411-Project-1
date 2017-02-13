@@ -23,6 +23,14 @@ int factorial(int n)
     return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
 }
 
+int index(int i, int j, int k, int l, int N)
+{
+    /*
+     * Function for contigious memory allocation.
+     */
+    return (N*(N*(N*i + j) + k) + l);
+}
+
 double solveGaussianHermiteQuadrature(int n,
                                       double (*Hx1)(double x1),
                                       double (*Hy1)(double y1),
