@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <math.h>
 
 using std::cout;
 using std::endl;
@@ -21,6 +22,11 @@ double deltaFunction(int i, int j)
 int factorial(int n)
 {
     return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
+}
+
+double normalizationConstant(int n)
+{
+    return 1.0/(pow(2,n)*factorial(n)*sqrt(M_PI));
 }
 
 int index(int i, int j, int k, int l, int N)
@@ -53,17 +59,21 @@ double solveGaussianHermiteQuadrature(int n,
     double integralValue = 0;
     int i, j, k, l;
 
+    double val1, val2, val3 = 0;
+
     for (i = 0; i < n; i++) // Loops over all x1
     {
+        val1 = w[i] * Hx1(x[i]) * Hx3(x[i]);
         for (j = 0; j < n; j++) // Loops over all y1
         {
+            val2 = w[j] * Hy1(x[j]) * Hy3(x[j]);
             for (k = 0; k < n; k++) // Loops over all x2
             {
+                val3 = w[k] * Hx4(x[k]) * Hx2(x[k]);
                 for (l = 0; l < n; l++) // Loops over all y2
                 {
-//                    CHANGE TO TAKE FOUR FUNCTIONS?
-//                    integralValue += w[i]*w[j]*w[k]*w[l]*Integrand(x[i],x[j],x[k],x[l]);
-                    integralValue += w[i]*w[j]*w[k]*w[l] * Hx1(x[i])*Hy1(x[j]) * Hx2(x[k])*Hy2(x[l]) * V(x[i],x[j],x[k],x[l]) * Hx3(x[i])*Hy3(x[j]) * Hx4(x[k])*Hy4(x[l]);
+//                    integralValue += w[i]*w[j]*w[k]*w[l] * Hx1(x[i])*Hy1(x[j]) * Hx2(x[k])*Hy2(x[l]) * V(x[i],x[j],x[k],x[l]) * Hx3(x[i])*Hy3(x[j]) * Hx4(x[k])*Hy4(x[l]);
+                    integralValue += w[l] * Hy2(x[l]) * V(x[i],x[j],x[k],x[l]) * Hy4(x[l]) * val1 * val2* val3;
                 }
             }
         }

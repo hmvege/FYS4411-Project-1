@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <math.h>
 #include "hermitepolynomials.h"
 #include "functions.h"
 
@@ -28,7 +29,8 @@ public:
     double getSpin() { return spin; }
     double getEnergy() { return (n_x + n_y + 1); }
 
-    double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y))) * ((double) factorial(n_x)) * ((double) factorial(n_y)); }
+//    double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y))) * ((double) factorial(n_x)) * ((double) factorial(n_y)); }
+    double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y)) * ((double) factorial(n_x)) * ((double) factorial(n_y)) * M_PI); }
 
     // Printers
     void printSystem();

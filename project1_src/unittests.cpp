@@ -3,6 +3,7 @@
 #include <time.h>
 #include <cmath>
 #include <vector>
+#include <math.h>
 #include "hermitepolynomials.h"
 #include "gaussianhermitequadrature.h"
 #include "functions.h"
@@ -12,8 +13,6 @@ using std::endl;
 using std::setw;
 using std::setprecision;
 using std::vector;
-
-double PI = 3.14159265358979323846;
 
 int runHermiteTimer(int N, double X)
 {
@@ -122,7 +121,7 @@ void testIntegratorClass(int NIntPoints, double eps=1e-10)
     /*
      * Small function for testing my integration class.
      */
-    double analyticalSolution = 2*PI*PI;
+    double analyticalSolution = 2*M_PI*M_PI;
 
     GaussianHermiteQuadrature integrator;
     integrator.setIntegrand(testIntegrand);
@@ -148,7 +147,7 @@ void testIntegratorFunction(int NIntPoints, double eps=1e-10)
      * Small function for testing my integration function
      */
 
-    double analyticalSolution = 2*PI*PI;
+    double analyticalSolution = 2*M_PI*M_PI;
 
     // Not a pretty method
     double numericalSolution = solveGaussianHermiteQuadrature(NIntPoints, testFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyFunction, emptyPotentialFunction);

@@ -2,6 +2,7 @@
 #define FUNCTION_H
 
 double deltaFunction(int i, int j);
+double normalizationConstant(int n);
 int factorial(int n);
 int index(int i, int j, int k, int l, int N);
 double solveGaussianHermiteQuadrature(int n,
