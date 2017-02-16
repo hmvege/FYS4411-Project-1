@@ -19,14 +19,14 @@ private:
     arma::mat densityMatrix;
     arma::mat C;
 
+    Basis *basis = nullptr;
 
-    HermitePolynomials hermite;
-    Basis basis;
+   void updateDensityMatrix();
 public:
     HartreeFock();
     HartreeFock(int NElectrons, int singleParticleStates);
     ~HartreeFock();
-    void initializeHF(int NElectrons, int singleParticleStates);
+    void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
     int runHF();
 
     // Setters

@@ -11,7 +11,7 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell)
     basis.initializeBasis(maxShell);
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
-    HF.initializeHF(N_Electrons, N_SPS);
+    HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
 
 void quantumDot::setPotential(double (*newV)(double x1, double x2, double y1, double y2))
