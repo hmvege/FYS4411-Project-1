@@ -18,9 +18,16 @@ SingleState::SingleState(int initN_x, int initN_y, double initSpin)
     spin = initSpin;
 }
 
-void SingleState::printSystem()
+void SingleState::printSystem(bool polar=false)
 {
-    cout << "n_x = " << n_x << ", n_y = " << n_y << ", spin = " << spin << ", energy = " << getEnergy() << endl;
+    if (polar)
+    {
+        cout << "n   = " << n   << ", m   = " << m   << ", spin = " << spin << ", energy = " << getEnergy() << endl;
+    }
+    else
+    {
+        cout << "n_x = " << n_x << ", n_y = " << n_y << ", spin = " << spin << ", energy = " << getEnergy() << endl;
+    }
 }
 
 void SingleState::set(int newN_x, int newN_y, double newSpin)
@@ -28,4 +35,25 @@ void SingleState::set(int newN_x, int newN_y, double newSpin)
     setN_x(newN_x);
     setN_y(newN_y);
     setSpin(newSpin);
+    setPolar(newN_x, newN_y);
+}
+
+void SingleState::setPolar(int newN_x, int newN_y)
+{
+    if (newN_x == newN_y)
+    {
+        n = newN_x;
+        m = newN_x - newN_y;
+    }
+    else if (newN_x > newN_y)
+    {
+        n = newN_y;
+        m = newN_x - newN_y;
+
+    }
+    else
+    {
+        n = newN_x;
+        m = newN_x - newN_y;
+    }
 }

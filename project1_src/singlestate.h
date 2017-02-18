@@ -15,6 +15,8 @@ private:
     int n;
     int m;
     double spin;
+
+    void setPolar(int newN_x, int newN_y);
 public:
     SingleState();
     SingleState(int initN_x, int initN_y, double initSpin);
@@ -26,10 +28,11 @@ public:
     void set(int newN_x, int newN_y, double newSpin);
 
 
-
     // Getters
     double getN_x() { return n_x; }
     double getN_y() { return n_y; }
+    double getN() { return n; }
+    double getM() { return m; }
     double getSpin() { return spin; }
     double getEnergy() { return (n_x + n_y + 1); }
 
@@ -37,7 +40,7 @@ public:
     double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y)) * ((double) factorial(n_x)) * ((double) factorial(n_y)) * M_PI); }
 
     // Printers
-    void printSystem();
+    void printSystem(bool polar);
 };
 
 #endif // SINGLESTATE_H

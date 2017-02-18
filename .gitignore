@@ -1,2 +1,7 @@
+# Ignoring files that dont have any extension
+*
+!/**/
+!*.*
+
 # Ignore binaries
 bin/

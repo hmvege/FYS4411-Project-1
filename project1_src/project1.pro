@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     unittests.cpp \
     gaussianhermitequadrature.cpp \
     hartreefock.cpp \
-    quantumdot.cpp
+    quantumdot.cpp \
+    Coulomb_Functions.cpp
 
 HEADERS += \
     singlestate.h \
@@ -21,9 +22,15 @@ HEADERS += \
     gaussianhermitequadrature.h \
     functions.h \
     hartreefock.h \
-    quantumdot.h
+    quantumdot.h \
+    Coulomb_Functions.h
 
 LIBS += -llapack -lblas -larmadillo
+
+
+# Following used to make code usable on mac
+LIBS += -L/usr/local/lib -larmadillo
+INCLUDEPATH += /usr/local/include
 
 #INCLUDEPATH += -I/usr/local/include
 #INCLUDEPATH += -L/usr/local/lib

@@ -109,3 +109,11 @@ int Basis::getShellParticles(int shellNumber)
     }
     return particleNumber;
 }
+
+void Basis::printBasis(bool polar)
+{
+    for (SingleState * state : statesArray)
+    {
+        state->printSystem(polar);
+    }
+}

@@ -22,6 +22,7 @@ public:
 
     void setPotential(double (*newV)(double x1, double x2, double y1, double y2));
     void setupInteractionMatrix(int integrationPoints);
+    void setupInteractionMatrixPolar();
     void setupInteractionMatrixFromFile(const std::string& filename);
     void runHartreeFock();
     void printInteractionMatrix(int NPrintPoints);

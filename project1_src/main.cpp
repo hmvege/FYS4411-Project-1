@@ -6,13 +6,13 @@
 #include "hermitepolynomials.h"
 #include "functions.h"
 
+//#include "Coulomb_Functions.h"
 #include "quantumdot.h"
-
 #include "hartreefock.h"
-
 #include <armadillo>
-#include "unittests.h"
 #include <iomanip>
+
+#include "unittests.h"
 //#include <time.h>
 
 using namespace std;
@@ -24,12 +24,13 @@ void setMatrixZero(double ** A, int N);
 int main(int nargs, char *args[])
 {
     int NElectrons  = 2; // Should be magic number: 2, 6, 12, 20
-    int maxShell    = 4;
-    int intPoints   = atoi(args[1]);
-
+    int maxShell    = 10;
+//    int intPoints   = atoi(args[1]);
+//    int intPoints = 4;
     quantumDot QMDot(NElectrons, maxShell);
     QMDot.setPotential(potentialV);
-    QMDot.setupInteractionMatrix(intPoints);
+//    QMDot.setupInteractionMatrix(intPoints);
+    QMDot.setupInteractionMatrixPolar();
     QMDot.printInteractionMatrix(10);
     QMDot.runHartreeFock();
 
