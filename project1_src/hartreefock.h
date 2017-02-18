@@ -21,7 +21,8 @@ private:
 
     Basis *basis = nullptr;
 
-   void updateDensityMatrix();
+    void setCMatrix();
+    void updateDensityMatrix();
 public:
     HartreeFock();
     HartreeFock(int NElectrons, int singleParticleStates);

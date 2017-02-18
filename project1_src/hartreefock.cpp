@@ -15,10 +15,7 @@ HartreeFock::HartreeFock(int NElectrons, int singleParticleStates)
     C = arma::zeros<arma::mat>(N_SPS,N_SPS);
 
     // Initializing C as a diagonal matrix(other initializations exists)
-    for (int i = 0; i < N_SPS; i++)
-    {
-        C(i,i) = 1;
-    }
+    setCMatrix();
 
     // Setting up the density matrix
     updateDensityMatrix();
@@ -33,56 +30,19 @@ void HartreeFock::initializeHF(int NElectrons, int singleParticleStates, Basis *
     C = arma::zeros<arma::mat>(N_SPS,N_SPS);
 
     // Initializing C as a diagonal matrix(other initializations exists)
-    for (int i = 0; i < N_SPS; i++)
-    {
-        C(i,i) = 1;
-    }
+    setCMatrix();
 
     // Setting up the density matrix
     updateDensityMatrix();
 }
 
-
-//HartreeFock::HartreeFock(int NElectrons, int singleParticleStates)
-//{
-//    N_Electrons = NElectrons;
-//    N_SPS = singleParticleStates;
-
-////    densityMatrix = new double * [N_SPS];
-////    C = new double * [N_SPS];
-
-//    densityMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
-//    C = arma::zeros<arma::mat>(N_SPS,N_SPS);
-
-////    for (int i = 0; i < N_SPS; i++)
-////    {
-////        C[i] = new double[N_SPS];
-////        densityMatrix[i] = new double[N_SPS];
-////    }
-
-//    // Initializing C as a diagonal matrix(other initializations exists)
-//    for (int i = 0; i < N_SPS; i++)
-//    {
-////        C[i][i] = 1;
-//        C(i,i) = 1;
-//    }
-
-//    // Setting up the density matrix
-//    for (int gamma = 0; gamma < N_SPS; gamma++)
-//    {
-//        for (int delta = 0; delta < N_SPS; delta++)
-//        {
-//            double sum = 0;
-//            for (int i = 0; i < N_Electrons; i++)
-//            {
-////                sum += C[i][gamma]*C[i][delta];
-//                sum += C(i,gamma)*C(i,delta);
-//            }
-////            densityMatrix[gamma][delta] = sum;
-//            densityMatrix(gamma,delta) = sum;
-//        }
-//    }
-//}
+void HartreeFock::setCMatrix()
+{
+    for (int i = 0; i < N_SPS; i++)
+    {
+        C(i,i) = 1;
+    }
+}
 
 HartreeFock::~HartreeFock()
 {
@@ -113,14 +73,13 @@ void HartreeFock::setInteractionMatrix(double * newInteractionMatrix)
 int HartreeFock::runHF()
 {
     // For loop will run till max HF iteration is reached, or we get a convergence for epsilon(NOT IMPLEMENTED YET)
-    int maxHFiterations = 100;
+    int maxHFiterations = 1000;
+    int HFiteration = 0; // To compare with for later
     arma::vec oldEnergies = arma::zeros<arma::vec>(N_SPS);
-//    arma::vec newEnergies = arma::zeros<arma::vec>(N_SPS);
     double lambda = 1e-10;
 
     std::cout << "Starting Hartree-Fock" << std::endl;
-
-    for (int HFiteration = 0; HFiteration < maxHFiterations; HFiteration++)
+    for (HFiteration; HFiteration < maxHFiterations; HFiteration++)
     {
         // Setting up HFMatrix
         arma::mat HFMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
@@ -149,22 +108,17 @@ int HartreeFock::runHF()
 
         // Finding eigenvalues & eigenvectors
         arma::vec singleParticleEnergies;
-//        std::cout <<"finding new eigvecs(before): "<< C << std::endl;
-        C, singleParticleEnergies = arma::eig_sym(HFMatrix);
-//        std::cout <<"finding new eigvecs(after):  "<< C << std::endl;
+        arma::eig_sym(singleParticleEnergies, C, HFMatrix);
         densityMatrix.zeros(); // Setting densityMatrix back to zeros only
-//        newEnergies = singleParticleEnergies;
 
         // Updating the density matrix
-//        std::cout <<"updating density matrix(before): "<< arma::sum(arma::sum(densityMatrix)) << std::endl;
         updateDensityMatrix();
-//        std::cout <<"updating density matrix(after):  "<< arma::sum(arma::sum(densityMatrix)) << std::endl;
 
-//        std::cout <<arma::sum(arma::abs(singleParticleEnergies))/N_SPS<< std::endl;
+        // When if we have convergence, rather than checking everyone, find the max element
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies))/N_SPS) < lambda)
         {
-//            std::cout << singleParticleEnergies << std::endl;
             std::cout << "Done after " << HFiteration << " Hartree Fock iteration."<< std::endl;
+            std::cout << singleParticleEnergies << std::endl;
             return 0;
         }
         else
@@ -172,7 +126,14 @@ int HartreeFock::runHF()
             oldEnergies = singleParticleEnergies;
         }
 
-        // When if we have convergence, rather than checking everyone, find the max element
+        if (HFiteration % 1000 == 0)
+        {
+            std::cout << HFiteration << std::endl;
+        }
+    }
+    if (HFiteration == maxHFiterations)
+    {
+        std::cout << "Max HF iterations reached." << std::endl;
     }
     return -1; // Should probably remove this at some point...
 }

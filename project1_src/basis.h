@@ -21,7 +21,7 @@ public:
     int getShellParticles(int shellNumber);
     double getTotalEnergy();
     double getShellEnergy(int shellNumber);
-
+    void printBasisSize();
     void printBasis(bool polar=false);
 
     SingleState * getState(int state);

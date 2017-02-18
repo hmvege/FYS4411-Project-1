@@ -110,6 +110,11 @@ int Basis::getShellParticles(int shellNumber)
     return particleNumber;
 }
 
+void Basis::printBasisSize()
+{
+    cout << statesArray.size() << endl;
+}
+
 void Basis::printBasis(bool polar)
 {
     for (SingleState * state : statesArray)

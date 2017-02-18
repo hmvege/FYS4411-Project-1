@@ -27,6 +27,14 @@ HEADERS += \
 
 LIBS += -llapack -lblas -larmadillo
 
+#QMAKE_CXXFLAGS += -openmp
+#QMAKE_LFLAGS += -openmp
+
+#QMAKE_CXXFLAGS+= -fopenmp
+#QMAKE_LFLAGS +=  -fopenmp
+
+#QMAKE_CXXFLAGS += -fopenmp
+#LIBS += -fopenmp
 
 # Following used to make code usable on mac
 LIBS += -L/usr/local/lib -larmadillo

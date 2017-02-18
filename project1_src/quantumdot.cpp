@@ -4,6 +4,7 @@
 #include "functions.h"
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
+#include "omp.h"
 
 quantumDot::quantumDot(int newNElectrons, int newMaxShell)
 {
@@ -14,7 +15,8 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell)
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
 
-    //    basis.printBasis(true); // For printing and checking basis
+    //    basis.printBasisSize();
+//    basis.printBasis(true); // For printing and checking basis
 }
 
 void quantumDot::setPotential(double (*newV)(double x1, double x2, double y1, double y2))
@@ -72,6 +74,7 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
             }
         }
     }
+    std::cout << "Matrix setup complete." << std::endl;
 }
 
 void quantumDot::setupInteractionMatrixPolar()
@@ -79,30 +82,46 @@ void quantumDot::setupInteractionMatrixPolar()
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
      */
+    int nonEmptyStatesCounter = 0;
     interactionMatrix = new double[interactionMatrixLength];
     double hw = 1;
     for (int alpha = 0; alpha < N_SPS; alpha++)
     {
         int n1 = basis.getState(alpha)->getN();
         int ml1 = basis.getState(alpha)->getM();
-        for (int beta = 0; beta < N_SPS; beta++)
+        for (int gamma = 0; gamma < N_SPS; gamma++)
         {
-            int n2 = basis.getState(beta)->getN();
-            int ml2 = basis.getState(beta)->getM();
-            for (int gamma = 0; gamma < N_SPS; gamma++)
+            int n2 = basis.getState(gamma)->getN();
+            int ml2 = basis.getState(gamma)->getM();
+            for (int beta = 0; beta < N_SPS; beta++)
             {
-                int n3 = basis.getState(gamma)->getN();
-                int ml3 = basis.getState(gamma)->getM();
+                int n3 = basis.getState(beta)->getN();
+                int ml3 = basis.getState(beta)->getM();
                 for (int delta = 0; delta < N_SPS; delta++)
                 {
                     int n4 = basis.getState(delta)->getN();
                     int ml4 = basis.getState(delta)->getM();
 
-                    interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                    if ((basis.getState(alpha)->getSpin() + basis.getState(gamma)->getSpin()) !=
+                            (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
+                    {
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+                    }
+                    else if (ml1 + ml2 != ml3 + ml4)
+                    {
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+                    }
+                    else
+                    {
+                        nonEmptyStatesCounter++;
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                    }
+//                    interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
                 }
             }
         }
     }
+    std::cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << std::endl;
 }
 
 void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // NOT FULLY IMPLEMENTED
@@ -132,6 +151,10 @@ void quantumDot::printInteractionMatrix(int NPrintPoints)
 {
     for (int i = 0; i < NPrintPoints; i++)
     {
-        printf("%.10f \n", interactionMatrix[i]);
+        double intMatrix = interactionMatrix[i];
+        if (intMatrix != 0.0)
+        {
+            printf("%.10f \n", interactionMatrix[i]);
+        }
     }
 }
