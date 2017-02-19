@@ -73,10 +73,10 @@ void HartreeFock::setInteractionMatrix(double * newInteractionMatrix)
 int HartreeFock::runHF()
 {
     // For loop will run till max HF iteration is reached, or we get a convergence for epsilon(NOT IMPLEMENTED YET)
-    int maxHFiterations = 1000;
+    int maxHFiterations = 10000;
     int HFiteration = 0; // To compare with for later
     arma::vec oldEnergies = arma::zeros<arma::vec>(N_SPS);
-    double lambda = 1e-10;
+    double lambda = 1e-8;
 
     std::cout << "Starting Hartree-Fock" << std::endl;
     for (HFiteration; HFiteration < maxHFiterations; HFiteration++)

@@ -30,15 +30,15 @@ LIBS += -llapack -lblas -larmadillo
 #QMAKE_CXXFLAGS += -openmp
 #QMAKE_LFLAGS += -openmp
 
-#QMAKE_CXXFLAGS+= -fopenmp
-#QMAKE_LFLAGS +=  -fopenmp
+QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_LFLAGS +=  -fopenmp
 
 #QMAKE_CXXFLAGS += -fopenmp
 #LIBS += -fopenmp
 
-# Following used to make code usable on mac
-LIBS += -L/usr/local/lib -larmadillo
-INCLUDEPATH += /usr/local/include
+## Following used to make code usable on mac
+#LIBS += -L/usr/local/lib -larmadillo
+#INCLUDEPATH += /usr/local/include
 
 #INCLUDEPATH += -I/usr/local/include
 #INCLUDEPATH += -L/usr/local/lib

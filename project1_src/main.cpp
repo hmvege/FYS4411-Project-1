@@ -39,6 +39,7 @@ int main(int nargs, char *args[])
     /*
      * TODO:
      * - Add parallelization to integral-finder
+     * - Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
      * - Add possibility for looping over several electrons
      * - Add write-to-file capability
      */
