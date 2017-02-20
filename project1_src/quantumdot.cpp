@@ -4,6 +4,7 @@
 #include "functions.h"
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
+#include <omp.h>
 
 quantumDot::quantumDot(int newNElectrons, int newMaxShell)
 {
@@ -140,10 +141,10 @@ void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // 
 }
 
 
-void quantumDot::runHartreeFock()
+void quantumDot::runHartreeFock(int maxHFIteration)
 {
     HF.setInteractionMatrix(interactionMatrix);
-    HF.runHF();
+    HF.runHF(maxHFIteration);
 }
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)

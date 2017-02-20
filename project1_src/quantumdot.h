@@ -24,7 +24,7 @@ public:
     void setupInteractionMatrix(int integrationPoints);
     void setupInteractionMatrixPolar();
     void setupInteractionMatrixFromFile(const std::string& filename);
-    void runHartreeFock();
+    void runHartreeFock(int maxHFIteration);
     void printInteractionMatrix(int NPrintPoints);
 };
 

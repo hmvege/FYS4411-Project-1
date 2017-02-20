@@ -9,8 +9,8 @@
 #include "functions.h"
 #include "quantumdot.h"
 #include "hartreefock.h"
-//#include "omp.h"
-#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
+#include <omp.h>
+//#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
 
 #include "unittests.h"
 //#include <time.h>
@@ -25,13 +25,13 @@ int main(int nargs, char *args[])
 {
     int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
     int maxShell    = 6;
+    int maxHFIterations = 10000;
 
-
-    int maxThreadNumber = omp_get_max_threads();
-    int maxProcessorNumber = omp_get_num_procs();
-    omp_set_num_threads(maxThreadNumber);
-    cout << "  The number of processors available = " << maxProcessorNumber << endl ;
-    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
+//    int maxThreadNumber = omp_get_max_threads();
+//    int maxProcessorNumber = omp_get_num_procs();
+//    omp_set_num_threads(maxThreadNumber);
+//    cout << "  The number of processors available = " << maxProcessorNumber << endl ;
+//    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
 
     //    int intPoints   = atoi(args[1]);
 //    int intPoints = 4;
@@ -41,11 +41,12 @@ int main(int nargs, char *args[])
 //    QMDot.setupInteractionMatrix(intPoints);
     QMDot.setupInteractionMatrixPolar();
 //    QMDot.printInteractionMatrix(pow(maxShell,4));
-    QMDot.runHartreeFock();
+    QMDot.runHartreeFock(maxHFIterations);
 
     /*
      * TODO:
      * - Add parallelization to integral-finder
+     * - Add parallelization to HF matrix setup
      * - Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
      * - Add possibility for looping over several electrons
      * - Add write-to-file capability

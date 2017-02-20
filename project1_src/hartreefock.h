@@ -10,7 +10,6 @@ class HartreeFock
 private:
     int N_SPS;
     int N_Electrons;
-    int maxHFIterations = 100;
 
     double * interactionMatrix;
 //    double ** densityMatrix;
@@ -28,11 +27,10 @@ public:
     HartreeFock(int NElectrons, int singleParticleStates);
     ~HartreeFock();
     void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
-    int runHF();
+    int runHF(int maxHFIterations);
 
     // Setters
     void setInteractionMatrix(double * newInteractionMatrix);
-    void setMaxHFIterations(int N) { maxHFIterations = N; }
 //    void setN_SPS(int N) { N_SPS = N; }
 //    void setN_Electrons(int N) { N_Electrons = N; }
 };

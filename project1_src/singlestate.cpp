@@ -40,20 +40,29 @@ void SingleState::set(int newN_x, int newN_y, double newSpin)
 
 void SingleState::setPolar(int newN_x, int newN_y)
 {
-    if (newN_x == newN_y)
+    if (newN_x <= newN_y)
     {
         n = newN_x;
-        m = newN_x - newN_y;
-    }
-    else if (newN_x > newN_y)
-    {
-        n = newN_y;
-        m = newN_x - newN_y;
-
     }
     else
     {
-        n = newN_x;
-        m = newN_x - newN_y;
+        n = newN_y;
     }
+    m = newN_x - newN_y;
+//    if (newN_x == newN_y)
+//    {
+//        n = newN_x;
+//        m = newN_x - newN_y;
+//    }
+//    else if (newN_x > newN_y)
+//    {
+//        n = newN_y;
+//        m = newN_x - newN_y;
+
+//    }
+//    else
+//    {
+//        n = newN_x;
+//        m = newN_x - newN_y;
+//    }
 }
