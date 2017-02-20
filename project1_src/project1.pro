@@ -27,18 +27,16 @@ HEADERS += \
 
 LIBS += -llapack -lblas -larmadillo
 
-#QMAKE_CXXFLAGS += -openmp
-#QMAKE_LFLAGS += -openmp
+# Following to make openmp usable on mac
+QMAKE_CFLAGS_RELEASE += -fopenmp
+QMAKE_LDFLAGS += -L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib
+#QMAKE_LFLAGS +=  -L/usr/local/opt/llvm/lib
+#QMAKE_CFLAGS += -I/usr/local/opt/llvm/include
 
-QMAKE_CXXFLAGS+= -fopenmp
-QMAKE_LFLAGS +=  -fopenmp
 
-#QMAKE_CXXFLAGS += -fopenmp
-#LIBS += -fopenmp
-
-## Following used to make code usable on mac
-#LIBS += -L/usr/local/lib -larmadillo
-#INCLUDEPATH += /usr/local/include
+# Following used to make armadillo usable on mac
+LIBS += -L/usr/local/lib -larmadillo
+INCLUDEPATH += /usr/local/include
 
 #INCLUDEPATH += -I/usr/local/include
 #INCLUDEPATH += -L/usr/local/lib

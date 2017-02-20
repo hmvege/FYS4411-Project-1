@@ -1,16 +1,16 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <iomanip>
+#include <armadillo>
 #include "singlestate.h"
 #include "basis.h"
 #include "hermitepolynomials.h"
 #include "functions.h"
-
-#include "omp.h"
 #include "quantumdot.h"
 #include "hartreefock.h"
-#include <armadillo>
-#include <iomanip>
+//#include "omp.h"
+#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
 
 #include "unittests.h"
 //#include <time.h>
@@ -25,6 +25,13 @@ int main(int nargs, char *args[])
 {
     int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
     int maxShell    = 6;
+
+
+    int maxThreadNumber = omp_get_max_threads();
+    int maxProcessorNumber = omp_get_num_procs();
+    omp_set_num_threads(maxThreadNumber);
+    cout << "  The number of processors available = " << maxProcessorNumber << endl ;
+    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
 
     //    int intPoints   = atoi(args[1]);
 //    int intPoints = 4;

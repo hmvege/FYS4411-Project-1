@@ -4,7 +4,6 @@
 #include "functions.h"
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
-#include "omp.h"
 
 quantumDot::quantumDot(int newNElectrons, int newMaxShell)
 {
