@@ -23,7 +23,7 @@ void setMatrixZero(double ** A, int N);
 
 int main(int nargs, char *args[])
 {
-    int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
+    int NElectrons  = 2; // Should be magic number: 2, 6, 12, 20
     int maxShell    = 6;
     int maxHFIterations = 10000;
 
@@ -45,6 +45,7 @@ int main(int nargs, char *args[])
 
     /*
      * TODO:
+     * - Need to add a check for quantum number conservation in HF-matrix setup?
      * - Add parallelization to integral-finder
      * - Add parallelization to HF matrix setup
      * - Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
