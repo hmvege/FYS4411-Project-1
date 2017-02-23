@@ -1,10 +1,11 @@
 #include "hartreefock.h"
 #include <armadillo>
-
+#include <iomanip>
 #include <ctime>
 
 using std::cout;
 using std::endl;
+using std::setprecision;
 
 HartreeFock::HartreeFock()
 {
@@ -81,7 +82,7 @@ int HartreeFock::runHF(int maxHFIterations)
     arma::vec oldEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::vec singleParticleEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::mat HFMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
-    double lambda = 1e-8;
+//    double lambda = 1e-5; // TODO: Add this as a user setting in QuantumDot class
 
     // For timing functions
     double mainLoopTime = 0;
@@ -103,11 +104,15 @@ int HartreeFock::runHF(int maxHFIterations)
         {
             for (int beta = 0; beta < N_SPS; beta++)
             {
+                // TODO: Add quantum-number conservation tests here! SPIN TEST HERE?!
+
+
                 double HFElement = 0;
                 for (int gamma = 0; gamma < N_SPS; gamma++)
                 {
                     for (int delta = 0; delta < N_SPS; delta++)
                     {
+                        // ADD M QM-NUMBER TEST HERE!
                         HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
                     }
                 }
@@ -136,9 +141,10 @@ int HartreeFock::runHF(int maxHFIterations)
         // When if we have convergence, rather than checking everyone, find the max element
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
+            writeToFile(singleParticleEnergies, C);
+//            cout << singleParticleEnergies << endl;
             cout << "Done after " << HFiteration << " Hartree Fock iteration." << endl;
-            cout << singleParticleEnergies << endl;
-            return 0;
+            break;
         }
         else
         {
@@ -146,24 +152,45 @@ int HartreeFock::runHF(int maxHFIterations)
         }
         minimaFinish = clock();
 
+        // Checking progress of program
         if (HFiteration % 1000 == 0)
         {
             cout << HFiteration << endl;
         }
 
-        mainLoopTime = ((loopFinish - loopStart)/((double)CLOCKS_PER_SEC));
-        eigTime = ((eigFinish - eigStart)/((double)CLOCKS_PER_SEC));
-        minimaTime = ((minimaFinish - minimaStart)/((double)CLOCKS_PER_SEC));
+        mainLoopTime += ((loopFinish - loopStart)/((double)CLOCKS_PER_SEC));
+        eigTime += ((eigFinish - eigStart)/((double)CLOCKS_PER_SEC));
+        minimaTime += ((minimaFinish - minimaStart)/((double)CLOCKS_PER_SEC));
 
     }
-    cout << "Average time per main loop:                 " << mainLoopTime / (double) HFiteration   << " seconds" << endl;
-    cout << "Average time for solving eigenvalueproblem: " << eigTime / (double) HFiteration        << " seconds" << endl;
-    cout << "Average time per finding minima:            " << minimaTime / (double) HFiteration     << " seconds" << endl;
+    cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFiteration   << " seconds" << endl;
+    cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFiteration        << " seconds" << endl;
+    cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFiteration     << " seconds" << endl;
 
     if (HFiteration == maxHFIterations)
     {
-        cout << singleParticleEnergies << endl;
+        writeToFile(singleParticleEnergies, C);
+//        cout << singleParticleEnergies << endl;
         cout << "Max HF iterations reached." << endl;
     }
-    return -1; // Should probably remove this at some point...
+    return 0; // Should probably remove this at some point...
+}
+
+void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
+{
+    std::ofstream file;
+    std::string filename = "output_NSPS" + std::to_string(N_SPS) + "_Electrons" + std::to_string(N_Electrons) + ".dat";
+    file.open(filename);
+    for (int i = 0; i < N_SPS; i++)
+    {
+        file << setprecision(8) << eigVals(i) << " # ";
+//        for (int j = 0; j < N_SPS; j++)
+//        {
+//            file << setprecision(8) << eigVecs(i,j); // AM I FILLING IN EIGENVECTORS HERE?
+//        }
+        file << endl;
+    }
+    file.close();
+    cout << filename << " written" << endl;
+
 }

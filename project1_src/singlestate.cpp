@@ -11,11 +11,12 @@ SingleState::SingleState()
 }
 
 
-SingleState::SingleState(int initN_x, int initN_y, double initSpin)
+SingleState::SingleState(int initN_x, int initN_y, double initSpin, double initOmega)
 {
     n_x = initN_x;
     n_y = initN_y;
     spin = initSpin;
+    omega = initOmega;
 }
 
 void SingleState::printSystem(bool polar=false)
@@ -30,11 +31,12 @@ void SingleState::printSystem(bool polar=false)
     }
 }
 
-void SingleState::set(int newN_x, int newN_y, double newSpin)
+void SingleState::set(int newN_x, int newN_y, double newSpin, double omega)
 {
     setN_x(newN_x);
     setN_y(newN_y);
     setSpin(newSpin);
+    setOmega(omega);
     setPolar(newN_x, newN_y);
 }
 

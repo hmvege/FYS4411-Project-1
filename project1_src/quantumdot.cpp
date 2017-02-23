@@ -4,13 +4,18 @@
 #include "functions.h"
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
-#include <omp.h>
+#include <ctime>
+//#include <omp.h>
 
-quantumDot::quantumDot(int newNElectrons, int newMaxShell)
+using std::cout;
+using std::endl;
+
+quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
 {
     N_Electrons = newNElectrons;
     maxShell = newMaxShell;
-    basis.initializeBasis(maxShell);
+    omega = newOmega;
+    basis.initializeBasis(maxShell, newOmega);
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
@@ -29,6 +34,10 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
     /*
      * Setting up the interaction matrix with contigious memory for cartesian coordinates
      */
+
+    clock_t setupStart, setupFinish;
+    setupStart = clock();
+
     interactionMatrix = new double[interactionMatrixLength];
 
     for (int alpha = 0; alpha < N_SPS; alpha++)
@@ -74,7 +83,9 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
             }
         }
     }
-    std::cout << "Matrix setup complete." << std::endl;
+    setupFinish = clock();
+    cout << "Matrix setup complete." << endl;
+    cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::setupInteractionMatrixPolar()
@@ -84,12 +95,16 @@ void quantumDot::setupInteractionMatrixPolar()
      */
     int nonEmptyStatesCounter = 0;
     interactionMatrix = new double[interactionMatrixLength];
-    double hw = 1;
+
+    clock_t setupStart, setupFinish;
+    setupStart = clock();
+
+    double interactionValue = 0;
     for (int alpha = 0; alpha < N_SPS; alpha++)
     {
         int n1 = basis.getState(alpha)->getN();
         int ml1 = basis.getState(alpha)->getM();
-        for (int gamma = 0; gamma < N_SPS; gamma++)
+        for (int gamma = alpha; gamma < N_SPS; gamma++)
         {
             int n2 = basis.getState(gamma)->getN();
             int ml2 = basis.getState(gamma)->getM();
@@ -97,7 +112,7 @@ void quantumDot::setupInteractionMatrixPolar()
             {
                 int n3 = basis.getState(beta)->getN();
                 int ml3 = basis.getState(beta)->getM();
-                for (int delta = 0; delta < N_SPS; delta++)
+                for (int delta = 0; delta < N_SPS; delta++) // CHANGE TO START AT BETA?
                 {
                     int n4 = basis.getState(delta)->getN();
                     int ml4 = basis.getState(delta)->getM();
@@ -106,22 +121,27 @@ void quantumDot::setupInteractionMatrixPolar()
                             (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
                     {
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
                     }
-                    else if (ml1 + ml2 != ml3 + ml4)
-                    {
-                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-                    }
+//                    else if (ml1 + ml2 != ml3 + ml4)
+//                    {
+//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+//                    }
                     else
                     {
                         nonEmptyStatesCounter++;
-                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                        interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
                     }
 //                    interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
                 }
             }
         }
     }
-    std::cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << std::endl;
+    setupFinish = clock();
+    cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << endl;
+    cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // NOT FULLY IMPLEMENTED
@@ -139,7 +159,6 @@ void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // 
         inputVectorM.push_back(m - 1);
     }
 }
-
 
 void quantumDot::runHartreeFock(int maxHFIteration)
 {

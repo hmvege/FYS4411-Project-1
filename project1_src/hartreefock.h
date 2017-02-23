@@ -11,6 +11,8 @@ private:
     int N_SPS;
     int N_Electrons;
 
+    double lambda = 1e-5; // TODO: Add this as a user setting in QuantumDot class
+
     double * interactionMatrix;
 //    double ** densityMatrix;
 //    double ** C;
@@ -28,8 +30,10 @@ public:
     ~HartreeFock();
     void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
     int runHF(int maxHFIterations);
+    void writeToFile(arma::vec eigVals, arma::mat eigVecs);
 
     // Setters
+    void setConvergence(double newLambda) { lambda = newLambda; }
     void setInteractionMatrix(double * newInteractionMatrix);
 //    void setN_SPS(int N) { N_SPS = N; }
 //    void setN_Electrons(int N) { N_Electrons = N; }

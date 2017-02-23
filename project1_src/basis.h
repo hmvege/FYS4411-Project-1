@@ -13,12 +13,15 @@ public:
     Basis();
     ~Basis();
 
-    void initializeBasis(int ECutoff);
+    double omega;
+
+    void initializeBasis(int ECutoff, double initOmega);
 
     int getShellDegeneracy(int shellNumber);
     int getTotalDegeneracy();
     int getTotalParticleNumber();
     int getShellParticles(int shellNumber);
+    double getOmega();
     double getTotalEnergy();
     double getShellEnergy(int shellNumber);
     void printBasisSize();

@@ -9,7 +9,8 @@
 #include "functions.h"
 #include "quantumdot.h"
 #include "hartreefock.h"
-#include <omp.h>
+//#include <mpi.h>
+//#include <omp.h>
 //#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
 
 #include "unittests.h"
@@ -26,6 +27,8 @@ int main(int nargs, char *args[])
     int NElectrons  = 2; // Should be magic number: 2, 6, 12, 20
     int maxShell    = 6;
     int maxHFIterations = 10000;
+    double omega = 1.0;
+    double epsilon = 1e-8;
 
 //    int maxThreadNumber = omp_get_max_threads();
 //    int maxProcessorNumber = omp_get_num_procs();
@@ -36,21 +39,23 @@ int main(int nargs, char *args[])
     //    int intPoints   = atoi(args[1]);
 //    int intPoints = 4;
 
-    quantumDot QMDot(NElectrons, maxShell);
+    quantumDot QMDot(NElectrons, maxShell, omega);
 //    QMDot.setPotential(potentialV);
 //    QMDot.setupInteractionMatrix(intPoints);
     QMDot.setupInteractionMatrixPolar();
+    QMDot.setHFLambda(epsilon);
 //    QMDot.printInteractionMatrix(pow(maxShell,4));
     QMDot.runHartreeFock(maxHFIterations);
 
     /*
      * TODO:
-     * - Need to add a check for quantum number conservation in HF-matrix setup?
-     * - Add parallelization to integral-finder
-     * - Add parallelization to HF matrix setup
-     * - Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
-     * - Add possibility for looping over several electrons
-     * - Add write-to-file capability
+     * [ ] Need to add a check for quantum number conservation in HF-matrix setup?
+     * [ ] Fix matrix setup - possible optimalization in <pq|v|rs>=<qp|v|sr>, why does value change when I change the last two indexes?
+     * [ ] Add parallelization to integral-finder
+     * [ ] Add parallelization to HF matrix setup
+     * [x] Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
+     * [ ] Add possibility for looping over several electrons
+     * [ ] Add write-to-file capability
      */
 
     return 0;

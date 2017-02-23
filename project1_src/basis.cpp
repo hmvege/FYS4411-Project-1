@@ -20,10 +20,10 @@ Basis::~Basis()
     statesArray.clear();
 }
 
-void Basis::initializeBasis(int ECutoff)
+void Basis::initializeBasis(int ECutoff, double initOmega)
 {
     // Retrieving all possible states up until a cutoff-shell
-
+    omega = initOmega;
     for (int i = 0; i < ECutoff; i++) // Running over variations of nx
     {
         for (int j = 0; j < ECutoff; j++) // Running over variations of ny
@@ -33,7 +33,7 @@ void Basis::initializeBasis(int ECutoff)
                 if (i+j < ECutoff) // If-test to prevent counting outside of the shell
                 {
                     SingleState * state = new SingleState();
-                    state->set(i, j, k);
+                    state->set(i, j, k, omega);
                     statesArray.push_back(state);
                 }
             }
