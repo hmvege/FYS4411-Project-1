@@ -45,12 +45,11 @@ LIBS += -llapack -lblas -larmadillo
 #QMAKE_LFLAGS += -fopenmp
 
 # Following to make openmp usable on mac
-#QMAKE_CFLAGS_RELEASE += -fopenmp
 #QMAKE_LDFLAGS += -L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib
 
 # Following used to make armadillo usable on mac
-#LIBS += -L/usr/local/lib -larmadillo
-#INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib -larmadillo
+INCLUDEPATH += /usr/local/include
 
 #INCLUDEPATH += -I/usr/local/include
 #INCLUDEPATH += -L/usr/local/lib

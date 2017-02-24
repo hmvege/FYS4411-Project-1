@@ -164,6 +164,7 @@ void quantumDot::runHartreeFock(int maxHFIteration)
 {
     HF.setInteractionMatrix(interactionMatrix);
     HF.runHF(maxHFIteration);
+    HF.getEnergies();
 }
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)

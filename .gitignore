@@ -5,3 +5,9 @@
 
 # Ignore binaries
 bin/
+
+# Datafiles
+*.dat
+
+# OS junk
+.DS_Store

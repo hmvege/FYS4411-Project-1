@@ -106,14 +106,13 @@ int HartreeFock::runHF(int maxHFIterations)
             {
                 // TODO: Add quantum-number conservation tests here! SPIN TEST HERE?!
 
-
                 double HFElement = 0;
                 for (int gamma = 0; gamma < N_SPS; gamma++)
                 {
                     for (int delta = 0; delta < N_SPS; delta++)
                     {
                         // ADD M QM-NUMBER TEST HERE!
-                        HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
                     }
                 }
                 HFMatrix(alpha,beta) = HFElement;
@@ -141,6 +140,7 @@ int HartreeFock::runHF(int maxHFIterations)
         // When if we have convergence, rather than checking everyone, find the max element
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
+            SPS_Energies = singleParticleEnergies;
             writeToFile(singleParticleEnergies, C);
 //            cout << singleParticleEnergies << endl;
             cout << "Done after " << HFiteration << " Hartree Fock iteration." << endl;
@@ -158,17 +158,20 @@ int HartreeFock::runHF(int maxHFIterations)
             cout << HFiteration << endl;
         }
 
+        // Summing up time spent
         mainLoopTime += ((loopFinish - loopStart)/((double)CLOCKS_PER_SEC));
         eigTime += ((eigFinish - eigStart)/((double)CLOCKS_PER_SEC));
         minimaTime += ((minimaFinish - minimaStart)/((double)CLOCKS_PER_SEC));
-
     }
+
+    // Printing out average time per loop element
     cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFiteration   << " seconds" << endl;
     cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFiteration        << " seconds" << endl;
     cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFiteration     << " seconds" << endl;
 
     if (HFiteration == maxHFIterations)
     {
+        SPS_Energies = singleParticleEnergies;
         writeToFile(singleParticleEnergies, C);
 //        cout << singleParticleEnergies << endl;
         cout << "Max HF iterations reached." << endl;
@@ -192,5 +195,40 @@ void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
     }
     file.close();
     cout << filename << " written" << endl;
+}
 
+void HartreeFock::getEnergies()
+{
+    double energy = 0;
+
+    for (int i = 0; i < N_Electrons; i++)
+    {
+        energy += SPS_Energies(i);
+
+                // Straight-forward method
+//                energy += C(i,alpha)*C(i,beta)*basis->getState(alpha)->getEnergy();
+//                for (int gamma = 0; gamma < N_SPS; gamma++)
+//                {
+//                    for (int delta = 0; delta < N_SPS; delta++)
+//                    {
+//                        for (int j = 0; j < N_Electrons; j++)
+//                        {
+//                            energy += 0.5*C(i,alpha)*C(j*beta)*C(i,gamma)*C(j,delta)*(interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+//                        }
+//                    }
+//                }
+//                for (int gamma = 0; gamma < N_SPS; gamma++)
+//                {
+//                    for (int delta = 0; delta < N_SPS; delta)
+//                    {
+//                        energy += 0.5*densityMatrix(alpha, beta)*densityMatrix(gamma,delta)*(interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+//                    }
+//                }
+                // Simple summation from manipulating terms
+//                energy += C(i,alpha)*C(i,beta)*SPS_Energies(alpha);
+
+//            }
+//        }
+    }
+    cout << "Energy: " << energy << endl;
 }

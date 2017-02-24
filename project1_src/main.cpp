@@ -14,7 +14,6 @@
 //#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
 
 #include "unittests.h"
-//#include <time.h>
 
 using namespace std;
 
@@ -24,11 +23,11 @@ void setMatrixZero(double ** A, int N);
 
 int main(int nargs, char *args[])
 {
-    int NElectrons  = 2; // Should be magic number: 2, 6, 12, 20
-    int maxShell    = 6;
-    int maxHFIterations = 10000;
+    int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
+    int maxShell    = 3;
+    int maxHFIterations = 1000;
     double omega = 1.0;
-    double epsilon = 1e-8;
+    double epsilon = 1e-10;
 
 //    int maxThreadNumber = omp_get_max_threads();
 //    int maxProcessorNumber = omp_get_num_procs();
@@ -36,15 +35,12 @@ int main(int nargs, char *args[])
 //    cout << "  The number of processors available = " << maxProcessorNumber << endl ;
 //    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
 
-    //    int intPoints   = atoi(args[1]);
-//    int intPoints = 4;
-
     quantumDot QMDot(NElectrons, maxShell, omega);
 //    QMDot.setPotential(potentialV);
 //    QMDot.setupInteractionMatrix(intPoints);
     QMDot.setupInteractionMatrixPolar();
     QMDot.setHFLambda(epsilon);
-//    QMDot.printInteractionMatrix(pow(maxShell,4));
+    QMDot.printInteractionMatrix(pow(maxShell,4));
     QMDot.runHartreeFock(maxHFIterations);
 
     /*
