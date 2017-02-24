@@ -132,7 +132,9 @@ int HartreeFock::runHF(int maxHFIterations)
         arma::eig_sym(singleParticleEnergies, C, HFMatrix);
         densityMatrix.zeros(); // Setting densityMatrix back to zeros only
         eigFinish = clock();
-
+        cout << "HFiteration: " << HFiteration << endl;
+        cout << singleParticleEnergies << endl;
+        cout << endl;
         // Updating the density matrix
         updateDensityMatrix();
 
@@ -201,34 +203,11 @@ void HartreeFock::getEnergies()
 {
     double energy = 0;
 
-    for (int i = 0; i < N_Electrons; i++)
+    for (int i = 0; i < N_SPS; i++)
     {
         energy += SPS_Energies(i);
-
-                // Straight-forward method
-//                energy += C(i,alpha)*C(i,beta)*basis->getState(alpha)->getEnergy();
-//                for (int gamma = 0; gamma < N_SPS; gamma++)
-//                {
-//                    for (int delta = 0; delta < N_SPS; delta++)
-//                    {
-//                        for (int j = 0; j < N_Electrons; j++)
-//                        {
-//                            energy += 0.5*C(i,alpha)*C(j*beta)*C(i,gamma)*C(j,delta)*(interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-//                        }
-//                    }
-//                }
-//                for (int gamma = 0; gamma < N_SPS; gamma++)
-//                {
-//                    for (int delta = 0; delta < N_SPS; delta)
-//                    {
-//                        energy += 0.5*densityMatrix(alpha, beta)*densityMatrix(gamma,delta)*(interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-//                    }
-//                }
-                // Simple summation from manipulating terms
-//                energy += C(i,alpha)*C(i,beta)*SPS_Energies(alpha);
-
-//            }
-//        }
+//        basis->getState(i)->printSystem(true);
+//        cout << SPS_Energies(i) << endl;
     }
     cout << "Energy: " << energy << endl;
 }
