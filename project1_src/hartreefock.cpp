@@ -203,11 +203,44 @@ void HartreeFock::getEnergies()
 {
     double energy = 0;
 
+//    for (int i = 0; i < N_SPS; i++)
+//    {
+//        energy += SPS_Energies(i);
+//    }
+
+    double alphaSpin = 0;
+    double betaSpin = 0;
+    double gammaSpin = 0;
+    double deltaSpin = 0;
+
     for (int i = 0; i < N_SPS; i++)
     {
         energy += SPS_Energies(i);
-//        basis->getState(i)->printSystem(true);
-//        cout << SPS_Energies(i) << endl;
+
+        for (int j = 0; j < N_SPS; j++)
+        {
+            for (int alpha = 0; alpha < N_SPS; alpha++)
+            {
+                for (int beta = 0; beta < N_SPS; beta++)
+                {
+                    for (int gamma = 0; gamma < N_SPS; gamma++)
+                    {
+                        for (int delta= 0; delta < N_SPS; delta++)
+                        {
+                            alphaSpin = basis->getState(alpha)->getSpin();
+                            betaSpin = basis->getState(beta)->getSpin();
+                            gammaSpin = basis->getState(gamma)->getSpin();
+                            deltaSpin = basis->getState(delta)->getSpin();
+                            if ((alphaSpin + gammaSpin) != (betaSpin + deltaSpin))
+                            {
+                                energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+
     cout << "Energy: " << energy << endl;
 }
