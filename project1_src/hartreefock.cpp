@@ -82,7 +82,6 @@ int HartreeFock::runHF(int maxHFIterations)
     arma::vec oldEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::vec singleParticleEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::mat HFMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
-//    double lambda = 1e-5; // TODO: Add this as a user setting in QuantumDot class
 
     // For timing functions
     double mainLoopTime = 0;
@@ -121,25 +120,29 @@ int HartreeFock::runHF(int maxHFIterations)
 //                    HFMatrix(alpha,beta) += basis->getState(alpha)->getEnergy();
 //                }
             }
-            HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergy(); // Instead of an if-test inside the nested for-loop
+            HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar(); // Instead of an if-test inside the nested for-loop
         }
         loopFinish = clock();
 
         // Finding eigenvalues & eigenvectors
-//        arma::vec singleParticleEnergies;
         eigStart = clock();
         singleParticleEnergies.zeros();
-        arma::eig_sym(singleParticleEnergies, C, HFMatrix);
+        arma::eig_sym(singleParticleEnergies, C, HFMatrix,"dc"); // dc faster for larger matrices, std default
         densityMatrix.zeros(); // Setting densityMatrix back to zeros only
         eigFinish = clock();
+
         cout << "HFiteration: " << HFiteration << endl;
-        cout << singleParticleEnergies << endl;
+        for (int alpha = 0; alpha < N_SPS; alpha++)
+        {
+            cout << singleParticleEnergies(alpha) << " N=" << basis->getState(alpha)->getN() << " M="<< basis->getState(alpha)->getM() << " SPEnergy: " << basis->getState(alpha)->getEnergyPolar() << endl;
+        }
         cout << endl;
+
         // Updating the density matrix
         updateDensityMatrix();
 
-        minimaStart = clock();
         // When if we have convergence, rather than checking everyone, find the max element
+        minimaStart = clock();
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
             SPS_Energies = singleParticleEnergies;
@@ -175,10 +178,9 @@ int HartreeFock::runHF(int maxHFIterations)
     {
         SPS_Energies = singleParticleEnergies;
         writeToFile(singleParticleEnergies, C);
-//        cout << singleParticleEnergies << endl;
         cout << "Max HF iterations reached." << endl;
     }
-    return 0; // Should probably remove this at some point...
+    return 0;
 }
 
 void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
@@ -203,43 +205,39 @@ void HartreeFock::getEnergies()
 {
     double energy = 0;
 
-//    for (int i = 0; i < N_SPS; i++)
-//    {
-//        energy += SPS_Energies(i);
-//    }
-
     double alphaSpin = 0;
     double betaSpin = 0;
     double gammaSpin = 0;
     double deltaSpin = 0;
 
-    for (int i = 0; i < N_SPS; i++)
+    for (int i = 0; i < N_Electrons; i++)
     {
         energy += SPS_Energies(i);
-
-        for (int j = 0; j < N_SPS; j++)
+        for (int alpha = 0; alpha < N_SPS; alpha++)
         {
-            for (int alpha = 0; alpha < N_SPS; alpha++)
+            for (int beta = 0; beta < N_SPS; beta++)
             {
-                for (int beta = 0; beta < N_SPS; beta++)
+                for (int gamma = 0; gamma < N_SPS; gamma++)
                 {
-                    for (int gamma = 0; gamma < N_SPS; gamma++)
+                    for (int delta= 0; delta < N_SPS; delta++)
                     {
-                        for (int delta= 0; delta < N_SPS; delta++)
+                        alphaSpin = basis->getState(alpha)->getSpin();
+                        betaSpin = basis->getState(beta)->getSpin();
+                        gammaSpin = basis->getState(gamma)->getSpin();
+                        deltaSpin = basis->getState(delta)->getSpin();
+                        if ((alphaSpin + gammaSpin) == (betaSpin + deltaSpin))
                         {
-                            alphaSpin = basis->getState(alpha)->getSpin();
-                            betaSpin = basis->getState(beta)->getSpin();
-                            gammaSpin = basis->getState(gamma)->getSpin();
-                            deltaSpin = basis->getState(delta)->getSpin();
-                            if ((alphaSpin + gammaSpin) != (betaSpin + deltaSpin))
-                            {
-                                energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-                            }
+                            energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+//                                energy += - 0.5 * C(alpha,i) * C(beta,j) * C(gamma,i) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
                         }
                     }
                 }
             }
         }
+//        for (int j = 0; j < N_Electrons; j++)
+//        {
+
+//        }
     }
 
     cout << "Energy: " << energy << endl;

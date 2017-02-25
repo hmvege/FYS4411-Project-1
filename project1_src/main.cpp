@@ -13,7 +13,7 @@
 //#include <omp.h>
 //#include "/usr/local/Cellar/llvm/3.9.1/lib/clang/3.9.1/include/omp.h" // To make omp.h usable on mac
 
-#include "unittests.h"
+//#include "unittests.h"
 
 using namespace std;
 
@@ -36,15 +36,17 @@ int main(int nargs, char *args[])
 //    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
 
     quantumDot QMDot(NElectrons, maxShell, omega);
+
 //    QMDot.setPotential(potentialV);
 //    QMDot.setupInteractionMatrix(intPoints);
     QMDot.setupInteractionMatrixPolar();
     QMDot.setHFLambda(epsilon);
-    QMDot.printInteractionMatrix(pow(maxShell,4));
+//    QMDot.printInteractionMatrix(pow(maxShell,4));
     QMDot.runHartreeFock(maxHFIterations);
 
     /*
      * TODO:
+     * [x] BUG: SP-states are not sorted from low to high energies!!!!
      * [ ] Figure out if I am calculating energies wrong/seting up matrix wrong or doing HF wrong.
      * [ ] Need to add a check for quantum number conservation in HF-matrix setup?
      * [ ] Fix matrix setup - possible optimalization in <pq|v|rs>=<qp|v|sr>, why does value change when I change the last two indexes?

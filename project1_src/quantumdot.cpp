@@ -16,12 +16,11 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     maxShell = newMaxShell;
     omega = newOmega;
     basis.initializeBasis(maxShell, newOmega);
+    basis.printBasis(true);
+    basis.printBasis();
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
-
-    //    basis.printBasisSize();
-//    basis.printBasis(true); // For printing and checking basis
 }
 
 void quantumDot::setPotential(double (*newV)(double x1, double x2, double y1, double y2))
@@ -93,7 +92,7 @@ void quantumDot::setupInteractionMatrixPolar()
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
      */
-    int nonEmptyStatesCounter = 0;
+//    int nonEmptyStatesCounter = 0;
     interactionMatrix = new double[interactionMatrixLength];
 
     clock_t setupStart, setupFinish;
@@ -123,13 +122,9 @@ void quantumDot::setupInteractionMatrixPolar()
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
                     }
-//                    else if (ml1 + ml2 != ml3 + ml4)
-//                    {
-//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-//                    }
                     else
                     {
-                        nonEmptyStatesCounter++;
+//                        nonEmptyStatesCounter++; // Does not work, as Coulomb_HO returns zero when m is not conserved
                         interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
@@ -140,7 +135,7 @@ void quantumDot::setupInteractionMatrixPolar()
         }
     }
     setupFinish = clock();
-    cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << endl;
+//    cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << endl;
     cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 

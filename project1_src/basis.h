@@ -15,7 +15,7 @@ public:
 
     double omega;
 
-    void initializeBasis(int ECutoff, double initOmega);
+    void initializeBasis(int maxShell, double initOmega);
 
     int getShellDegeneracy(int shellNumber);
     int getTotalDegeneracy();
