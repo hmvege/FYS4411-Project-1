@@ -45,12 +45,13 @@ int main(int nargs, char *args[])
 
     /*
      * TODO:
+     * [ ] Figure out if I am calculating energies wrong/seting up matrix wrong or doing HF wrong.
      * [ ] Need to add a check for quantum number conservation in HF-matrix setup?
      * [ ] Fix matrix setup - possible optimalization in <pq|v|rs>=<qp|v|sr>, why does value change when I change the last two indexes?
      * [ ] Add parallelization to integral-finder
      * [ ] Add parallelization to HF matrix setup
      * [x] Make it so that hw is a function of omega, the basic energy and that omega is set from the main settup of program(should go into basis)
-     * [ ] Add possibility for looping over several electrons
+     * [ ] Add possibility for looping over several electrons(easy)
      * [ ] Add write-to-file capability
      */
 

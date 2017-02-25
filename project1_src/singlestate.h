@@ -30,18 +30,19 @@ public:
     void set(int newN_x, int newN_y, double newSpin, double omega);
 
     // Getters
-    double getN_x() { return n_x; }
-    double getN_y() { return n_y; }
-    double getN() { return n; }
-    double getM() { return m; }
-    double getSpin() { return spin; }
-    double getEnergy() { return omega*(n_x + n_y + 1); }
+    double getN_x() const { return n_x; }
+    double getN_y() const { return n_y; }
+    double getN() const { return n; }
+    double getM() const { return m; }
+    double getSpin() const { return spin; }
+    double getEnergy() const { return omega*(n_x + n_y + 1); }
 
 //    double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y))) * ((double) factorial(n_x)) * ((double) factorial(n_y)); }
     double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y)) * ((double) factorial(n_x)) * ((double) factorial(n_y)) * M_PI); }
 
     // Printers
     void printSystem(bool polar);
+    friend std::ostream& operator<<(std::ostream& os, const SingleState& state); // Allows cout << myVector
 };
 
 #endif // SINGLESTATE_H

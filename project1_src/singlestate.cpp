@@ -68,3 +68,15 @@ void SingleState::setPolar(int newN_x, int newN_y)
 //        m = newN_x - newN_y;
 //    }
 }
+
+std::ostream &operator<<(std::ostream &os, const SingleState &state) // Allows cout << myVector << endl;
+{
+    os << "n = " << state.getN() << ", m  = " << state.getM() << ", spin = " << state.getSpin() << ", energy = " << state.getEnergy();
+    return os;
+}
+
+//std::ostream &operator<<(std::ostream &os, const vec3 &myVector) // Allows cout << myVector << endl;
+//{
+//    os << "[" << myVector.x() << ", " << myVector.y() << ", " << myVector.z() << "];";
+//    return os;
+//}
