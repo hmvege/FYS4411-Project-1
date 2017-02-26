@@ -29,6 +29,7 @@ public:
     void setupInteractionMatrixFromFile(const std::string& filename);
     void runHartreeFock(int maxHFIteration);
     void printInteractionMatrix(int NPrintPoints);
+    int getInteractionMatrixLength() { return interactionMatrixLength; }
 };
 
 #endif // QUANTUMDOT_H

@@ -41,7 +41,7 @@ int main(int nargs, char *args[])
 //    QMDot.setupInteractionMatrix(intPoints);
     QMDot.setupInteractionMatrixPolar();
     QMDot.setHFLambda(epsilon);
-//    QMDot.printInteractionMatrix(pow(maxShell,4));
+//    QMDot.printInteractionMatrix(QMDot.getInteractionMatrixLength());
     QMDot.runHartreeFock(maxHFIterations);
 
     /*
