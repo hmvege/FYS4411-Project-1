@@ -136,16 +136,15 @@ void quantumDot::setupInteractionMatrixPolar()
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
                     }
 
-                    // ANTISYMMETRY TEST
-                    interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
-                    asval1 = interactionValue - Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
-                    asval2 = Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n1, ml1, n2, ml2) - Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n2, ml2, n1, ml1);
-                    if (abs(asval1-asval2) < 1e-8)
-                    {
-                        antiSymErrors++;
-                    }
-                    FIX THIS STUFF
-//                    interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] = Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+//                    // ANTISYMMETRY TEST
+//                    interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+//                    asval1 = interactionValue - Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
+//                    asval2 = Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n1, ml1, n2, ml2) - Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n2, ml2, n1, ml1);
+//                    if (abs(asval1-asval2) < 1e-8)
+//                    {
+//                        antiSymErrors++;
+//                    }
+//                    FIXTHIS
                 }
             }
         }
