@@ -100,7 +100,7 @@ void quantumDot::setupInteractionMatrixPolar()
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    //// AS TEST
+    // ASYMMETRY TEST
     double asval1 = 0;
     double asval2 = 0;
     int antiSymErrors = 0;
