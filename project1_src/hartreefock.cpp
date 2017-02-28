@@ -162,7 +162,6 @@ int HartreeFock::runHF(int maxHFIterations)
 //        }
 //        cout << endl;
 
-
         // Updating the density matrix
         updateDensityMatrix();
 
@@ -238,7 +237,7 @@ void HartreeFock::getEnergies()
     // Test for checking unity of C matrix
     if (fabs(arma::sum(arma::sum(C*arma::trans(C))) - N_SPS) < lambda)
     {
-        cout<< "C*C^T = " << arma::sum(arma::sum(C*arma::trans(C)))<<endl;
+        cout << "tr(C*C^T) = " << arma::trace(C*arma::trans(C)) << endl;
         cout << "C is unitary" << endl;
     }
 
