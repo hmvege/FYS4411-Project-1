@@ -21,7 +21,7 @@ public:
     int getTotalDegeneracy();
     int getTotalParticleNumber();
     int getShellParticles(int shellNumber);
-    double getOmega();
+    double getOmega() { return omega; }
     double getTotalEnergy();
     double getShellEnergy(int shellNumber);
     void printBasisSize();

@@ -4,6 +4,7 @@
 #include <armadillo>
 #include "basis.h"
 #include "hermitepolynomials.h"
+#include "Coulomb_Functions.h"
 
 class HartreeFock
 {

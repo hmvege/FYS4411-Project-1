@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <ctime>
 
+#include "Coulomb_Functions.h"
+
 using std::cout;
 using std::endl;
 using std::setprecision;
@@ -11,21 +13,6 @@ using std::setw;
 HartreeFock::HartreeFock()
 {
 
-}
-
-HartreeFock::HartreeFock(int NElectrons, int singleParticleStates)
-{
-    N_Electrons = NElectrons;
-    N_SPS = singleParticleStates;
-
-    densityMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
-    C = arma::zeros<arma::mat>(N_SPS,N_SPS);
-
-    // Initializing C as a diagonal matrix(other initializations exists)
-    setCMatrix();
-
-    // Setting up the density matrix
-    updateDensityMatrix();
 }
 
 void HartreeFock::initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis)
@@ -104,16 +91,34 @@ int HartreeFock::runHF(int maxHFIterations)
         // Retrieving HF elements; TODO: PARALELLIZE HERE
         for (int alpha = 0; alpha < N_SPS; alpha++)
         {
+            // Bruteforce
+//            int alpha_n = basis->getState(alpha)->getN();
+//            int alpha_ml = basis->getState(alpha)->getM();
+
             for (int beta = 0; beta < N_SPS; beta++)
             {
+                // Bruteforce
+//                int beta_n = basis->getState(beta)->getN();
+//                int beta_ml = basis->getState(beta)->getM();
+
                 // TODO: Add quantum-number conservation tests here! SPIN TEST HERE?!
 
                 double HFElement = 0;
                 for (int gamma = 0; gamma < N_SPS; gamma++)
                 {
+                    // Bruteforce
+//                    int gamma_n = basis->getState(gamma)->getN();
+//                    int gamma_ml = basis->getState(gamma)->getM();
+
                     for (int delta = 0; delta < N_SPS; delta++)
                     {
-//                        // ADD M QM-NUMBER TEST HERE!
+
+                        // Bruteforce
+//                        int delta_n = basis->getState(delta)->getN();
+//                        int delta_ml = basis->getState(delta)->getM();
+//                        HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
+////
+                        // ADD M QM-NUMBER TEST HERE!
 //                        if (basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM())
 //                        {
 //                            HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
@@ -201,6 +206,7 @@ int HartreeFock::runHF(int maxHFIterations)
         cout << "Max HF iterations reached." << endl;
     }
     SPS_Energies = singleParticleEnergies;
+    cout<<SPS_Energies<<endl;
     writeToFile(singleParticleEnergies, C);
 
     return 0;
@@ -241,25 +247,25 @@ void HartreeFock::getEnergies()
         cout << "C is unitary" << endl;
     }
 
-    for (int i = 0; i < N_Electrons; i++)
-    {
-        for (int j = 0; j < N_Electrons; j++)
-        {
-            for (int alpha = 0; alpha < N_SPS; alpha++)
-            {
-                for (int beta = 0; beta < N_SPS; beta++)
-                {
-                    for (int gamma = 0; gamma < N_SPS; gamma++)
-                    {
-                        for (int delta= 0; delta < N_SPS; delta++)
-                        {
-                            energy += - 0.5 * C(alpha,i) * C(beta,j) * C(gamma,i) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    for (int i = 0; i < N_Electrons; i++)
+//    {
+//        for (int j = 0; j < N_Electrons; j++)
+//        {
+//            for (int alpha = 0; alpha < N_SPS; alpha++)
+//            {
+//                for (int beta = 0; beta < N_SPS; beta++)
+//                {
+//                    for (int gamma = 0; gamma < N_SPS; gamma++)
+//                    {
+//                        for (int delta= 0; delta < N_SPS; delta++)
+//                        {
+//                            energy += - 0.5 * C(alpha,i) * C(beta,j) * C(gamma,i) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 //    for (int i = 0; i < N_Electrons; i++)
 //    {
