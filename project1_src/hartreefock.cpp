@@ -92,38 +92,45 @@ int HartreeFock::runHF(int maxHFIterations)
         for (int alpha = 0; alpha < N_SPS; alpha++)
         {
             // Bruteforce
-//            int alpha_n = basis->getState(alpha)->getN();
-//            int alpha_ml = basis->getState(alpha)->getM();
+            int alpha_n = basis->getState(alpha)->getN();
+            int alpha_ml = basis->getState(alpha)->getM();
 
             for (int beta = 0; beta < N_SPS; beta++)
             {
                 // Bruteforce
-//                int beta_n = basis->getState(beta)->getN();
-//                int beta_ml = basis->getState(beta)->getM();
+                int beta_n = basis->getState(beta)->getN();
+                int beta_ml = basis->getState(beta)->getM();
 
-                // TODO: Add quantum-number conservation tests here! SPIN TEST HERE?!
+                // Spin and M conservation test
+                if ((basis->getState(alpha)->getM() != basis->getState(beta)->getM()) || (basis->getState(alpha)->getSpin() != basis->getState(beta)->getSpin()))
+                {
+                    continue;
+                }
 
                 double HFElement = 0;
                 for (int gamma = 0; gamma < N_SPS; gamma++)
                 {
                     // Bruteforce
-//                    int gamma_n = basis->getState(gamma)->getN();
-//                    int gamma_ml = basis->getState(gamma)->getM();
+                    int gamma_n = basis->getState(gamma)->getN();
+                    int gamma_ml = basis->getState(gamma)->getM();
 
                     for (int delta = 0; delta < N_SPS; delta++)
                     {
 
                         // Bruteforce
-//                        int delta_n = basis->getState(delta)->getN();
-//                        int delta_ml = basis->getState(delta)->getM();
-//                        HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
-////
+                        int delta_n = basis->getState(delta)->getN();
+                        int delta_ml = basis->getState(delta)->getM();
+                        if ((basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM()) && (basis->getState(alpha)->getSpin() + basis->getState(gamma)->getSpin() == basis->getState(beta)->getSpin() + basis->getState(delta)->getSpin()))
+                        {
+                            HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
+                        }
+
                         // ADD M QM-NUMBER TEST HERE!
 //                        if (basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM())
 //                        {
 //                            HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
 //                        }
-                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
+//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
                     }
                 }
                 HFMatrix(alpha,beta) = HFElement;
@@ -249,6 +256,7 @@ void HartreeFock::getEnergies()
 
 //    for (int i = 0; i < N_Electrons; i++)
 //    {
+//        energy += SPS_Energies(i);
 //        for (int j = 0; j < N_Electrons; j++)
 //        {
 //            for (int alpha = 0; alpha < N_SPS; alpha++)
@@ -266,6 +274,42 @@ void HartreeFock::getEnergies()
 //            }
 //        }
 //    }
+    for (int i = 0; i< N_Electrons; i++) {
+
+    energy +=SPS_Energies(i);
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        // Bruteforce
+        int alpha_n = basis->getState(alpha)->getN();
+        int alpha_ml = basis->getState(alpha)->getM();
+
+        for (int beta = 0; beta < N_SPS; beta++)
+        {
+            // Bruteforce
+            int beta_n = basis->getState(beta)->getN();
+            int beta_ml = basis->getState(beta)->getM();
+
+            // Spin and M conservation test
+            if ((basis->getState(alpha)->getM() != basis->getState(beta)->getM()) || (basis->getState(alpha)->getSpin() != basis->getState(beta)->getSpin()))
+            {
+                continue;
+            }
+            for (int gamma = 0; gamma < N_SPS; gamma++)
+            {
+                // Bruteforce
+                int gamma_n = basis->getState(gamma)->getN();
+                int gamma_ml = basis->getState(gamma)->getM();
+
+                for (int delta = 0; delta < N_SPS; delta++)
+                {
+
+                    // Bruteforce
+                    int delta_n = basis->getState(delta)->getN();
+                    int delta_ml = basis->getState(delta)->getM();
+                    if ((basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM()) && (basis->getState(alpha)->getSpin() + basis->getState(gamma)->getSpin() == basis->getState(beta)->getSpin() + basis->getState(delta)->getSpin()))
+                    {
+                        energy += densityMatrix(alpha,beta)*densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
+                    }}}}}}
 
 //    for (int i = 0; i < N_Electrons; i++)
 //    {

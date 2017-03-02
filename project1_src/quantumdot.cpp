@@ -94,16 +94,10 @@ void quantumDot::setupInteractionMatrixPolar()
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
      */
-//    int nonEmptyStatesCounter = 0;
     interactionMatrix = new double[interactionMatrixLength];
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
-
-    // ASYMMETRY TEST
-    double asval1 = 0;
-    double asval2 = 0;
-    int antiSymErrors = 0;
 
     double interactionValue = 0;
     for (int alpha = 0; alpha < N_SPS; alpha++)
@@ -135,51 +129,12 @@ void quantumDot::setupInteractionMatrixPolar()
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
 //                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
                     }
-
-//                    // ANTISYMMETRY TEST
-//                    interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
-//                    asval1 = interactionValue - Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
-//                    asval2 = Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n1, ml1, n2, ml2) - Coulomb_HO(basis.omega, n3, ml3, n4, ml4, n2, ml2, n1, ml1);
-//                    if (abs(asval1-asval2) < 1e-8)
-//                    {
-//                        antiSymErrors++;
-//                    }
-//                    FIXTHIS
                 }
             }
         }
     }
     setupFinish = clock();
-//    cout << "Matrix setup complete. Number of non-empty states: " << nonEmptyStatesCounter << endl;
     cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
-
-
-//    // Anti-symmetry test
-//    double antisym1 = 0;
-//    double antisym2 = 0;
-//    double eps = 1e-8;
-//    int antiSymErrors = 0;
-//    for (int alpha = 0; alpha < N_SPS; alpha++)
-//    {
-//        for (int beta = 0; beta < N_SPS; beta++)
-//        {
-//            for (int gamma = 0; gamma < N_SPS; gamma++)
-//            {
-//                for (int delta = 0; delta < N_SPS; delta++)
-//                {
-//                    antisym1 = interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)];
-//                    antisym2 = interactionMatrix[index(beta, delta, alpha, gamma, N_SPS)] - interactionMatrix[index(beta, delta, gamma, alpha, N_SPS)];
-//                    if (fabs(antisym1 - antisym2) < eps)
-//                    {
-//                        antiSymErrors++;
-//                    }
-//                }
-//            }
-//        }
-//    }
-    cout << "antiSymErrors=" << antiSymErrors << endl;
-
-
 }
 
 void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // NOT FULLY IMPLEMENTED
