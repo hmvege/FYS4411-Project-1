@@ -31,7 +31,6 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
     /*
      * Setting up the interaction matrix with contigious memory for cartesian coordinates
      */
-
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
@@ -122,7 +121,7 @@ void quantumDot::setupInteractionMatrixPolar()
             }
         }
     }
-    antiSymmetrizeMatrix();
+//    antiSymmetrizeMatrix();
     setupFinish = clock();
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }

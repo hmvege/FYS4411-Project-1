@@ -52,7 +52,6 @@ double solveGaussianHermiteQuadrature(int n,
      * Solver for Gaussian Quadrature. Assumes that the integrand is a function(or class instance), that when called upon with
      * values x[i], x[j], x[k], x[l], will return the integrand value that is required.
      */
-
     double * x = new double[n]; // Integration points
     double * w = new double[n]; // Weights
     getHermiteWeights(x, w, n);
@@ -78,7 +77,6 @@ double solveGaussianHermiteQuadrature(int n,
             }
         }
     }
-
     delete [] x;
     delete [] w;
 

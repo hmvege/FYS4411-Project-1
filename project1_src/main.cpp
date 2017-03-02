@@ -20,9 +20,9 @@ void setMatrixZero(double ** A, int N);
 int main(int nargs, char *args[])
 {
     int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
-    int maxShell    = 4;
+    int maxShell    = 3;
     int maxHFIterations = 200;
-    double omega = 1.0;
+    double omega = 1;
     double epsilon = 1e-10;
 
 //    int maxThreadNumber = omp_get_max_threads();
@@ -39,8 +39,9 @@ int main(int nargs, char *args[])
 
     /*
      * TODO:
-     * [ ] Clean up code quantumdot.cpp
-     * [ ] Clean up hartreefock.cpp
+     * [x] Clean up code quantumdot.cpp
+     * [x] Clean up hartreefock.cpp
+     * [ ] Precalculate the antisymmetric integrals
      * [ ] Add parallelization to integral-finder
      * [ ] Add parallelization to HF matrix setup
      * [ ] Add possibility for looping over several electrons(easy)
