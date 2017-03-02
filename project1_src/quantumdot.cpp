@@ -73,6 +73,7 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
             }
         }
     }
+    antiSymmetrizeMatrix();
     setupFinish = clock();
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
@@ -92,7 +93,7 @@ void quantumDot::setupInteractionMatrixPolar()
     {
         int n1 = basis.getState(alpha)->getN();
         int ml1 = basis.getState(alpha)->getM();
-        for (int gamma = 0; gamma < N_SPS; gamma++)
+        for (int gamma = alpha; gamma < N_SPS; gamma++)
         {
             int n2 = basis.getState(gamma)->getN();
             int ml2 = basis.getState(gamma)->getM();
@@ -109,18 +110,19 @@ void quantumDot::setupInteractionMatrixPolar()
                             (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
                     {
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
                     }
                     else
                     {
                         interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
-//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
                     }
                 }
             }
         }
     }
+    antiSymmetrizeMatrix();
     setupFinish = clock();
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
@@ -159,7 +161,19 @@ void quantumDot::antiSymmetrizeMatrix()
             }
         }
     }
-    interactionMatrix = tempInteractionMatrix;
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        for (int beta = 0; beta < N_SPS; beta++)
+        {
+            for (int gamma = 0; gamma < N_SPS; gamma++)
+            {
+                for (int delta= 0; delta < N_SPS; delta++)
+                {
+                    interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = tempInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                }
+            }
+        }
+    }
 
     delete [] tempInteractionMatrix;
 }

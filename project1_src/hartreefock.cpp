@@ -74,32 +74,40 @@ void HartreeFock::updateHFMatrix(arma::mat &HFMatrix)
         for (int beta = 0; beta < N_SPS; beta++)
         {
             int beta_ml = basis->getState(beta)->getM();
-            double betaSpin = basis->getState(beta)->getSpin();
+            int betaSpin = basis->getState(beta)->getSpin();
             // Spin and M conservation test
             if ((alpha_ml != beta_ml) || (alphaSpin != betaSpin)) { continue; }
-            double HFElement = 0;
-            for (int gamma = 0; gamma < N_SPS; gamma++)
-            {
-                int gamma_ml = basis->getState(gamma)->getM();
-                double gammaSpin = basis->getState(gamma)->getSpin();
-                for (int delta = 0; delta < N_SPS; delta++)
-                {
-                    int delta_ml = basis->getState(delta)->getM();
-                    double deltaSpin = basis->getState(delta)->getSpin();
-                    // Total spin and angular momentum conservation test
-                    if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
-                    {
-                        // Brute-forcey method, not removed the extra deltaFunction for spin
-//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
-                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
-                    }
-                }
-            }
-            HFMatrix(alpha,beta) = HFElement;
+
+            HFMatrix(alpha,beta) = calculateInnerHFMatrixElement(alpha, alpha_ml, alphaSpin, beta, beta_ml, betaSpin);
         }
         // Instead of an if-test inside the nested for-loop
         HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar();
     }
+}
+
+double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin)
+{
+    double HFElement = 0;
+    for (int gamma = 0; gamma < N_SPS; gamma++)
+    {
+        int gamma_ml = basis->getState(gamma)->getM();
+        double gammaSpin = basis->getState(gamma)->getSpin();
+        for (int delta = 0; delta < N_SPS; delta++)
+        {
+            int delta_ml = basis->getState(delta)->getM();
+            double deltaSpin = basis->getState(delta)->getSpin();
+
+            // Total spin and angular momentum conservation test
+            if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
+            {
+                // Brute-forcey method, not removed the extra deltaFunction for spin
+//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+//                HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+                HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+            }
+        }
+    }
+    return HFElement;
 }
 
 int HartreeFock::runHF(int maxHFIterations)
@@ -117,58 +125,14 @@ int HartreeFock::runHF(int maxHFIterations)
     clock_t eigStart, eigFinish;
     clock_t minimaStart, minimaFinish;
 
+    int HFCounter = 0;
     cout << "Starting Hartree-Fock" << endl;
-    int HFiteration = 0; // To compare with for later(I know this is risky business)
-    for (HFiteration; HFiteration < maxHFIterations; HFiteration++)
-    {
-        cout << "HFiteration: " << HFiteration << endl; // Checking progress of program, usefull for short runs
 
+    for (int HFIteration = 0; HFIteration < maxHFIterations; HFIteration++)
+    {
         // Setting up HFMatrix
         loopStart = clock();
         updateHFMatrix(HFMatrix);
-
-        //        HFMatrix.zeros();
-//        for (int alpha = 0; alpha < N_SPS; alpha++)
-//        {
-//            int alpha_ml = basis->getState(alpha)->getM();
-//            int alphaSpin = basis->getState(alpha)->getSpin();
-
-//            for (int beta = 0; beta < N_SPS; beta++)
-//            {
-//                int beta_ml = basis->getState(beta)->getM();
-//                double betaSpin = basis->getState(beta)->getSpin();
-
-//                // Spin and M conservation test
-//                if ((alpha_ml != beta_ml) || (alphaSpin != betaSpin))
-//                {
-//                    continue;
-//                }
-
-//                double HFElement = 0;
-//                for (int gamma = 0; gamma < N_SPS; gamma++)
-//                {
-//                    int gamma_ml = basis->getState(gamma)->getM();
-//                    double gammaSpin = basis->getState(gamma)->getSpin();
-
-//                    for (int delta = 0; delta < N_SPS; delta++)
-//                    {
-//                        int delta_ml = basis->getState(delta)->getM();
-//                        double deltaSpin = basis->getState(delta)->getSpin();
-
-//                        // Total spin and angular momentum conservation test
-//                        if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
-//                        {
-////                            HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml)*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml)*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
-//                            HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
-//                        }
-
-//                    }
-//                }
-//                HFMatrix(alpha,beta) = HFElement;
-//            }
-//            // Instead of an if-test inside the nested for-loop
-//            HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar();
-//        }
         loopFinish = clock();
 
         // Finding eigenvalues & eigenvectors
@@ -185,8 +149,8 @@ int HartreeFock::runHF(int maxHFIterations)
         minimaStart = clock();
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
-//            cout << singleParticleEnergies << endl;
-            cout << "Done after " << HFiteration << " Hartree Fock iteration." << endl;
+            cout << "Done after " << HFIteration << " Hartree Fock iteration." << endl;
+            HFCounter = HFIteration;
             break;
         }
         else
@@ -201,17 +165,20 @@ int HartreeFock::runHF(int maxHFIterations)
         minimaTime += ((minimaFinish - minimaStart)/((double)CLOCKS_PER_SEC));
     }
 
-    // Printing out average time per loop element
-    cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFiteration   << " seconds" << endl;
-    cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFiteration        << " seconds" << endl;
-    cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFiteration     << " seconds" << endl;
-
-    if (HFiteration == maxHFIterations)
+    // Checking if maximum HF iterations have been reached
+    if (HFCounter == 0)
     {
+        HFCounter = maxHFIterations;
         cout << "Max HF iterations reached." << endl;
     }
+
+    // Printing out average time per loop element
+    cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFCounter   << " seconds" << endl;
+    cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFCounter        << " seconds" << endl;
+    cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFCounter     << " seconds" << endl;
+
     SPS_Energies = singleParticleEnergies;
-    cout<<SPS_Energies<<endl;
+    cout << SPS_Energies << endl;
     writeToFile(singleParticleEnergies, C);
 
     return 0;
@@ -312,6 +279,7 @@ void HartreeFock::getHFEnergy()
                     {
                         deltaSpin = basis->getState(delta)->getSpin();
                         energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+//                        energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
 
                         //                        energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
                         }

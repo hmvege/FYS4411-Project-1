@@ -28,6 +28,7 @@ public:
     void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
     int runHF(int maxHFIterations);
     void updateHFMatrix(arma::mat &HFMatrix);
+    double calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin);
     void writeToFile(arma::vec eigVals, arma::mat eigVecs);
     void getHFEnergy();
 
