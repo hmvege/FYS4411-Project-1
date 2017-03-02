@@ -16,10 +16,6 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     maxShell = newMaxShell;
     omega = newOmega;
     basis.initializeBasis(maxShell, newOmega);
-
-//    basis.printBasis(true);
-//    basis.printBasis();
-
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
@@ -46,14 +42,10 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
         double (*alphaHerm_x)(double) = hermite.getPolynom(basis.getState(alpha)->getN_x());
         double (*alphaHerm_y)(double) = hermite.getPolynom(basis.getState(alpha)->getN_y());
         double alphaConst = basis.getState(alpha)->normConst();
-//        double constA1 = normalizationConstant(basis.getState(alpha)->getN_x());
-//        double constA2 = normalizationConstant(basis.getState(alpha)->getN_y());
         for (int beta = 0; beta < N_SPS; beta++)
         {
             double (*betaHerm_x)(double) = hermite.getPolynom(basis.getState(beta)->getN_x());
             double (*betaHerm_y)(double) = hermite.getPolynom(basis.getState(beta)->getN_y());
-//            double constA3 = normalizationConstant(basis.getState(beta)->getN_x());
-//            double constA4 = normalizationConstant(basis.getState(beta)->getN_y());
             double betaConst = basis.getState(beta)->normConst();
             for (int gamma = 0; gamma < N_SPS; gamma++)
             {
@@ -77,16 +69,12 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
                                                                                                                 deltaHerm_y,
                                                                                                                 V);
                     interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] *= alphaConst*betaConst*gammaConst*deltaConst;
-//                    interactionMatrix[index(alpha, beta, gamma, delta, N_SPS)] *= constA1*constA2*constA3*constA4;
-                    // state_alpha*alpha_norm * etc..
-                    // May need to do some change of variable..?
                 }
             }
         }
     }
     setupFinish = clock();
-    cout << "Matrix setup complete." << endl;
-    cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::setupInteractionMatrixPolar()
@@ -112,7 +100,7 @@ void quantumDot::setupInteractionMatrixPolar()
             {
                 int n3 = basis.getState(beta)->getN();
                 int ml3 = basis.getState(beta)->getM();
-                for (int delta = 0; delta < N_SPS; delta++) // CHANGE TO START AT BETA?
+                for (int delta = 0; delta < N_SPS; delta++)
                 {
                     int n4 = basis.getState(delta)->getN();
                     int ml4 = basis.getState(delta)->getM();
@@ -134,8 +122,48 @@ void quantumDot::setupInteractionMatrixPolar()
         }
     }
     setupFinish = clock();
-    cout << "Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
+
+void quantumDot::antiSymmetrizeMatrix()
+{
+    double * tempInteractionMatrix = new double[interactionMatrixLength];
+    int alphaSpin = 0;
+    int betaSpin = 0;
+    int gammaSpin = 0;
+    int deltaSpin = 0;
+
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        alphaSpin = basis.getState(alpha)->getSpin();
+        for (int beta = 0; beta < N_SPS; beta++)
+        {
+            betaSpin = basis.getState(beta)->getSpin();
+            for (int gamma = 0; gamma < N_SPS; gamma++)
+            {
+                gammaSpin = basis.getState(gamma)->getSpin();
+                for (int delta= 0; delta < N_SPS; delta++)
+                {
+                    deltaSpin = basis.getState(delta)->getSpin();;
+
+                    if (alphaSpin + betaSpin != betaSpin + gammaSpin)
+                    {
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+                    }
+                    else
+                    {
+                        tempInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+                    }
+                }
+            }
+        }
+    }
+    interactionMatrix = tempInteractionMatrix;
+
+    delete [] tempInteractionMatrix;
+}
+
 
 void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // NOT FULLY IMPLEMENTED
 {
@@ -157,7 +185,7 @@ void quantumDot::runHartreeFock(int maxHFIteration)
 {
     HF.setInteractionMatrix(interactionMatrix);
     HF.runHF(maxHFIteration);
-    HF.getEnergies();
+    HF.getHFEnergy();
 }
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)

@@ -27,8 +27,13 @@ public:
     ~HartreeFock();
     void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
     int runHF(int maxHFIterations);
+    void updateHFMatrix(arma::mat &HFMatrix);
     void writeToFile(arma::vec eigVals, arma::mat eigVecs);
-    void getEnergies();
+    void getHFEnergy();
+
+    // Printers
+    void printHFMatrix(arma::mat HFMatrix);
+    void printSPEnergies(arma::vec singleParticleEnergies);
 
     // Setters
     void setConvergence(double newLambda) { lambda = newLambda; }

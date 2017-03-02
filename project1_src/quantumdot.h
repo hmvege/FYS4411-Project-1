@@ -22,14 +22,20 @@ public:
     quantumDot(int newNElectrons, int newMaxShell, double newOmega);
     ~quantumDot() { }
 
-    void setHFLambda(double newLambda) { HF.setConvergence(newLambda); }
-    void setPotential(double (*newV)(double x1, double x2, double y1, double y2));
+    void runHartreeFock(int maxHFIteration);
+    void antiSymmetrizeMatrix();
+    void setupInteractionMatrixFromFile(const std::string& filename);
     void setupInteractionMatrix(int integrationPoints);
     void setupInteractionMatrixPolar();
-    void setupInteractionMatrixFromFile(const std::string& filename);
-    void runHartreeFock(int maxHFIteration);
     void printInteractionMatrix(int NPrintPoints);
+
+    // Setters
+    void setHFLambda(double newLambda) { HF.setConvergence(newLambda); }
+    void setPotential(double (*newV)(double x1, double x2, double y1, double y2));
+
+    // Getters
     int getInteractionMatrixLength() { return interactionMatrixLength; }
+    Basis getBasis() { return basis; }
 };
 
 #endif // QUANTUMDOT_H

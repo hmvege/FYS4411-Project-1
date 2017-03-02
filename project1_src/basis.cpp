@@ -45,7 +45,7 @@ void Basis::initializeBasis(int maxShell, double initOmega)
         {
             for (int j = 0; j < maxShell; j++) // Running over variations of ny
             {
-                for (double k = -0.5; k < 1; k++) // Running over the two possible spin configurations
+                for (double k = -1; k < 2; k += 2) // Running over the two possible spin configurations
                 {
                     if (i+j == shellInt) // If-test to prevent counting outside of the shell
                     {

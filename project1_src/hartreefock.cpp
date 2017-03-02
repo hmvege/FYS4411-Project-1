@@ -2,7 +2,7 @@
 #include <armadillo>
 #include <iomanip>
 #include <ctime>
-
+#include "functions.h"
 #include "Coulomb_Functions.h"
 
 using std::cout;
@@ -64,6 +64,44 @@ void HartreeFock::setInteractionMatrix(double * newInteractionMatrix)
     interactionMatrix = newInteractionMatrix;
 }
 
+void HartreeFock::updateHFMatrix(arma::mat &HFMatrix)
+{
+    HFMatrix.zeros();
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        int alpha_ml = basis->getState(alpha)->getM();
+        int alphaSpin = basis->getState(alpha)->getSpin();
+        for (int beta = 0; beta < N_SPS; beta++)
+        {
+            int beta_ml = basis->getState(beta)->getM();
+            double betaSpin = basis->getState(beta)->getSpin();
+            // Spin and M conservation test
+            if ((alpha_ml != beta_ml) || (alphaSpin != betaSpin)) { continue; }
+            double HFElement = 0;
+            for (int gamma = 0; gamma < N_SPS; gamma++)
+            {
+                int gamma_ml = basis->getState(gamma)->getM();
+                double gammaSpin = basis->getState(gamma)->getSpin();
+                for (int delta = 0; delta < N_SPS; delta++)
+                {
+                    int delta_ml = basis->getState(delta)->getM();
+                    double deltaSpin = basis->getState(delta)->getSpin();
+                    // Total spin and angular momentum conservation test
+                    if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
+                    {
+                        // Brute-forcey method, not removed the extra deltaFunction for spin
+//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+                    }
+                }
+            }
+            HFMatrix(alpha,beta) = HFElement;
+        }
+        // Instead of an if-test inside the nested for-loop
+        HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar();
+    }
+}
+
 int HartreeFock::runHF(int maxHFIterations)
 {
     // For loop will run till max HF iteration is reached, or we get a convergence for epsilon(NOT IMPLEMENTED YET)
@@ -87,79 +125,51 @@ int HartreeFock::runHF(int maxHFIterations)
 
         // Setting up HFMatrix
         loopStart = clock();
-        HFMatrix.zeros();
-        // Retrieving HF elements; TODO: PARALELLIZE HERE
-        for (int alpha = 0; alpha < N_SPS; alpha++)
-        {
-            // Bruteforce
-            int alpha_n = basis->getState(alpha)->getN();
-            int alpha_ml = basis->getState(alpha)->getM();
+        updateHFMatrix(HFMatrix);
 
-            for (int beta = 0; beta < N_SPS; beta++)
-            {
-                // Bruteforce
-                int beta_n = basis->getState(beta)->getN();
-                int beta_ml = basis->getState(beta)->getM();
-
-                // Spin and M conservation test
-                if ((basis->getState(alpha)->getM() != basis->getState(beta)->getM()) || (basis->getState(alpha)->getSpin() != basis->getState(beta)->getSpin()))
-                {
-                    continue;
-                }
-
-                double HFElement = 0;
-                for (int gamma = 0; gamma < N_SPS; gamma++)
-                {
-                    // Bruteforce
-                    int gamma_n = basis->getState(gamma)->getN();
-                    int gamma_ml = basis->getState(gamma)->getM();
-
-                    for (int delta = 0; delta < N_SPS; delta++)
-                    {
-
-                        // Bruteforce
-                        int delta_n = basis->getState(delta)->getN();
-                        int delta_ml = basis->getState(delta)->getM();
-                        if ((basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM()) && (basis->getState(alpha)->getSpin() + basis->getState(gamma)->getSpin() == basis->getState(beta)->getSpin() + basis->getState(delta)->getSpin()))
-                        {
-                            HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
-                        }
-
-                        // ADD M QM-NUMBER TEST HERE!
-//                        if (basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM())
-//                        {
-//                            HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-//                        }
-//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-                    }
-                }
-                HFMatrix(alpha,beta) = HFElement;
-//                if (alpha == beta) // Delta function
-//                {
-//                    HFMatrix(alpha,beta) += basis->getState(alpha)->getEnergy();
-//                }
-            }
-            HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar(); // Instead of an if-test inside the nested for-loop
-        }
-        loopFinish = clock();
-
-//        // Printing HFMatrix
+        //        HFMatrix.zeros();
 //        for (int alpha = 0; alpha < N_SPS; alpha++)
 //        {
+//            int alpha_ml = basis->getState(alpha)->getM();
+//            int alphaSpin = basis->getState(alpha)->getSpin();
+
 //            for (int beta = 0; beta < N_SPS; beta++)
 //            {
-//                double val = HFMatrix(alpha,beta);
-//                if (fabs(val) < (1e-15))
+//                int beta_ml = basis->getState(beta)->getM();
+//                double betaSpin = basis->getState(beta)->getSpin();
+
+//                // Spin and M conservation test
+//                if ((alpha_ml != beta_ml) || (alphaSpin != betaSpin))
 //                {
-//                    cout << setw(12) << 0;
+//                    continue;
 //                }
-//                else
+
+//                double HFElement = 0;
+//                for (int gamma = 0; gamma < N_SPS; gamma++)
 //                {
-//                    cout << setw(12) << HFMatrix(alpha,beta);
+//                    int gamma_ml = basis->getState(gamma)->getM();
+//                    double gammaSpin = basis->getState(gamma)->getSpin();
+
+//                    for (int delta = 0; delta < N_SPS; delta++)
+//                    {
+//                        int delta_ml = basis->getState(delta)->getM();
+//                        double deltaSpin = basis->getState(delta)->getSpin();
+
+//                        // Total spin and angular momentum conservation test
+//                        if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
+//                        {
+////                            HFElement += densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml)*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml)*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+//                            HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+//                        }
+
+//                    }
 //                }
+//                HFMatrix(alpha,beta) = HFElement;
 //            }
-//            cout << endl;
+//            // Instead of an if-test inside the nested for-loop
+//            HFMatrix(alpha,alpha) += basis->getState(alpha)->getEnergyPolar();
 //        }
+        loopFinish = clock();
 
         // Finding eigenvalues & eigenvectors
         eigStart = clock();
@@ -167,12 +177,6 @@ int HartreeFock::runHF(int maxHFIterations)
         arma::eig_sym(singleParticleEnergies, C, HFMatrix); // dc faster for larger matrices, std default
         densityMatrix.zeros(); // Setting densityMatrix back to zeros only
         eigFinish = clock();
-
-//        for (int alpha = 0; alpha < N_SPS; alpha++)
-//        {
-//            cout << singleParticleEnergies(alpha) << " N=" << basis->getState(alpha)->getN() << " M="<< basis->getState(alpha)->getM() << " SPEnergy: " << basis->getState(alpha)->getEnergyPolar() << endl;
-//        }
-//        cout << endl;
 
         // Updating the density matrix
         updateDensityMatrix();
@@ -190,12 +194,6 @@ int HartreeFock::runHF(int maxHFIterations)
             oldEnergies = singleParticleEnergies;
         }
         minimaFinish = clock();
-
-        // Checking progress of program, usefull for long runs
-//        if (HFiteration % 1000 == 0)
-//        {
-//            cout << HFiteration << endl;
-//        }
 
         // Summing up time spent
         mainLoopTime += ((loopFinish - loopStart)/((double)CLOCKS_PER_SEC));
@@ -219,131 +217,110 @@ int HartreeFock::runHF(int maxHFIterations)
     return 0;
 }
 
+void HartreeFock::printHFMatrix(arma::mat HFMatrix)
+{
+    /*
+     *  Small function for printing out the Hartree-Fock matrix
+     */
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        for (int beta = 0; beta < N_SPS; beta++)
+        {
+            double val = HFMatrix(alpha,beta);
+            if (fabs(val) < (1e-15))
+            {
+                cout << setw(12) << 0;
+            }
+            else
+            {
+                cout << setw(12) << HFMatrix(alpha,beta);
+            }
+        }
+    cout << endl;
+    }
+}
+
+void HartreeFock::printSPEnergies(arma::vec singleParticleEnergies)
+{
+    /*
+     * Small function for printing out the single particle energies with their belonging quantum numbers
+     */
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        cout << "SP-Energy = " << singleParticleEnergies(alpha) << " N = " << basis->getState(alpha)->getN() << " M = " << basis->getState(alpha)->getM() << endl;
+    }
+    cout << endl;
+}
+
 void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
 {
+    /*
+     * Function for writing eigenvectors and the egeinvalue to file
+     * Setup:
+     * eigenValue # eigenvector-elements
+     */
     std::ofstream file;
     std::string filename = "output_NSPS" + std::to_string(N_SPS) + "_Electrons" + std::to_string(N_Electrons) + ".dat";
     file.open(filename);
     for (int i = 0; i < N_SPS; i++)
     {
         file << setprecision(8) << eigVals(i) << " # ";
-//        for (int j = 0; j < N_SPS; j++)
-//        {
-//            file << setprecision(8) << eigVecs(i,j); // AM I FILLING IN EIGENVECTORS HERE?
-//        }
+        for (int j = 0; j < N_SPS; j++)
+        {
+            file << setprecision(8) << eigVecs(i,j); // AM I FILLING IN EIGENVECTORS HERE?
+        }
         file << endl;
     }
     file.close();
     cout << filename << " written" << endl;
 }
 
-void HartreeFock::getEnergies()
+void HartreeFock::getHFEnergy()
 {
-    double energy = 0;
-    double matrixEnergies = 0;
+    /*
+     * Function for retrieving the Hartree-Fock ground state energy
+     */
 
+    double energy = 0;
     double alphaSpin = 0;
     double betaSpin = 0;
     double gammaSpin = 0;
     double deltaSpin = 0;
 
-    // Test for checking unity of C matrix
-    if (fabs(arma::sum(arma::sum(C*arma::trans(C))) - N_SPS) < lambda)
+//    // Test for checking unity of C matrix
+//    if (fabs(arma::sum(arma::sum(C*arma::trans(C))) - N_SPS) < lambda)
+//    {
+//        cout << "tr(C*C^T) = " << arma::trace(C*arma::trans(C)) << endl;
+//        cout << "C is unitary" << endl;
+//    }
+
+    for (int i = 0; i < N_Electrons; i++)
     {
-        cout << "tr(C*C^T) = " << arma::trace(C*arma::trans(C)) << endl;
-        cout << "C is unitary" << endl;
+        energy += SPS_Energies(i);
+        for (int j = 0; j<N_Electrons; j++)
+        {
+        for (int alpha = 0; alpha < N_SPS; alpha++)
+        {
+            alphaSpin = basis->getState(alpha)->getSpin();
+            for (int beta = 0; beta < N_SPS; beta++)
+            {
+                betaSpin = basis->getState(beta)->getSpin();
+                for (int gamma = 0; gamma < N_SPS; gamma++)
+                {
+                    gammaSpin = basis->getState(gamma)->getSpin();
+                    for (int delta= 0; delta < N_SPS; delta++)
+                    {
+                        deltaSpin = basis->getState(delta)->getSpin();
+                        energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+
+                        //                        energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
-//    for (int i = 0; i < N_Electrons; i++)
-//    {
-//        energy += SPS_Energies(i);
-//        for (int j = 0; j < N_Electrons; j++)
-//        {
-//            for (int alpha = 0; alpha < N_SPS; alpha++)
-//            {
-//                for (int beta = 0; beta < N_SPS; beta++)
-//                {
-//                    for (int gamma = 0; gamma < N_SPS; gamma++)
-//                    {
-//                        for (int delta= 0; delta < N_SPS; delta++)
-//                        {
-//                            energy += - 0.5 * C(alpha,i) * C(beta,j) * C(gamma,i) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-    for (int i = 0; i< N_Electrons; i++) {
-
-    energy +=SPS_Energies(i);
-    for (int alpha = 0; alpha < N_SPS; alpha++)
-    {
-        // Bruteforce
-        int alpha_n = basis->getState(alpha)->getN();
-        int alpha_ml = basis->getState(alpha)->getM();
-
-        for (int beta = 0; beta < N_SPS; beta++)
-        {
-            // Bruteforce
-            int beta_n = basis->getState(beta)->getN();
-            int beta_ml = basis->getState(beta)->getM();
-
-            // Spin and M conservation test
-            if ((basis->getState(alpha)->getM() != basis->getState(beta)->getM()) || (basis->getState(alpha)->getSpin() != basis->getState(beta)->getSpin()))
-            {
-                continue;
-            }
-            for (int gamma = 0; gamma < N_SPS; gamma++)
-            {
-                // Bruteforce
-                int gamma_n = basis->getState(gamma)->getN();
-                int gamma_ml = basis->getState(gamma)->getM();
-
-                for (int delta = 0; delta < N_SPS; delta++)
-                {
-
-                    // Bruteforce
-                    int delta_n = basis->getState(delta)->getN();
-                    int delta_ml = basis->getState(delta)->getM();
-                    if ((basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM()) && (basis->getState(alpha)->getSpin() + basis->getState(gamma)->getSpin() == basis->getState(beta)->getSpin() + basis->getState(delta)->getSpin()))
-                    {
-                        energy += densityMatrix(alpha,beta)*densityMatrix(gamma,delta) * (Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, beta_n, beta_ml, delta_n, delta_ml) - Coulomb_HO(basis->omega, alpha_n, alpha_ml, gamma_n, gamma_ml, delta_n, delta_ml, beta_n, beta_ml));
-                    }}}}}}
-
-//    for (int i = 0; i < N_Electrons; i++)
-//    {
-//        energy += SPS_Energies(i);
-//        for (int alpha = 0; alpha < N_SPS; alpha++)
-//        {
-//            alphaSpin = basis->getState(alpha)->getSpin();
-//            for (int beta = 0; beta < N_SPS; beta++)
-//            {
-//                betaSpin = basis->getState(beta)->getSpin();
-//                for (int gamma = 0; gamma < N_SPS; gamma++)
-//                {
-//                    gammaSpin = basis->getState(gamma)->getSpin();
-//                    for (int delta= 0; delta < N_SPS; delta++)
-//                    {
-//                        deltaSpin = basis->getState(delta)->getSpin();
-//                        if (((alphaSpin + gammaSpin) == (betaSpin + deltaSpin)) && (basis->getState(alpha)->getM() + basis->getState(gamma)->getM() == basis->getState(beta)->getM() + basis->getState(delta)->getM()))
-////                        if (((alphaSpin + gammaSpin) == (betaSpin + deltaSpin)) && ((basis->getState(alpha)->getM() + basis->getState(beta)->getM()) == basis->getState(gamma)->getM() + basis->getState(delta)->getM()))
-//                        {
-//                            double en = - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-////                            if (fabs(en) > lambda)
-////                            {
-////                                cout << en << endl;
-////                            }
-//                            matrixEnergies += en;
-////                            energy -= 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-////                            energy += - 0.5 * C(alpha,i) * C(beta,j) * C(gamma,i) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    cout << "Matrix Energies: " << matrixEnergies << endl;
     cout << "Energy: " << energy << endl;
 }
