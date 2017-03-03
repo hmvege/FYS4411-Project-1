@@ -101,7 +101,7 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
             if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
             {
                 // Brute-forcey method, not removed the extra deltaFunction for spin
-//                        HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
+//                HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
                 HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
 //                HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
             }
@@ -247,7 +247,6 @@ void HartreeFock::getHFEnergy()
     /*
      * Function for retrieving the Hartree-Fock ground state energy
      */
-
     double energy = 0;
     double alphaSpin = 0;
     double betaSpin = 0;
@@ -266,28 +265,27 @@ void HartreeFock::getHFEnergy()
         energy += SPS_Energies(i);
         for (int j = 0; j<N_Electrons; j++)
         {
-        for (int alpha = 0; alpha < N_SPS; alpha++)
-        {
-            alphaSpin = basis->getState(alpha)->getSpin();
-            for (int beta = 0; beta < N_SPS; beta++)
+            for (int alpha = 0; alpha < N_SPS; alpha++)
             {
-                betaSpin = basis->getState(beta)->getSpin();
-                for (int gamma = 0; gamma < N_SPS; gamma++)
+                alphaSpin = basis->getState(alpha)->getSpin();
+                for (int beta = 0; beta < N_SPS; beta++)
                 {
-                    gammaSpin = basis->getState(gamma)->getSpin();
-                    for (int delta= 0; delta < N_SPS; delta++)
+                    betaSpin = basis->getState(beta)->getSpin();
+                    for (int gamma = 0; gamma < N_SPS; gamma++)
                     {
-                        deltaSpin = basis->getState(delta)->getSpin();
-                        energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
-//                        energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                        gammaSpin = basis->getState(gamma)->getSpin();
+                        for (int delta= 0; delta < N_SPS; delta++)
+                        {
+                            deltaSpin = basis->getState(delta)->getSpin();
+                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+    //                        energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
 
-                        //                        energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
+                            //                        energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
                         }
                     }
                 }
             }
         }
-
     }
 
     cout << "Energy: " << energy << endl;
