@@ -6,6 +6,12 @@
 # Ignore binaries
 bin/
 
+# Tex-files
+*.aux
+*.log
+*.out
+*.gz
+
 # Datafiles
 *.dat
 
