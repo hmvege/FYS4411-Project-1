@@ -41,11 +41,11 @@ int main(int nargs, char *args[])
      * TODO:
      * [x] Clean up code quantumdot.cpp
      * [x] Clean up hartreefock.cpp
-     * [ ] Precalculate the antisymmetric integrals
+     * [x] Precalculate the antisymmetric integrals
+     * [ ] Add possibility for looping over several electrons(easy)
      * [ ] Add parallelization to integral-finder
      * [ ] Add parallelization to HF matrix setup
-     * [ ] Add possibility for looping over several electrons(easy)
-     * [ ] Add write-to-file capability
+     * [ ] Add write-to-file capability(easy)
      */
 
     return 0;

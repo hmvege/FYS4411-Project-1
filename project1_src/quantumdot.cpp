@@ -121,13 +121,14 @@ void quantumDot::setupInteractionMatrixPolar()
             }
         }
     }
-//    antiSymmetrizeMatrix();
+    antiSymmetrizeMatrix();
     setupFinish = clock();
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::antiSymmetrizeMatrix()
 {
+    cout << "Antisymmetrising" << endl;
     double * tempInteractionMatrix = new double[interactionMatrixLength];
     int alphaSpin = 0;
     int betaSpin = 0;
@@ -146,16 +147,8 @@ void quantumDot::antiSymmetrizeMatrix()
                 for (int delta= 0; delta < N_SPS; delta++)
                 {
                     deltaSpin = basis.getState(delta)->getSpin();;
-
-                    if (alphaSpin + betaSpin != betaSpin + gammaSpin)
-                    {
-                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
-                    }
-                    else
-                    {
-                        tempInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
-                    }
+                    tempInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin)
+                                                                                    - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
                 }
             }
         }
