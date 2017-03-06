@@ -9,6 +9,7 @@ class Basis
 {
 private:
     vector<SingleState *> statesArray;
+    int maxShell;
 public:
     Basis();
     ~Basis();
@@ -17,6 +18,9 @@ public:
 
     void initializeBasis(int maxShell, double initOmega);
 
+    // Getters
+    SingleState * getState(int state);
+    int getMaxShell() { return maxShell; }
     int getShellDegeneracy(int shellNumber);
     int getTotalDegeneracy();
     int getTotalParticleNumber();
@@ -24,15 +28,11 @@ public:
     double getOmega() { return omega; }
     double getTotalEnergy();
     double getShellEnergy(int shellNumber);
+
+    // Printers
     void printBasisSize();
     void printBasis(bool polar=false);
 
-    SingleState * getState(int state);
-
-    // getDegeneracyOfShell
-    // getTotalEnergy
-    // getParticleNumber
-    // getShellParticles
 };
 
 #endif // BASIS_H

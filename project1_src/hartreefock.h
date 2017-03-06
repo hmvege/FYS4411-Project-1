@@ -11,6 +11,7 @@ class HartreeFock
 private:
     int N_SPS;
     int N_Electrons;
+    int HFCounter = 0;
     double lambda = 1e-5;
     double * interactionMatrix;
     arma::vec SPS_Energies;
@@ -19,7 +20,7 @@ private:
 
     Basis *basis = nullptr;
 
-    void setCMatrix();
+    void initializeCMatrix();
     void updateDensityMatrix();
 public:
     HartreeFock();
@@ -29,8 +30,8 @@ public:
     int runHF(int maxHFIterations);
     void updateHFMatrix(arma::mat &HFMatrix);
     double calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin);
-    void writeToFile(arma::vec eigVals, arma::mat eigVecs);
-    void getHFEnergy();
+    void writeToFile();
+    void getHFEnergy(double &HFEnergyResults, int &HFIterationsResults);
 
     // Printers
     void printHFMatrix(arma::mat HFMatrix);

@@ -24,14 +24,17 @@ void HartreeFock::initializeHF(int NElectrons, int singleParticleStates, Basis *
     C = arma::zeros<arma::mat>(N_SPS,N_SPS);
 
     // Initializing C as a diagonal matrix(other initializations exists)
-    setCMatrix();
+    initializeCMatrix();
 
     // Setting up the density matrix
     updateDensityMatrix();
 }
 
-void HartreeFock::setCMatrix()
+void HartreeFock::initializeCMatrix()
 {
+    /*
+     * Initializing the C-matrix.
+     */
     for (int i = 0; i < N_SPS; i++)
     {
         C(i,i) = 1;
@@ -45,6 +48,9 @@ HartreeFock::~HartreeFock()
 
 void HartreeFock::updateDensityMatrix()
 {
+    /*
+     * Function for updating the density matrix
+     */
     for (int gamma = 0; gamma < N_SPS; gamma++)
     {
         for (int delta = 0; delta < N_SPS; delta++)
@@ -52,7 +58,7 @@ void HartreeFock::updateDensityMatrix()
             double sum = 0;
             for (int i = 0; i < N_Electrons; i++)
             {
-                sum += C(gamma,i)*C(delta,i); // Is this right??
+                sum += C(gamma,i)*C(delta,i);
             }
             densityMatrix(gamma,delta) = sum;
         }
@@ -61,11 +67,17 @@ void HartreeFock::updateDensityMatrix()
 
 void HartreeFock::setInteractionMatrix(double * newInteractionMatrix)
 {
+    /*
+     * Function for setting the interaction matrix to be used in the algorithm.
+     */
     interactionMatrix = newInteractionMatrix;
 }
 
 void HartreeFock::updateHFMatrix(arma::mat &HFMatrix)
 {
+    /*
+     * Function for updating the Hartree-Fock matrix.
+     */
     HFMatrix.zeros();
     for (int alpha = 0; alpha < N_SPS; alpha++)
     {
@@ -75,6 +87,7 @@ void HartreeFock::updateHFMatrix(arma::mat &HFMatrix)
         {
             int beta_ml = basis->getState(beta)->getM();
             int betaSpin = basis->getState(beta)->getSpin();
+
             // Spin and M conservation test
             if ((alpha_ml != beta_ml) || (alphaSpin != betaSpin)) { continue; }
 
@@ -101,8 +114,6 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
             if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
             {
                 // Brute-forcey method, not removed the extra deltaFunction for spin
-//                HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
-//                HFElement += densityMatrix(gamma,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin, betaSpin));
                 HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
             }
         }
@@ -112,7 +123,9 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
 
 int HartreeFock::runHF(int maxHFIterations)
 {
-    // For loop will run till max HF iteration is reached, or we get a convergence for epsilon(NOT IMPLEMENTED YET)
+    /*
+     * Hartree-Fock algorithm. For loop will run till max HF iteration is reached, or we get a convergence in energies.
+     */
     arma::vec oldEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::vec singleParticleEnergies = arma::zeros<arma::vec>(N_SPS);
     arma::mat HFMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
@@ -124,9 +137,6 @@ int HartreeFock::runHF(int maxHFIterations)
     clock_t loopStart, loopFinish;
     clock_t eigStart, eigFinish;
     clock_t minimaStart, minimaFinish;
-
-    int HFCounter = 0;
-    cout << "Starting Hartree-Fock" << endl;
 
     for (int HFIteration = 0; HFIteration < maxHFIterations; HFIteration++)
     {
@@ -149,7 +159,7 @@ int HartreeFock::runHF(int maxHFIterations)
         minimaStart = clock();
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
-            cout << "Done after " << HFIteration << " Hartree Fock iteration." << endl;
+//            cout << "Done after " << HFIteration << " Hartree Fock iteration." << endl;
             HFCounter = HFIteration;
             break;
         }
@@ -173,13 +183,11 @@ int HartreeFock::runHF(int maxHFIterations)
     }
 
     // Printing out average time per loop element
-    cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFCounter   << " seconds" << endl;
-    cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFCounter        << " seconds" << endl;
-    cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFCounter     << " seconds" << endl;
+//    cout << "Average time per main loop:                 " << setprecision(8) << mainLoopTime / (double) HFCounter   << " seconds" << endl;
+//    cout << "Average time for solving eigenvalueproblem: " << setprecision(8) << eigTime / (double) HFCounter        << " seconds" << endl;
+//    cout << "Average time per finding minima:            " << setprecision(8) << minimaTime / (double) HFCounter     << " seconds" << endl;
 
     SPS_Energies = singleParticleEnergies;
-    cout << SPS_Energies << endl;
-    writeToFile(singleParticleEnergies, C);
 
     return 0;
 }
@@ -219,7 +227,7 @@ void HartreeFock::printSPEnergies(arma::vec singleParticleEnergies)
     cout << endl;
 }
 
-void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
+void HartreeFock::writeToFile()
 {
     /*
      * Function for writing eigenvectors and the egeinvalue to file
@@ -231,10 +239,10 @@ void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
     file.open(filename);
     for (int i = 0; i < N_SPS; i++)
     {
-        file << setprecision(8) << eigVals(i) << " # ";
+        file << setprecision(8) << SPS_Energies(i) << " # ";
         for (int j = 0; j < N_SPS; j++)
         {
-            file << setprecision(8) << eigVecs(i,j); // AM I FILLING IN EIGENVECTORS HERE?
+            file << setprecision(8) << C(i,j); // AM I FILLING IN EIGENVECTORS HERE?
         }
         file << endl;
     }
@@ -242,23 +250,12 @@ void HartreeFock::writeToFile(arma::vec eigVals, arma::mat eigVecs)
     cout << filename << " written" << endl;
 }
 
-void HartreeFock::getHFEnergy()
+void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
 {
     /*
      * Function for retrieving the Hartree-Fock ground state energy
      */
     double energy = 0;
-    double alphaSpin = 0;
-    double betaSpin = 0;
-    double gammaSpin = 0;
-    double deltaSpin = 0;
-
-//    // Test for checking unity of C matrix
-//    if (fabs(arma::sum(arma::sum(C*arma::trans(C))) - N_SPS) < lambda)
-//    {
-//        cout << "tr(C*C^T) = " << arma::trace(C*arma::trans(C)) << endl;
-//        cout << "C is unitary" << endl;
-//    }
 
     for (int i = 0; i < N_Electrons; i++)
     {
@@ -267,26 +264,20 @@ void HartreeFock::getHFEnergy()
         {
             for (int alpha = 0; alpha < N_SPS; alpha++)
             {
-                alphaSpin = basis->getState(alpha)->getSpin();
                 for (int beta = 0; beta < N_SPS; beta++)
                 {
-                    betaSpin = basis->getState(beta)->getSpin();
                     for (int gamma = 0; gamma < N_SPS; gamma++)
                     {
-                        gammaSpin = basis->getState(gamma)->getSpin();
                         for (int delta= 0; delta < N_SPS; delta++)
                         {
-                            deltaSpin = basis->getState(delta)->getSpin();
-//                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
                             energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
-
-                            //                        energy += - 0.5 * densityMatrix(alpha,gamma) * densityMatrix(beta,delta) * (interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)]*deltaFunction(alphaSpin,betaSpin)*deltaFunction(gammaSpin,deltaSpin) - interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)]*deltaFunction(alphaSpin,deltaSpin)*deltaFunction(gammaSpin,betaSpin));
                         }
                     }
                 }
             }
         }
     }
-
-    cout << "Energy: " << energy << endl;
+    printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
+    HFEnergyResults = energy;
+    HFIterationsResults = HFCounter;
 }

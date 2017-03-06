@@ -123,12 +123,11 @@ void quantumDot::setupInteractionMatrixPolar()
     }
     antiSymmetrizeMatrix();
     setupFinish = clock();
-    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+//    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::antiSymmetrizeMatrix()
 {
-    cout << "Antisymmetrising" << endl;
     double * tempInteractionMatrix = new double[interactionMatrixLength];
     int alphaSpin = 0;
     int betaSpin = 0;
@@ -187,12 +186,35 @@ void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // 
     }
 }
 
-void quantumDot::runHartreeFock(int maxHFIteration)
+double quantumDot::runHartreeFock(int maxHFIteration)
 {
+    /*
+     * Function for running the Hartree-Fock algorithm
+     */
     HF.setInteractionMatrix(interactionMatrix);
     HF.runHF(maxHFIteration);
-    HF.getHFEnergy();
+    HF.getHFEnergy(HFEnergyResults, HFIterationsResults);
+
+    return HFEnergyResults;
 }
+
+void quantumDot::storeResults(const std::string& filename)
+{
+    /*
+     * Function for storing Hartree-Fock results
+     */
+    int fileWidth = 8;
+    std::ofstream file;
+    file.open(filename);
+    file << "NElectrons "   << std::setw(fileWidth) << N_Electrons;
+    file << "| maxShell "     << std::setw(fileWidth) << maxShell;
+    file << "| HFIterations " << std::setw(fileWidth) << HFIterationsResults;
+    file << "| HFEnergy "     << std::setw(fileWidth) << HFEnergyResults;
+    file << endl;
+    file.close();
+    cout << "" << endl;//UGLY HACK??!? WHY NO PRINTINGS
+}
+
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)
 {

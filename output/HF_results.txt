@@ -1,0 +1,1 @@
+NElectrons       12| maxShell        6| HFIterations       39| HFEnergy  67.2969

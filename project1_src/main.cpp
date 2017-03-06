@@ -13,17 +13,16 @@
 
 using namespace std;
 
-double potentialV(double x1, double x2, double y1, double y2);
-void printMatrix(double ** A, int N);
-void setMatrixZero(double ** A, int N);
-
 int main(int nargs, char *args[])
 {
-    int NElectrons  = 6; // Should be magic number: 2, 6, 12, 20
-    int maxShell    = 3;
-    int maxHFIterations = 200;
-    double omega = 1;
-    double epsilon = 1e-10;
+    int NElectronArrElems   = 2;
+    int NElectronsArray[NElectronArrElems] = {12,20}; // Should be magic number: 2, 6, 12, 20. HAVE DONE: 2,6
+    int startShell          = 4;
+    int maxShell            = 12;
+    int maxHFIterations     = 200;
+    double omega            = 1.0;
+    double epsilon          = 1e-10;
+    std::string filename    = "../output/HF_results.txt";
 
 //    int maxThreadNumber = omp_get_max_threads();
 //    int maxProcessorNumber = omp_get_num_procs();
@@ -31,45 +30,41 @@ int main(int nargs, char *args[])
 //    cout << "  The number of processors available = " << maxProcessorNumber << endl ;
 //    cout << "  The number of threads available    = " << maxThreadNumber <<  endl;
 
-    quantumDot QMDot(NElectrons, maxShell, omega);
+    double HFEnergyPrev     = 0;
+    double HFEnergy         = 0;
+    double HFEnergyMaxDifference = 1e-4;
 
-    QMDot.setupInteractionMatrixPolar();
-    QMDot.setHFLambda(epsilon);
-    QMDot.runHartreeFock(maxHFIterations);
+    for (int i = 0; i < NElectronArrElems; i++)
+    {
+        for (int shells = startShell; shells < maxShell; shells++)
+        {
+            quantumDot QMDot(NElectronsArray[i], shells, omega);
+            QMDot.setupInteractionMatrixPolar();
+            QMDot.setHFLambda(epsilon);
+            HFEnergy = QMDot.runHartreeFock(maxHFIterations);
+            QMDot.storeResults(filename);
+            if (fabs(HFEnergy - HFEnergyPrev) < HFEnergyMaxDifference)
+            {
+                break;
+            }
+            else
+            {
+                HFEnergyPrev = HFEnergy;
+            }
+        }
+    }
 
     /*
      * TODO:
      * [x] Clean up code quantumdot.cpp
      * [x] Clean up hartreefock.cpp
      * [x] Precalculate the antisymmetric integrals
-     * [ ] Add possibility for looping over several electrons(easy)
+     * [x] Add possibility for looping over several electrons(easy)
      * [ ] Add parallelization to integral-finder
      * [ ] Add parallelization to HF matrix setup
      * [ ] Add write-to-file capability(easy)
+     * [ ] Compare with unperturbed energy - unittest
      */
 
     return 0;
-}
-
-void printMatrix(double ** A, int N)
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            cout << A[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-double potentialV(double x1, double x2, double y1, double y2)
-{
-    double eps = 1e-16;
-    double divisor = 1.0*((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-    if  (divisor > eps)
-        return 1.0/(sqrt(divisor));
-    else
-        return 0.0;
-//    return 1.0/sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }

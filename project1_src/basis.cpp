@@ -20,10 +20,11 @@ Basis::~Basis()
     statesArray.clear();
 }
 
-void Basis::initializeBasis(int maxShell, double initOmega)
+void Basis::initializeBasis(int initMaxShell, double initOmega)
 {
     // Retrieving all possible states up until a cutoff-shell
     omega = initOmega;
+    maxShell = initMaxShell;
 //    for (int i = 0; i < maxShell; i++) // Running over variations of nx
 //    {
 //        for (int j = 0; j < maxShell; j++) // Running over variations of ny

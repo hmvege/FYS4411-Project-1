@@ -86,7 +86,7 @@ double solveGaussianHermiteQuadrature(int n,
 void getHermiteWeights(double * x, double * w, int n)
 {
     /*
-     * From MHJ lecture notes. Should probably check this one out closer.
+     * From lecture notes.
      */
     int i, its, j, m;
     double p1,p2,p3,pp,z,z1;
@@ -136,4 +136,33 @@ void getHermiteWeights(double * x, double * w, int n)
         w[i-1]=2.0/(pp*pp);
         w[n-i]=w[i-1];
     }
+}
+
+void printMatrix(double ** A, int N)
+{
+    /*
+     * Matrix printing
+     */
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            cout << A[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+double potentialV(double x1, double x2, double y1, double y2)
+{
+    /*
+     * Potential used in cartesian coordinates.
+     */
+    double eps = 1e-16;
+    double divisor = 1.0*((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    if  (divisor > eps)
+        return 1.0/(sqrt(divisor));
+    else
+        return 0.0;
+//    return 1.0/sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
