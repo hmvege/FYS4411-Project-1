@@ -204,12 +204,12 @@ void quantumDot::storeResults(const std::string& filename)
      * Function for storing Hartree-Fock results
      */
     int fileWidth = 8;
-    std::ofstream file;
-    file.open(filename);
-    file << "NElectrons "   << std::setw(fileWidth) << N_Electrons;
-    file << "| maxShell "     << std::setw(fileWidth) << maxShell;
-    file << "| HFIterations " << std::setw(fileWidth) << HFIterationsResults;
-    file << "| HFEnergy "     << std::setw(fileWidth) << HFEnergyResults;
+    std::ofstream file(filename, std::ios_base::app | std::ios_base::out);
+//    file.open(filename);
+    file << "  NElectrons "   << std::setw(fileWidth) << N_Electrons;
+    file << "  maxShell "     << std::setw(fileWidth) << maxShell;
+    file << "  HFIterations " << std::setw(fileWidth) << HFIterationsResults;
+    file << "  HFEnergy "     << std::setw(fileWidth) << HFEnergyResults;
     file << endl;
     file.close();
     cout << "" << endl;//UGLY HACK??!? WHY NO PRINTINGS
