@@ -6,6 +6,7 @@
 #include "Coulomb_Functions.h"
 #include <ctime>
 //#include <omp.h>
+#include "mpi/mpi.h"
 
 using std::cout;
 using std::endl;
@@ -110,12 +111,18 @@ void quantumDot::setupInteractionMatrixPolar()
                     {
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+
+//                        interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)] = 0;
+//                        interactionMatrix[index(gamma, alpha, beta, delta, N_SPS)] = 0;
                     }
                     else
                     {
                         interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
+
+//                        interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)] = interactionValue;
+//                        interactionMatrix[index(gamma, alpha, beta, delta, N_SPS)] = interactionValue;
                     }
                 }
             }
@@ -123,7 +130,7 @@ void quantumDot::setupInteractionMatrixPolar()
     }
     antiSymmetrizeMatrix();
     setupFinish = clock();
-//    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::antiSymmetrizeMatrix()
@@ -204,7 +211,7 @@ void quantumDot::storeResults(const std::string& filename)
      * Function for storing Hartree-Fock results
      */
     int fileWidth = 8;
-    std::ofstream file(filename, std::ios_base::app | std::ios_base::out);
+    std::ofstream file(filename + "_" + std::to_string(N_Electrons) + "electrons.txt", std::ios_base::app | std::ios_base::out);
 //    file.open(filename);
     file << "  NElectrons "   << std::setw(fileWidth) << N_Electrons;
     file << "  maxShell "     << std::setw(fileWidth) << maxShell;
