@@ -19,7 +19,7 @@ int main(int nargs, char *args[])
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems] = {2,6,12,20}; // Should be magic number: 2, 6, 12, 20. HAVE DONE: 2,6,PARTIALLY 12 & 20.NEED TO DO MORE ON 2 and 6 for higher shells
     int startShell          = 3;
-    int maxShell            = 14;
+    int maxShell            = 12;
     int maxHFIterations     = 200;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -32,7 +32,7 @@ int main(int nargs, char *args[])
 //    double HFEnergy         = 0;
 //    double HFEnergyMaxDifference = 1e-4;
 
-    for (int i = 1; i < NElectronArrElems; i++)
+    for (int i = 2; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
@@ -40,7 +40,7 @@ int main(int nargs, char *args[])
             QMDot.setupInteractionMatrixPolar();
             QMDot.setHFLambda(epsilon);
             QMDot.runHartreeFock(maxHFIterations);
-            QMDot.storeResults(filename);
+//            QMDot.storeResults(filename);
 //            if (fabs(HFEnergy - HFEnergyPrev) < HFEnergyMaxDifference)
 //            {
 //                break;

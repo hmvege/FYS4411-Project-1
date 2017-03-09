@@ -18,6 +18,7 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     omega = newOmega;
     basis.initializeBasis(maxShell, newOmega);
     N_SPS = basis.getTotalParticleNumber();
+    cout << N_SPS << endl;
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
