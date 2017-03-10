@@ -18,7 +18,6 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     omega = newOmega;
     basis.initializeBasis(maxShell, newOmega);
     N_SPS = basis.getTotalParticleNumber();
-    cout << N_SPS << endl;
     interactionMatrixLength = (int) pow(N_SPS,4);
     HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
@@ -219,7 +218,7 @@ void quantumDot::storeResults(const std::string& filename)
     file << "  NElectrons "   << std::setw(fileWidth) << N_Electrons;
     file << "  maxShell "     << std::setw(fileWidth) << maxShell;
     file << "  HFIterations " << std::setw(fileWidth) << HFIterationsResults;
-    file << "  HFEnergy "     << std::setw(fileWidth) << HFEnergyResults;
+    file << "  HFEnergy "     << std::setw(fileWidth) << std::setprecision(8) << HFEnergyResults;
     file << endl;
     file.close();
     cout << "" << endl;//UGLY HACK??!? WHY NO PRINTINGS
