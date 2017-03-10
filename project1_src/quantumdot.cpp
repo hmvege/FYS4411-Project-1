@@ -6,7 +6,7 @@
 #include "Coulomb_Functions.h"
 #include <ctime>
 //#include <omp.h>
-#include "mpi/mpi.h"
+//#include "mpi/mpi.h"
 
 using std::cout;
 using std::endl;
@@ -83,6 +83,7 @@ void quantumDot::setupInteractionMatrixPolar()
 {
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
+     * Notation: < alpha gamma |v| beta delta >
      */
     interactionMatrix = new double[interactionMatrixLength];
 
@@ -113,8 +114,8 @@ void quantumDot::setupInteractionMatrixPolar()
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
 
-//                        interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)] = 0;
-//                        interactionMatrix[index(gamma, alpha, beta, delta, N_SPS)] = 0;
+//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = 0;
+//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = 0;
                     }
                     else
                     {
@@ -122,8 +123,9 @@ void quantumDot::setupInteractionMatrixPolar()
                         interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
                         interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
 
-//                        interactionMatrix[index(alpha, gamma, delta, beta, N_SPS)] = interactionValue;
-//                        interactionMatrix[index(gamma, alpha, beta, delta, N_SPS)] = interactionValue;
+
+//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = interaxctionValue;
+//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = interactionValue;
                     }
                 }
             }

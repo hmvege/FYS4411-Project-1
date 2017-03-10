@@ -35,7 +35,7 @@ public:
 
     // Printers
     void printHFMatrix(arma::mat HFMatrix);
-    void printSPEnergies(arma::vec singleParticleEnergies);
+    void printSPEnergies();
 
     // Setters
     void setConvergence(double newLambda) { lambda = newLambda; }

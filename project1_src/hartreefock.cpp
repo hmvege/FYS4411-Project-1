@@ -215,14 +215,14 @@ void HartreeFock::printHFMatrix(arma::mat HFMatrix)
     }
 }
 
-void HartreeFock::printSPEnergies(arma::vec singleParticleEnergies)
+void HartreeFock::printSPEnergies()
 {
     /*
      * Small function for printing out the single particle energies with their belonging quantum numbers
      */
     for (int alpha = 0; alpha < N_SPS; alpha++)
     {
-        cout << "SP-Energy = " << singleParticleEnergies(alpha) << " N = " << basis->getState(alpha)->getN() << " M = " << basis->getState(alpha)->getM() << endl;
+        cout << "SP-Energy = " << SPS_Energies(alpha) << " N = " << basis->getState(alpha)->getN() << " M = " << basis->getState(alpha)->getM() << endl;
     }
     cout << endl;
 }
