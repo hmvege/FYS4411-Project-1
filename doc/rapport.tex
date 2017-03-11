@@ -37,9 +37,9 @@ The full Hamiltonian for our quantum dot system is on the form
 \begin{align}
 	H &= H_0 + H_I \nonumber \\
 	&= \sum^N_{i=0} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^N_{i<j}\frac{1}{r_{ij}},
-	\label{eq:full-hamlitonian}
+	\label{eq:full-hamiltonian}
 \end{align}
-with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. 
+with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $N$.
 
 An unperturbed two dimensional harmonic oscillator have energies given as
 \begin{align}
@@ -54,20 +54,86 @@ The wave function solution for a harmonic oscillator is given by the Hermite pol
 \end{align}
 
 As is evident in our calculations later on, we will be using polar coordinates to describe our system. Doing this changes our quantum numbers from $n_x$ and $n_y$ to $n$ and $m$, and the energies is now given by
-
 \begin{align}
 	\varepsilon_{n, m} = \omega(2n + |m| + 1)
 	\label{eq:ho-energy-polar}
 \end{align}
 
-
-
 \subsection{Hartree-Fock}
+In order to derive the Hartree-Fock equations, we begin by setting up the functional for the ground state energy which we are to minimize,
+\begin{align}
+	E_0 \leq E[\Phi] = \int \Phi^* \hat{H} \Phi d\tau.
+	\label{eq:variational-principle}
+\end{align}
+with $d\tau = d\mathbf{r}_1d\mathbf{r}_2\dots d\mathbf{r}_N$ and $\Phi$ as a wave function function we wish to use to minimize the energy for. Inserting for the Hamiltonian we set up earlier \eqref{eq:full-hamiltonian}, we get
+\begin{align}
+	E[\Phi] = \int \Phi^* H_0 \Phi d\tau + \int \Phi^* H_I \Phi d\tau
+	\label{eq:energy-functional}
+\end{align}
+We start by looking at the first term.
+
+
+
+
+
+\husk{Considering} a basis transformation of $\phi_\lambda(x)$ to $\psi_p(x)$ through
+\begin{align}
+	\psi_p (x) = \sum_\lambda C_{p\lambda} \phi_\lambda(x),
+	\label{eq:wavefunc-transform}
+\end{align}
+where the $C_{p\lambda}$ is an unitary matrix.
+
 \subsubsection{Hartree-Fock algorithm}
+
 
 \section{Results}
 \subsection{Unperturbed results}
+\subsection{Unit tests}
 
 \section{Conclusions and discussions}
+
+\section{Appendix A: mathematical formulas}
+\subsection{Slater determinants}
+A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $N$ particles, we have 
+\begin{align}
+	\begin{split}
+		\Phi(x_1,x_2,\dots,x_N; \alpha,\dots,\sigma) =\\
+		\frac{1}{\sqrt{N!}}
+		\begin{vmatrix}
+			\psi_\alpha(x_1) & \dots & \psi_\alpha(x_N) \\
+			\dots & \dots & \dots \\
+			\psi_\sigma(x_1) & \dots & \psi_\sigma(x_N) \\
+		\end{vmatrix}
+	\end{split}
+	\label{eq:slater-determinant}
+\end{align}
+This can be written in a more compact form using the anti-symmetrization operator $\hat{A}$,
+\begin{align}
+	\hat{A} = \frac{1}{N!}\sum_P (-1)^P \hat{P}
+	\label{eq:anti-symmetrization-operator}
+\end{align}
+Combining the Slater determinant \eqref{eq:slater-determinant} with $\hat{A}$, we get
+\begin{align}
+	&\Phi(x_1,\dots,x_N;\alpha,\dots,\nu) \nonumber \\
+	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P}\psi_\alpha(x_1)\dots\psi_\nu(x_N) \nonumber \\
+	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P} \prod_s \psi_s(x_s) \nonumber \\
+	&= \sqrt{N!}\hat{A}\Phi_H,
+	\label{eq:slater-determinant-compact}
+\end{align}
+where $\Phi_H$ is the wave function that is being permuted according to its components.
+
+The $\psi$ is given by an orthogonal basis $\phi$
+\begin{align}
+	\psi_p = \sum_\lambda C_{p\lambda} \phi_\lambda
+	\label{eq:basis-orthogonality}
+\end{align}
+where the $\lambda$ runs over all the single particle states $\alpha, \beta, \dots, \nu$. We have that $\phi_\lambda$ is an orthogonal basis, and we can show from this that $\psi_p$ also must be an orthogonal basis.
+\begin{align*}
+	\langle \psi_p | \psi_q \rangle &= \int \left( \sum_\lambda C^*_{p\lambda}\phi_\lambda \right) \left( \sum_\eta C_{q\eta}\phi_\eta \right) d\mathbf{r}_i \\
+	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \int \phi_\lambda \phi_\eta d\mathbf{r}_i \\
+	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \delta_{\lambda\eta}
+\end{align*}
+
+
 
 \end{document}
