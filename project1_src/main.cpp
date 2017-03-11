@@ -23,8 +23,8 @@ int main(int nargs, char *args[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int startShell          = 4;
-    int maxShell            = 12;
+    int startShell          = 3;
+    int maxShell            = 7;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -33,7 +33,7 @@ int main(int nargs, char *args[])
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    for (int i = 3; i < NElectronArrElems; i++)
+    for (int i = 1; i < NElectronArrElems-2; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {

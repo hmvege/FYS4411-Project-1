@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[11pt,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -24,15 +24,44 @@
 \maketitle
 
 \begin{abstract}
-Nan
+NAN
 \end{abstract}
 
 \section{Introduction}
-For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. 
+For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. For our project, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $N = 2, 6, 12, 20, 30$ and so on.
+
+In order to present my results, I will begin repeating the physics involved in this project, and finally go through the Hartree-Fock algorithm.
 
 \section{Theory}
-\subsection{Quantum dots}
-\subsection{Quantum Harmonic Oscillator}
+The full Hamiltonian for our quantum dot system is on the form
+\begin{align}
+	H &= H_0 + H_I \nonumber \\
+	&= \sum^N_{i=0} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^N_{i<j}\frac{1}{r_{ij}},
+	\label{eq:full-hamlitonian}
+\end{align}
+with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. 
+
+An unperturbed two dimensional harmonic oscillator have energies given as
+\begin{align}
+	\varepsilon_{n_x,n_y} = \omega(n_x + n_y + 1)
+	\label{eq:ho-energy-cartesian}
+\end{align}
+
+The wave function solution for a harmonic oscillator is given by the Hermite polynomials,
+\begin{align}
+	\phi_{n_x,n_y}(x,y) = AH_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\times \nonumber \\
+	\exp(-\omega(x^2 + y^2)/2)
+\end{align}
+
+As is evident in our calculations later on, we will be using polar coordinates to describe our system. Doing this changes our quantum numbers from $n_x$ and $n_y$ to $n$ and $m$, and the energies is now given by
+
+\begin{align}
+	\varepsilon_{n, m} = \omega(2n + |m| + 1)
+	\label{eq:ho-energy-polar}
+\end{align}
+
+
+
 \subsection{Hartree-Fock}
 \subsubsection{Hartree-Fock algorithm}
 

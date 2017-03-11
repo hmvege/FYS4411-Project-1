@@ -36,7 +36,7 @@ public:
     double getM() const { return m; }
     double getSpin() const { return spin; }
     double getEnergy() const { return omega*(n_x + n_y + 1); }
-    double getEnergyPolar() const { return omega*(2*n + fabs(m) + 1); }
+    double getEnergyPolar() const { return omega*(2*n + abs(m) + 1); }
 
 //    double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y))) * ((double) factorial(n_x)) * ((double) factorial(n_y)); }
     double normConst() { return 1./sqrt(pow(2,((double) n_x) + ((double) n_y)) * ((double) factorial(n_x)) * ((double) factorial(n_y)) * M_PI); }
