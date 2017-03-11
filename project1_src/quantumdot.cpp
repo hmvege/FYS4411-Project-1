@@ -213,11 +213,11 @@ void quantumDot::storeResults(const std::string& filename)
      * Function for storing Hartree-Fock results
      */
     int fileWidth = 8;
-    std::ofstream file(filename + "_" + std::to_string(N_Electrons) + "electrons.txt", std::ios_base::app | std::ios_base::out);
-//    file.open(filename);
+    std::ofstream file(filename + " omega" + std::to_string(omega) +  "_" + std::to_string(N_Electrons) + "electrons.txt", std::ios_base::app | std::ios_base::out);
     file << "  NElectrons "   << std::setw(fileWidth) << N_Electrons;
     file << "  maxShell "     << std::setw(fileWidth) << maxShell;
     file << "  HFIterations " << std::setw(fileWidth) << HFIterationsResults;
+//    file << "  Omega "        << std::setw(fileWidth) << omega;
     file << "  HFEnergy "     << std::setw(fileWidth) << std::setprecision(8) << HFEnergyResults;
     file << endl;
     file.close();

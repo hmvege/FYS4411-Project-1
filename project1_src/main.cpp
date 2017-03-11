@@ -24,16 +24,16 @@ int main(int nargs, char *args[])
     NElectronsArray[3]      = 20;
 
     int startShell          = 3;
-    int maxShell            = 7;
+    int maxShell            = 11;
     int maxHFIterations     = 500;
-    double omega            = 1.0;
+    double omega            = 0.1;
     double epsilon          = 1e-10;
     std::string filename    = "../output/HF_results";
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    for (int i = 1; i < NElectronArrElems-2; i++)
+    for (int i = 0; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
