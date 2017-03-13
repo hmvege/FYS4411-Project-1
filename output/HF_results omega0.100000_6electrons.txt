@@ -5,3 +5,4 @@
   NElectrons        6  maxShell        7  HFIterations       29  HFEnergy 3.8631345
   NElectrons        6  maxShell        8  HFIterations       31  HFEnergy 3.8528799
   NElectrons        6  maxShell        9  HFIterations       31  HFEnergy 3.8525909
+  NElectrons        6  maxShell       10  HFIterations       31  HFEnergy 3.8523927
