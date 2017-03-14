@@ -22,10 +22,8 @@ void HartreeFock::initializeHF(int NElectrons, int singleParticleStates, Basis *
     basis = newBasis;
     densityMatrix = arma::zeros<arma::mat>(N_SPS,N_SPS);
     C = arma::zeros<arma::mat>(N_SPS,N_SPS);
-
     // Initializing C as a diagonal matrix(other initializations exists)
     initializeCMatrix();
-
     // Setting up the density matrix
     updateDensityMatrix();
 }

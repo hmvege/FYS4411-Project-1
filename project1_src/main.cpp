@@ -23,7 +23,7 @@ int main(int nargs, char *args[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int startShell          = 3;
+    int startShell          = 4;
     int maxShell            = 11;
     int maxHFIterations     = 500;
     double omega            = 0.1;
@@ -33,10 +33,11 @@ int main(int nargs, char *args[])
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    for (int i = 0; i < NElectronArrElems; i++)
+    for (int i = 3; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
+//            if (NElectronsArray[i] < pow(shells,4)) { continue; } // Ensuring that we always have enough shells in our calculations
             quantumDot QMDot(NElectronsArray[i], shells, omega);
             QMDot.setupInteractionMatrixPolar();
             QMDot.setHFLambda(epsilon);
