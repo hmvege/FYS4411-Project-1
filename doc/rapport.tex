@@ -1,4 +1,4 @@
-\documentclass[11pt,twocolumn]{article}
+\documentclass[11pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -11,7 +11,7 @@
 \usepackage{float}
 \usepackage{hyperref}
 
-\overfullrule=2cm
+% \overfullrule=2cm
 
 \newcommand{\husk}[1]{\color{red} #1 \color{black}}
 \newcommand{\expect}[1]{\langle{#1}\rangle}
@@ -30,13 +30,18 @@ NAN
 \section{Introduction}
 For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. For our project, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $N = 2, 6, 12, 20, 30$ and so on.
 
-In order to present my results, I will begin repeating the physics involved in this project, and finally go through the Hartree-Fock algorithm.
+
+\husk{motivation}
+
+In order to present my results, I will begin repeating the physics and mathematics involved in this project, and finally go through the Hartree-Fock algorithm.
+
 
 \section{Theory}
 The full Hamiltonian for our quantum dot system is on the form
 \begin{align}
 	H &= H_0 + H_I \nonumber \\
-	&= \sum^N_{i=0} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^N_{i<j}\frac{1}{r_{ij}},
+	&= \sum^N_{i=1} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^N_{i<j}\frac{1}{r_{ij}} \\
+	&= \sum^N_{i=1} \hat{h}_{i,0} + \sum^N_{i<j}V(r_{ij}),
 	\label{eq:full-hamiltonian}
 \end{align}
 with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $N$.
@@ -66,22 +71,88 @@ In order to derive the Hartree-Fock equations, we begin by setting up the functi
 	\label{eq:variational-principle}
 \end{align}
 with $d\tau = d\mathbf{r}_1d\mathbf{r}_2\dots d\mathbf{r}_N$ and $\Phi$ as a wave function function we wish to use to minimize the energy for. Inserting for the Hamiltonian we set up earlier \eqref{eq:full-hamiltonian}, we get
-\begin{align}
+\begin{align*}
 	E[\Phi] = \int \Phi^* H_0 \Phi d\tau + \int \Phi^* H_I \Phi d\tau
-	\label{eq:energy-functional}
-\end{align}
-We start by looking at the first term.
-
-
-
-
-
-\husk{Considering} a basis transformation of $\phi_\lambda(x)$ to $\psi_p(x)$ through
+\end{align*}
+We start by looking at the first term. Using the permutation operator \eqref{eq:anti-symmetrization-operator}, we can write out the Slater determinants as defined in the appendix (equation \eqref{eq:slater-determinant-compact}),
+\begin{align*}
+	\int \Phi^* H_0 \Phi d\tau &= \int \sqrt{N!}\hat{A}\Phi_H^* \hat{H_0} \sqrt{N!}\hat{A}\Phi_H d\tau \\
+	&= N! \int \hat{A}\Phi_H^* \hat{H_0} \hat{A}\Phi_H d\tau
+\end{align*}
+We can now make use of the properties of the anti-symmetrization operator,
 \begin{align}
-	\psi_p (x) = \sum_\lambda C_{p\lambda} \phi_\lambda(x),
-	\label{eq:wavefunc-transform}
+	[\hat{H_0},\hat{A}] = [\hat{H_I},\hat{A}] = 0
 \end{align}
-where the $C_{p\lambda}$ is an unitary matrix.
+and $\hat{A}^2 = \hat{A}$. Using the definition of the anti-symmetrization operator given in equation \eqref{eq:anti-symmetrization-operator}, we get
+\begin{align*}
+	&N! \int \hat{A}\Phi_H^* \hat{H_0} \hat{A}\Phi_H d\tau \\
+	&= \sum_P (-1)^P \int \Phi_H^* \hat{H_0} \hat{P} \Phi_H d\tau \\
+	&= \sum^N_{i=1} \sum_P (-1)^P \int \Phi_H^* \hat{H_0} \hat{P} \Phi_H d\tau \\
+	&= \sum^N_{i=1} \sum_P (-1)^P \int \prod_r \psi^*_r(\mathbf{r}_r) \hat{H_0} \hat{P} \prod_s \psi_s(\mathbf{r}_s) d\tau \\
+	&= \sum^N_{i=1} \sum_P \prod_r \prod_s (-1)^P \int \psi^*_r(\mathbf{r}_r) \hat{H_0} \hat{P} \psi_s(\mathbf{r}_s) d\tau
+\end{align*}
+We see that due to the fact that we have orthogonality, all instances where two or more particles are switched will vanish. This then removes the products and the permutation summation. Instead, we are left with a sum over all the different particle states,
+\begin{align*}
+	\sum^N_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i
+\end{align*}
+Using Dirac notation, we simplify further, 
+\begin{align}
+	\int \Phi^* H_0 \Phi d\tau &= \sum^N_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i \nonumber \\
+	&= \sum^N_{\mu=1} \langle \mu |\hat{h}_0|\mu\rangle
+	\label{eq:non-interaction-hamilton}
+\end{align}
+Now that we have massaged the non-interacting Hamiltonian into a more manageable expression, it is only fair to do the same with the interacting Hamiltonian, $\hat{H}_I$.
+\begin{align*}
+	\int \Phi^* H_I \Phi d\tau &= \sum^N_{i<j} \int \Phi^* V(r_{ij}) \Phi d\tau \\
+	&= N! \sum^N_{i<j} \int \Phi_H^* \hat{A} V(r_{ij}) \hat{A} \Phi_H d\tau \\
+	&= \sum^N_{i<j} \sum_P (-1)^P \int \Phi_H^* \frac{1}{r_{ij}} \hat{P} \Phi_H d\tau
+\end{align*}
+We now have to do some thinking. We can start by realizing that the $\hat{P}$ operator switches two particles, such that e.g. $\hat{P}\psi_\alpha(\mathbf{r}_1)\psi_\beta(\mathbf{r}_2) = \psi_\alpha(\mathbf{r}_2)\psi_\beta(\mathbf{r}_1)$. If we now write out the sum for the exchanged elements, we get
+\begin{align*}
+	\int \Phi^* H_I \Phi d\tau &= \sum^N_{i<j} \bigg[ (-1)^0 \int \Phi_H^* \frac{1}{r_{ij}} \Phi_H d\tau \\ 
+	&+ (-1)^1 \int \Phi_H^* \frac{1}{r_{ij}} P_{ij} \Phi_H d\tau + \dots \bigg]
+\end{align*}
+Due to the orthogonality of the wave functions, we will have that only the terms with one permutation and no permutations will survive the summation. Further, we have that only permutations involving particles considered by the potential $V(r_{ij})$, will survive the permutation and orthogonality requirement. This simplifies our expression to
+\begin{align*}
+	\int &\Phi^* H_I \Phi d\tau = \sum^N_{i<j} \int \Phi_H^* \frac{1}{r_{ij}} (1 - P_{ij}) \Phi_H d\tau  \\
+	&= \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
+	&\times (1 - P_{ij}) \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\
+	&= \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \\
+	&\times \frac{1}{r_{ij}} \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+	&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg] \\
+	&= \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \left[ \langle\mu\nu|\hat{v}|\mu\nu\rangle - \langle\mu\nu|\hat{v}|\nu\mu\rangle \right] \\
+	&= \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \langle\mu\nu|\hat{v}|\mu\nu\rangle_{AS}
+\end{align*}
+In the last equation we used Dirac notation similar to what that were seen in \eqref{eq:non-interaction-hamilton}. We now have all we need to write the full energy functional,
+\begin{align}
+	\begin{split}
+		E[\Phi] &= \sum^N_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i \\
+		&+ \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
+		&\times \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+		&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg]
+	\label{eq:energy-functional}
+	\end{split}
+\end{align}
+Written in a compact form of notation, this is
+\begin{align}
+	\begin{split}
+		E[\Phi] &= \sum^N_{\mu=1} \langle \mu |\hat{h}_0|\mu\rangle + \frac{1}{2}\sum^N_{\mu=1}\sum^N_{\nu=1} \langle\mu\nu|\hat{v}|\mu\nu\rangle_{AS}
+	\label{eq:energy-functional-compact}
+	\end{split}
+\end{align}
+We can now expand this function in a new basis, $\psi$. $\psi$ is given by an orthogonal basis $\phi$
+\begin{align}
+	\psi_p = \sum_\lambda C_{p\lambda} \phi_\lambda
+	\label{eq:basis-orthogonality}
+\end{align}
+where the $\lambda$ runs over all the single particle states $\alpha, \beta, \dots, \nu$. 
+
+% \husk{Considering} a basis transformation of $\phi_\lambda(x)$ to $\psi_p(x)$ through
+% \begin{align}
+% 	\psi_p (x) = \sum_\lambda C_{p\lambda} \phi_\lambda(x),
+% 	\label{eq:wavefunc-transform}
+% \end{align}
+% where the $C_{p\lambda}$ is an unitary matrix.
 
 \subsubsection{Hartree-Fock algorithm}
 
@@ -97,12 +168,12 @@ where the $C_{p\lambda}$ is an unitary matrix.
 A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $N$ particles, we have 
 \begin{align}
 	\begin{split}
-		\Phi(x_1,x_2,\dots,x_N; \alpha,\dots,\sigma) =\\
+		\Phi(\mathbf{r}_1,\mathbf{r}_2,\dots,\mathbf{r}_N; \alpha,\dots,\sigma) =\\
 		\frac{1}{\sqrt{N!}}
 		\begin{vmatrix}
-			\psi_\alpha(x_1) & \dots & \psi_\alpha(x_N) \\
+			\psi_\alpha(\mathbf{r}_1) & \dots & \psi_\alpha(\mathbf{r}_N) \\
 			\dots & \dots & \dots \\
-			\psi_\sigma(x_1) & \dots & \psi_\sigma(x_N) \\
+			\psi_\sigma(\mathbf{r}_1) & \dots & \psi_\sigma(\mathbf{r}_N) \\
 		\end{vmatrix}
 	\end{split}
 	\label{eq:slater-determinant}
@@ -114,26 +185,23 @@ This can be written in a more compact form using the anti-symmetrization operato
 \end{align}
 Combining the Slater determinant \eqref{eq:slater-determinant} with $\hat{A}$, we get
 \begin{align}
-	&\Phi(x_1,\dots,x_N;\alpha,\dots,\nu) \nonumber \\
-	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P}\psi_\alpha(x_1)\dots\psi_\nu(x_N) \nonumber \\
-	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P} \prod_s \psi_s(x_s) \nonumber \\
+	&\Phi(\mathbf{r}_1,\dots,\mathbf{r}_N;\alpha,\dots,\nu) \nonumber \\
+	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P}\psi_\alpha(\mathbf{r}_1)\dots\psi_\nu(\mathbf{r}_N) \nonumber \\
+	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P} \prod_s \psi_s(\mathbf{r}_s) \nonumber \\
 	&= \sqrt{N!}\hat{A}\Phi_H,
 	\label{eq:slater-determinant-compact}
 \end{align}
 where $\Phi_H$ is the wave function that is being permuted according to its components.
 
-The $\psi$ is given by an orthogonal basis $\phi$
-\begin{align}
-	\psi_p = \sum_\lambda C_{p\lambda} \phi_\lambda
-	\label{eq:basis-orthogonality}
-\end{align}
-where the $\lambda$ runs over all the single particle states $\alpha, \beta, \dots, \nu$. We have that $\phi_\lambda$ is an orthogonal basis, and we can show from this that $\psi_p$ also must be an orthogonal basis.
+\subsubsection{Basis orthogonality}
+Given an basis seen in equation \eqref{eq:basis-orthogonality}, and that $\phi_\lambda$ is an orthogonal basis, we can show from this that $\psi_p$ also must be an orthogonal basis.
 \begin{align*}
 	\langle \psi_p | \psi_q \rangle &= \int \left( \sum_\lambda C^*_{p\lambda}\phi_\lambda \right) \left( \sum_\eta C_{q\eta}\phi_\eta \right) d\mathbf{r}_i \\
 	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \int \phi_\lambda \phi_\eta d\mathbf{r}_i \\
-	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \delta_{\lambda\eta}
+	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \delta_{\lambda\eta} \\
+	&= \sum_{\lambda} C^*_{p\lambda} C_{q\lambda}
 \end{align*}
-
+And thus we see that the new basis must be orthogonal.
 
 
 \end{document}
