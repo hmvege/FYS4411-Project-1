@@ -33,7 +33,7 @@ int main(int nargs, char *args[])
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    for (int i = 3; i < NElectronArrElems; i++)
+    for (int i = 1; i < NElectronArrElems-2; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
