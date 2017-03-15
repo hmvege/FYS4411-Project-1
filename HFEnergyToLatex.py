@@ -32,22 +32,25 @@ for file in os.listdir(output_folder):
 
 def convert_to_latex(list_dictionary):
 	'Shells  & $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ \\ \hline'
-	string_to_build = '%s & %s & %s & %s & %s & %s \\'
+	string_to_build = '%10.10s & %10.10s & %10.10s & %10.10s & %10.10s  \\\ \n'
 	latex_string = ''
 	start_shell = 3
 	stop_shell = 11
-	for i in list_dictionary:
-		print i
 	for shell in xrange(start_shell, stop_shell+1):
 		HFE2 = 0
 		HFE6 = 0
 		HFE12 = 0
 		HFE20 = 0
 		for stat_list in list_dictionary:
-			# if stat_list['']
-			latex_string += stat_list['HFEnergy'] + ' & '
+			if int(stat_list['electrons']) == 2 and int(stat_list['maxShell']) == shell: HFE2 = stat_list['HFEnergy']
+			if int(stat_list['electrons']) == 6 and int(stat_list['maxShell']) == shell: HFE6 = stat_list['HFEnergy']
+			if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell: HFE12 = stat_list['HFEnergy']
+			if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy']
+
+		latex_string += string_to_build % (shell, HFE2, HFE6, HFE12, HFE20)
+			# latex_string += stat_list['HFEnergy'] + ' & '
 		
 	print latex_string
 
 convert_to_latex(omega10)
-# convert_to_latex(omega01)
+convert_to_latex(omega01)
