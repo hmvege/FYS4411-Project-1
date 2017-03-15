@@ -1,4 +1,5 @@
-\documentclass[11pt,twocolumn]{article}
+\documentclass[11pt]{article}
+% \documentclass[11pt,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -11,7 +12,13 @@
 \usepackage{float}
 \usepackage{hyperref}
 
-\overfullrule=2cm
+
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+
+% \overfullrule=2cm
 
 \newcommand{\husk}[1]{\color{red} #1 \color{black}}
 \newcommand{\expect}[1]{\langle{#1}\rangle}
@@ -28,22 +35,27 @@ NAN
 \end{abstract}
 
 \section{Introduction}
-For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. For our project, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $N = 2, 6, 12, 20, 30$ and so on.
+For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. For our project, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $A = 2, 6, 12, 20, 30$ and so on.
 
-In order to present my results, I will begin repeating the physics involved in this project, and finally go through the Hartree-Fock algorithm.
+The Hartree-Fock method allows us to find the ground state energy of an atom.
+\husk{motivation}
+
+In order to present my results, I will begin repeating the physics and mathematics involved in this project, and finally go through the Hartree-Fock algorithm.
+
 
 \section{Theory}
 The full Hamiltonian for our quantum dot system is on the form
 \begin{align}
 	H &= H_0 + H_I \nonumber \\
-	&= \sum^N_{i=0} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^N_{i<j}\frac{1}{r_{ij}},
+	&= \sum^A_{i=1} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2 r^2_i \right) + \sum^A_{i<j}\frac{1}{r_{ij}} \\
+	&= \sum^A_{i=1} \hat{h}_{i,0} + \sum^A_{i<j}V(r_{ij}),
 	\label{eq:full-hamiltonian}
 \end{align}
-with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $N$.
+with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $A$. For our usage will $A$ indicate particles below the Fermi level. We will be using the Born-Oppenheimer approximation, which means we will for all intents and purposes ignoring the nucleus in our calculations.
 
 An unperturbed two dimensional harmonic oscillator have energies given as
 \begin{align}
-	\varepsilon_{n_x,n_y} = \omega(n_x + n_y + 1)
+	\epsilon_{n_x,n_y} = \omega(n_x + n_y + 1)
 	\label{eq:ho-energy-cartesian}
 \end{align}
 
@@ -52,10 +64,11 @@ The wave function solution for a harmonic oscillator is given by the Hermite pol
 	\phi_{n_x,n_y}(x,y) = AH_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\times \nonumber \\
 	\exp(-\omega(x^2 + y^2)/2)
 \end{align}
+The A is in this case a normalization constant.
 
 As is evident in our calculations later on, we will be using polar coordinates to describe our system. Doing this changes our quantum numbers from $n_x$ and $n_y$ to $n$ and $m$, and the energies is now given by
 \begin{align}
-	\varepsilon_{n, m} = \omega(2n + |m| + 1)
+	\epsilon_{n, m} = \omega(2n + |m| + 1)
 	\label{eq:ho-energy-polar}
 \end{align}
 
@@ -65,28 +78,195 @@ In order to derive the Hartree-Fock equations, we begin by setting up the functi
 	E_0 \leq E[\Phi] = \int \Phi^* \hat{H} \Phi d\tau.
 	\label{eq:variational-principle}
 \end{align}
-with $d\tau = d\mathbf{r}_1d\mathbf{r}_2\dots d\mathbf{r}_N$ and $\Phi$ as a wave function function we wish to use to minimize the energy for. Inserting for the Hamiltonian we set up earlier \eqref{eq:full-hamiltonian}, we get
-\begin{align}
+with $d\tau = d\mathbf{r}_1d\mathbf{r}_2\dots d\mathbf{r}_A$ and $\Phi$ as a wave function function we wish to use to minimize the energy for. Inserting for the Hamiltonian we set up earlier \eqref{eq:full-hamiltonian}, we get
+\begin{align*}
 	E[\Phi] = \int \Phi^* H_0 \Phi d\tau + \int \Phi^* H_I \Phi d\tau
-	\label{eq:energy-functional}
-\end{align}
-We start by looking at the first term.
-
-
-
-
-
-\husk{Considering} a basis transformation of $\phi_\lambda(x)$ to $\psi_p(x)$ through
+\end{align*}
+We start by looking at the first term. Using the permutation operator \eqref{eq:anti-symmetrization-operator}, we can write out the Slater determinants as defined in the appendix (equation \eqref{eq:slater-determinant-compact}),
+\begin{align*}
+	\int \Phi^* H_0 \Phi d\tau &= \int \sqrt{A!}\hat{A}\Phi_H^* \hat{H_0} \sqrt{A!}\hat{A}\Phi_H d\tau \\
+	&= A! \int \hat{A}\Phi_H^* \hat{H_0} \hat{A}\Phi_H d\tau
+\end{align*}
+We can now make use of the properties of the anti-symmetrization operator,
 \begin{align}
-	\psi_p (x) = \sum_\lambda C_{p\lambda} \phi_\lambda(x),
-	\label{eq:wavefunc-transform}
+	[\hat{H_0},\hat{A}] = [\hat{H_I},\hat{A}] = 0
 \end{align}
-where the $C_{p\lambda}$ is an unitary matrix.
+and $\hat{A}^2 = \hat{A}$. Using the definition of the anti-symmetrization operator given in equation \eqref{eq:anti-symmetrization-operator}, we get
+\begin{align*}
+	&A! \int \hat{A}\Phi_H^* \hat{H_0} \hat{A}\Phi_H d\tau \\
+	&= \sum_P (-1)^P \int \Phi_H^* \hat{H_0} \hat{P} \Phi_H d\tau \\
+	&= \sum^A_{i=1} \sum_P (-1)^P \int \Phi_H^* \hat{H_0} \hat{P} \Phi_H d\tau \\
+	&= \sum^A_{i=1} \sum_P (-1)^P \int \prod_r \psi^*_r(\mathbf{r}_r) \hat{H_0} \hat{P} \prod_s \psi_s(\mathbf{r}_s) d\tau \\
+	&= \sum^A_{i=1} \sum_P \prod_r \prod_s (-1)^P \int \psi^*_r(\mathbf{r}_r) \hat{H_0} \hat{P} \psi_s(\mathbf{r}_s) d\tau
+\end{align*}
+We see that due to the fact that we have orthogonality, all instances where two or more particles are switched will vanish. This then removes the products and the permutation summation. Instead, we are left with a sum over all the different particle states,
+\begin{align*}
+	\sum^A_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i
+\end{align*}
+Using Dirac notation, we simplify further, 
+\begin{align}
+	\int \Phi^* H_0 \Phi d\tau &= \sum^A_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i \nonumber \\
+	&= \sum^A_{\mu=1} \langle \mu |\hat{h}_0|\mu\rangle
+	\label{eq:non-interaction-hamilton}
+\end{align}
+Now that we have massaged the non-interacting Hamiltonian into a more manageable expression, it is only fair to do the same with the interacting Hamiltonian, $\hat{H}_I$.
+\begin{align*}
+	\int \Phi^* H_I \Phi d\tau &= \sum^A_{i<j} \int \Phi^* V(r_{ij}) \Phi d\tau \\
+	&= A! \sum^A_{i<j} \int \Phi_H^* \hat{A} V(r_{ij}) \hat{A} \Phi_H d\tau \\
+	&= \sum^A_{i<j} \sum_P (-1)^P \int \Phi_H^* \frac{1}{r_{ij}} \hat{P} \Phi_H d\tau
+\end{align*}
+We now have to do some thinking. We can start by realizing that the $\hat{P}$ operator switches two particles, such that e.g. $\hat{P}\psi_\alpha(\mathbf{r}_1)\psi_\beta(\mathbf{r}_2) = \psi_\alpha(\mathbf{r}_2)\psi_\beta(\mathbf{r}_1)$. If we now write out the sum for the exchanged elements, we get
+\begin{align*}
+	\int \Phi^* H_I \Phi d\tau &= \sum^A_{i<j} \bigg[ (-1)^0 \int \Phi_H^* \frac{1}{r_{ij}} \Phi_H d\tau \\ 
+	&+ (-1)^1 \int \Phi_H^* \frac{1}{r_{ij}} P_{ij} \Phi_H d\tau + \dots \bigg]
+\end{align*}
+Due to the orthogonality of the wave functions, we will have that only the terms with one permutation and no permutations will survive the summation. Further, we have that only permutations involving particles considered by the potential $V(r_{ij})$, will survive the permutation and orthogonality requirement. This simplifies our expression to
+\begin{align*}
+	\int &\Phi^* H_I \Phi d\tau = \sum^A_{i<j} \int \Phi_H^* \frac{1}{r_{ij}} (1 - P_{ij}) \Phi_H d\tau  \\
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
+	&\times (1 - P_{ij}) \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \\
+	&\times \frac{1}{r_{ij}} \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+	&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg] \\
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \left[ \langle\mu\nu|\hat{v}|\mu\nu\rangle - \langle\mu\nu|\hat{v}|\nu\mu\rangle \right] \\
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \langle\mu\nu|\hat{v}|\mu\nu\rangle_{AS}
+\end{align*}
+In the last equation we used Dirac notation similar to what that were seen in \eqref{eq:non-interaction-hamilton}. We now have all we need to write the full energy functional,
+\begin{align}
+	\begin{split}
+		E[\Phi] &= \sum^A_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i \\
+		&+ \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
+		&\times \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+		&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg]
+	\label{eq:energy-functional}
+	\end{split}
+\end{align}
+Written in a compact form of notation, this is
+\begin{align}
+	\begin{split}
+		E[\Phi] &= \sum^A_{\mu=1} \langle \mu |\hat{h}_0|\mu\rangle + \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \langle\mu\nu|\hat{v}|\mu\nu\rangle_{AS}
+	\label{eq:energy-functional-compact}
+	\end{split}
+\end{align}
+We can now expand this function in a new basis, $\psi$. $\psi$ is given by an orthogonal basis $\phi$
+\begin{align}
+	\psi_p = \sum_\lambda C_{p\lambda} \phi_\lambda
+	\label{eq:basis-orthogonality}
+\end{align}
+where the $\lambda$ runs over all the single particle states $\alpha, \beta, \dots, \nu$. In theory, this is an infinite basis. We will however make due with $N$ single particle states, defined at a certain cutoff-shell. We can now relabel the energy functional indices from $\mu,\nu$ to $i,j$, meaning all running over all our particles. Greek letters now run over all single particle states.
+\begin{align*}
+	E[\Phi] &= \sum^A_{i=1} \sum \langle i |\hat{h}_0| i \rangle + \frac{1}{2}\sum^A_{i,j=1} \langle ij |\hat{v}| ij \rangle_{AS} \\
+\end{align*}
+We can use that the wave functions can be written in a orthogonal basis(see equation \eqref{eq:basis-orthogonality}), which further reduces this to
+\begin{align}
+	\begin{split}
+		E[\Phi] &= \sum^A_{i=1} \sum^N_{\alpha\beta} C^*_{i\alpha} C_{i\beta} \epsilon_\alpha \langle\alpha|\hat{h}_0|\beta\rangle \\&+ \frac{1}{2}\sum^A_{ij}\sum^N_{\alpha\beta\gamma\delta} C^*_{i\alpha}C^*_{j\beta}C_{i\gamma}C_{j\delta} \langle \alpha\beta|\hat{v}|\gamma\delta\rangle_{AS}
+		\label{eq:energy-functioinal-basis}
+	\end{split}
+\end{align}
+We now wish to minimize this equation, and we do so by introducing Lagrangian multipliers. We wish the Lagrangian multipliers to adhere to the orthogonality given by two particle states,
+\begin{align*}
+	\langle a | b \rangle &= \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\langle \alpha | \beta \rangle \\&= \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\delta_{\alpha\beta} 
+	\\&= \sum_{\alpha}C_{a\alpha}^*C_{a\alpha}
+\end{align*}
+With the Lagrangian multiplier being $\sum_{i=1}^A \epsilon_i$, we get the function we need to minimize to be
+\begin{align*}
+	E[\Phi] - \sum_{i=1}^A \epsilon_i \sum_{\alpha}^N C_{i\alpha}^*C_{i\alpha}
+\end{align*}
+with $N$ being the total number of single particle states. Minimizing with respect to $C^*_{k\alpha}$, with $k$ indicating a single particle state below the Fermi level. We get
+\begin{align*}
+	\frac{d}{d C^*_{k\alpha}} \left[E[\Phi] - \sum_{i=1}^A \epsilon_i \sum_{\alpha}^N C_{i\alpha}^*C_{i\alpha}\right] = 0
+\end{align*}
+Inserting for $E[\Phi]$ and recalling from tensor analysis that $\frac{dx_i}{dx_j} = \delta_{ij}$, we get
+\begin{align*}
+	\frac{d}{d C^*_{k\alpha}} \bigg\{ &\sum^A_{i=1} \sum^N_{\alpha\beta} C^*_{i\alpha} C_{i\beta} \langle\alpha|\hat{h}_0|\beta\rangle + \frac{1}{2}\sum^A_{ij}\sum^N_{\alpha\beta\gamma\delta} C^*_{i\alpha}C^*_{j\beta}C_{i\gamma}C_{j\delta} \langle \alpha\beta|\hat{v}|\gamma\delta\rangle_{AS} \\
+	&- \sum_{i=1}^A \epsilon_i \sum_{\alpha}^N C_{i\alpha}^*C_{i\alpha}\bigg\} = 0 \\
+\end{align*}
+While the first sum is trivial to take the derivative of, the second derivation of the second part i slightly more involved(hello, tensor chain-rule). It goes as follow,
+\begin{align*}
+	\frac{d}{d C^*_{k\alpha}}\bigg\{ &\frac{1}{2}\sum^A_{ij}\sum^N_{\alpha\beta\gamma\delta} C^*_{i\alpha}C^*_{j\beta}C_{i\gamma}C_{j\delta} \bigg\} \\
+	&= \frac{1}{2} \bigg\{\sum^A_{ij}\sum^N_{\alpha\beta\gamma\delta} (\delta_{ki} \delta_{\alpha\alpha} C^*_{j\beta}C_{i\gamma}C_{j\delta} + \delta_{kj} \delta_{\alpha\beta} C^*_{i\alpha}C_{i\gamma}C_{j\delta}) \bigg\} \\
+	&= \frac{1}{2} \bigg\{\sum^A_{j} \sum^N_{\beta\gamma\delta} C^*_{j\beta}C_{k\gamma}C_{j\delta} + \sum^A_{i} \sum^N_{\beta\gamma\delta} C^*_{i\beta}C_{i\gamma}C_{k\delta} \bigg\} \\
+	&= \frac{1}{2} \bigg\{\sum^A_{j} \sum^N_{\beta\gamma\delta} C^*_{j\beta}C_{k\gamma}C_{j\delta} + \sum^A_{j} \sum^N_{\beta\delta\gamma} C^*_{j\beta}C_{j\delta}C_{k\gamma}\bigg\} \\
+	&= \sum^A_{j} \sum^N_{\beta\gamma\delta} C^*_{j\beta}C_{k\gamma}C_{j\delta}
+\end{align*}
+Note that the sum over $\alpha$ also disappeared due to the tensor derivative. In any case, our result becomes
+\begin{align*}
+	\sum^N_{\beta} C_{k\beta} \langle\alpha|\hat{h}_0|\beta\rangle + \sum^A_{j}\sum^N_{\beta\gamma\delta} C^*_{j\beta}C_{k\gamma}C_{j\delta} \langle \alpha\beta|\hat{v}|\gamma\delta\rangle_{AS} = \epsilon_k^{HF} C_{k\alpha}
+\end{align*}
+We can now change dummy variables in the second term, $\beta \leftrightarrow \gamma$.
+\begin{align*}
+	\sum^N_{\beta} C_{k\beta} \langle\alpha|\hat{h}_0|\beta\rangle + \sum^A_{j}\sum^N_{\gamma\beta\delta} C^*_{j\gamma}C_{k\beta}C_{j\delta} \langle \alpha\gamma|\hat{v}|\beta\delta\rangle_{AS} = \epsilon_k^{HF} C_{k\alpha}
+\end{align*}
+Also relabeling $k \leftrightarrow i$ and moving the sum over $\beta$ outside, gives us
+\begin{align*}
+	\sum^N_{\beta} \left\{ \langle\alpha|\hat{h}_0|\beta\rangle + \sum^A_{j}\sum^N_{\gamma\delta} C^*_{j\gamma}C_{j\delta} \langle \alpha\gamma|\hat{v}|\beta\delta\rangle_{AS} \right\} C_{i\beta} = \epsilon_i^{HF} C_{i\alpha}
+\end{align*}
+Assuming the basis is orthogonal, we can define the Hartree-Fock matrix,
+\begin{align}
+	h^{HF}_{\alpha\beta} = \epsilon_\alpha\delta_{\alpha\beta} + \sum^A_{j}\sum^N_{\gamma\delta} C^*_{j\gamma}C_{j\delta} \langle \alpha\gamma|\hat{v}|\beta\delta\rangle_{AS}
+	\label{eq:hartree-fock-matrix}
+\end{align}
+Using the density matrix as defined in equation \eqref{eq:rho-matrix}, we can further simplify this to
+\begin{align}
+	h^{HF}_{\alpha\beta} = \epsilon_\alpha\delta_{\alpha\beta} + \frac{1}{2}\sum^N_{\gamma\delta} \rho_{\gamma\delta} \langle \alpha\gamma|\hat{v}|\beta\delta\rangle_{AS}
+	\label{eq:hartree-fock-matrix-rho}
+\end{align}
+The interaction part is a four dimensional integral that can be written as
+\begin{align}
+	\langle \alpha\gamma|\hat{v}|\beta\delta\rangle = \int \Psi_\alpha^*(\mathbf{r}_i) \Psi_\gamma^*(\mathbf{r}_j) V(r_{ij}) \Psi_\beta(\mathbf{r}_i) \Psi_\delta(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j 
+	\label{eq:interaction-matrix}
+\end{align}
+and thus stored as a $N^4$ matrix, with indices corresponding to different single particle states. With from these definitions, we get the following equation
+\begin{align}
+	h^{HF}_{\alpha\beta} C_{i\beta} = \epsilon_i^{HF} C_{i\alpha},
+	\label{eq:eigen-value-problem}
+\end{align}
+which we immediately recognize as an Eigenvalue problem. We now have all the ingredients we need to formulate the Hartree-Fock algorithm.
+
+\subsubsection{Hartree-Fock ground state energy}
+In order to find the correct expression for the Hartree-Fock ground state energy, we remind ourselves how the $\hat{h}^{HF}$ Hamiltonian 
 
 \subsubsection{Hartree-Fock algorithm}
+In order to find a energy minimum for the energy functional \eqref{eq:energy-functional-compact}, we have to solve this problem in an iterative way. The algorithm will run till the convergence criteria is met. That is, the previous single particle energies does not change significantly from the previous single particle energy values.
+\begin{align}
+	\frac{\sum_i^N|\epsilon^{n}_i - \epsilon^{n-1}_i|}{N} \leq \lambda
+	\label{eq:convergence-criteria}
+\end{align}
+Where $\lambda=10^{-10}$.
 
+\begin{algorithm}[H]
+\caption{Hartree-Fock. Number of Hartree-Fock iterations given by number of times step 4-6 is repeated.}
+\label{alg:hf-algorithm}
+\begin{algorithmic}[1]
+\State Set the interaction matrix $\langle \alpha \gamma |\hat{v}| \beta \delta \rangle$, as given by equation \eqref{eq:interaction-matrix}, as a function of shells.
+\State Set up the $C$ matrix as a identity matrix.
+\State Set up the density matrix $\rho$ as seen in equation \eqref{eq:rho-matrix}.
+\State Calculate the $h^{HF}_{\alpha\beta}$ matrix accordingly to equation \eqref{eq:hartree-fock-matrix-rho}.
+\State Solve the Eigenvalue problem as given by equation \eqref{eq:eigen-value-problem}.
+\State With the new C-matrix found by solving the Eigenvalue problem, recalculate te $\rho$-matrix in equation \eqref{eq:rho-matrix}.
+\State Repeat 4-6 till convergence criteria of equation \eqref{eq:convergence-criteria} is met.
+\State Calculate the Hartree-Fock groundstate energy
+\end{algorithmic}
+\end{algorithm}
+
+\section{Setup}
+For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in C++. The code can be found in at \husk{GitHub}.
 
 \section{Results}
+I perform calculations for primary two different values of $\omega$, $\omega=0.1$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{c | c | c | c | c | c}
+		\hline $A = 2$ 	& $A = 6$ 	& $A = 12$ 	& $A = 12$ 	& Shells 	& Hartree-Fock iterations 	\\ \hline
+		2 			& 			& 			& 			&			&							\\
+		\hline
+	\end{tabular}
+	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons.}
+\end{table}
+
+
 \subsection{Unperturbed results}
 \subsection{Unit tests}
 
@@ -94,46 +274,104 @@ where the $C_{p\lambda}$ is an unitary matrix.
 
 \section{Appendix A: mathematical formulas}
 \subsection{Slater determinants}
-A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $N$ particles, we have 
+A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $A$ particles, we have 
 \begin{align}
 	\begin{split}
-		\Phi(x_1,x_2,\dots,x_N; \alpha,\dots,\sigma) =\\
-		\frac{1}{\sqrt{N!}}
+		\Phi(\mathbf{r}_1,\mathbf{r}_2,\dots,\mathbf{r}_A; \alpha,\dots,\sigma) =\\
+		\frac{1}{\sqrt{A!}}
 		\begin{vmatrix}
-			\psi_\alpha(x_1) & \dots & \psi_\alpha(x_N) \\
+			\psi_\alpha(\mathbf{r}_1) & \dots & \psi_\alpha(\mathbf{r}_A) \\
 			\dots & \dots & \dots \\
-			\psi_\sigma(x_1) & \dots & \psi_\sigma(x_N) \\
+			\psi_\sigma(\mathbf{r}_1) & \dots & \psi_\sigma(\mathbf{r}_A) \\
 		\end{vmatrix}
 	\end{split}
 	\label{eq:slater-determinant}
 \end{align}
 This can be written in a more compact form using the anti-symmetrization operator $\hat{A}$,
 \begin{align}
-	\hat{A} = \frac{1}{N!}\sum_P (-1)^P \hat{P}
+	\hat{A} = \frac{1}{A!}\sum_P (-1)^P \hat{P}
 	\label{eq:anti-symmetrization-operator}
 \end{align}
 Combining the Slater determinant \eqref{eq:slater-determinant} with $\hat{A}$, we get
 \begin{align}
-	&\Phi(x_1,\dots,x_N;\alpha,\dots,\nu) \nonumber \\
-	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P}\psi_\alpha(x_1)\dots\psi_\nu(x_N) \nonumber \\
-	&= \frac{1}{\sqrt{N!}}\sum_P (-1)^P \hat{P} \prod_s \psi_s(x_s) \nonumber \\
-	&= \sqrt{N!}\hat{A}\Phi_H,
+	&\Phi(\mathbf{r}_1,\dots,\mathbf{r}_A;\alpha,\dots,\nu) \nonumber \\
+	&= \frac{1}{\sqrt{A!}}\sum_P (-1)^P \hat{P}\psi_\alpha(\mathbf{r}_1)\dots\psi_\nu(\mathbf{r}_A) \nonumber \\
+	&= \frac{1}{\sqrt{A!}}\sum_P (-1)^P \hat{P} \prod_s \psi_s(\mathbf{r}_s) \nonumber \\
+	&= \sqrt{A!}\hat{A}\Phi_H,
 	\label{eq:slater-determinant-compact}
 \end{align}
 where $\Phi_H$ is the wave function that is being permuted according to its components.
 
-The $\psi$ is given by an orthogonal basis $\phi$
+\subsubsection{Slater determinant products}
+We can now show that a new Slater determinant constructed from a previous basis and its Slater determinant can be written - in a somewhat short-hand notation - as
 \begin{align}
-	\psi_p = \sum_\lambda C_{p\lambda} \phi_\lambda
-	\label{eq:basis-orthogonality}
+	\Phi = C \Psi
+	\label{eq:slater-det-products}
 \end{align}
-where the $\lambda$ runs over all the single particle states $\alpha, \beta, \dots, \nu$. We have that $\phi_\lambda$ is an orthogonal basis, and we can show from this that $\psi_p$ also must be an orthogonal basis.
+We will now use $p,q,\dots,u$ and $\alpha,\beta,\dots,\gamma$ together under the assumption that the Slater determinant is a $N\times N$ matrix. We get,
+\begin{align*}
+	\Phi &= \frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\psi_p(\mathbf{r}_1) & \psi_p(\mathbf{r}_2) & \dots \\
+		\psi_q(\mathbf{r}_1) & \dots 				& \dots	\\
+		\dots 				 & \dots 				& \dots \\
+		\psi_u(\mathbf{r}_1) & \dots 				& \psi_u(\mathbf{r}_N)
+	\end{vmatrix} \\
+	&= \frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\sum_\lambda C_{p\lambda} \phi_\lambda(\mathbf{r}_1) & \dots  & \sum_\lambda C_{p\lambda} \phi_\lambda(\mathbf{r}_N) \\
+		\dots 				 								 & \dots  & \dots \\
+		\sum_\lambda C_{u\lambda} \phi_\lambda(\mathbf{r}_1) & \dots  & \sum_\lambda C_{u\lambda} \phi_\lambda(\mathbf{r}_N)
+	\end{vmatrix} \\
+	&= \frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\left(C_{p\alpha} \phi_\alpha(\mathbf{r}_1) + C_{p\beta} \phi_\beta(\mathbf{r}_1) + \dots + C_{p\gamma} \phi_\gamma(\mathbf{r}_1)\right) & \dots  & \dots \\
+		\dots 				 								 & \dots  & \dots \\
+		\left(C_{u\alpha} \phi_\alpha(\mathbf{r}_1) + C_{u\beta} \phi_\beta(\mathbf{r}_1) + \dots + C_{u\gamma} \phi_\gamma(\mathbf{r}_1)\right) & \dots  & \dots
+	\end{vmatrix}
+\end{align*}
+We can now recognize the sum as a matrix multiplication product, and rewrite our expression to
+\begin{align*}
+	\frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\psi_p(\mathbf{r}_1) & \psi_p(\mathbf{r}_2) & \dots \\
+		\psi_q(\mathbf{r}_1) & \dots 				& \dots	\\
+		\dots 				 & \dots 				& \dots \\
+		\psi_u(\mathbf{r}_1) & \dots 				& \psi_u(\mathbf{r}_N)
+	\end{vmatrix} = 
+	\begin{vmatrix}
+		C_{p\alpha} & c_{p\beta} 	& \dots 	& C_{p\gamma} \\
+		C_{q\alpha} & \dots 		& \dots 	& \dots \\
+		\dots 		& \dots			& \dots		& \dots \\
+		C_{u\alpha} & \dots 		& \dots 	& C_{u\gamma} \\
+	\end{vmatrix} \\
+	\times 
+	\frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\phi_\alpha(\mathbf{r}_1) & \phi_\alpha(\mathbf{r}_2) & \dots & \phi_\alpha(\mathbf{r}_N) \\
+		\phi_\beta(\mathbf{r}_1) & \dots & \dots & \dots \\
+		\dots & \dots & \dots & \dots \\
+		\phi_\gamma(\mathbf{r}_1) & \dots & \dots & \phi_\gamma(\mathbf{r}_N)
+	\end{vmatrix}
+\end{align*}
+And we have shown that the new Slater determinant can be shown as a product between the $C$ matrix and the old Slater determinant.
+
+\subsection{Basis orthogonality}
+Given an basis seen in equation \eqref{eq:basis-orthogonality}, and that $\phi_\lambda$ is an orthogonal basis, we can show from this that $\psi_p$ also must be an orthogonal basis.
 \begin{align*}
 	\langle \psi_p | \psi_q \rangle &= \int \left( \sum_\lambda C^*_{p\lambda}\phi_\lambda \right) \left( \sum_\eta C_{q\eta}\phi_\eta \right) d\mathbf{r}_i \\
 	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \int \phi_\lambda \phi_\eta d\mathbf{r}_i \\
-	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \delta_{\lambda\eta}
+	&= \sum_{\lambda,\eta} C^*_{p\lambda} C_{q\eta} \delta_{\lambda\eta} \\
+	&= \sum_{\lambda} C^*_{p\lambda} C_{q\lambda}
 \end{align*}
+And thus we see that the new basis must be orthogonal.
 
+\subsection{Density matrix calculation}
+In equation the Hartree-Fock matrix \eqref{eq:hartree-fock-matrix}, we can pre-calculate the $C_{j\gamma}^* C_{j\delta}$. This gives us the density matrix, $\rho$,
+\begin{align}
+	\rho_{\gamma\delta} = \sum_{j=1}^A C_{\gamma j}^* C_{\delta j}
+	\label{eq:rho-matrix}
+\end{align}
 
 
 \end{document}
