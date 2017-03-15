@@ -35,10 +35,7 @@ NAN
 \end{abstract}
 
 \section{Introduction}
-For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. For our project, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $A = 2, 6, 12, 20, 30$ and so on.
-
-The Hartree-Fock method allows us to find the ground state energy of an atom.
-\husk{motivation}
+For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. The Hartree-Fock method allows us to find the ground state of a given Hamiltonian for a many particle system. As for our case, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $A = 2, 6, 12, 20, 30$ and so on. 
 
 In order to present my results, I will begin repeating the physics and mathematics involved in this project, and finally go through the Hartree-Fock algorithm.
 
@@ -61,8 +58,7 @@ An unperturbed two dimensional harmonic oscillator have energies given as
 
 The wave function solution for a harmonic oscillator is given by the Hermite polynomials,
 \begin{align}
-	\phi_{n_x,n_y}(x,y) = AH_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\times \nonumber \\
-	\exp(-\omega(x^2 + y^2)/2)
+	\phi_{n_x,n_y}(x,y) = AH_{n_x}(\sqrt{\omega}x)H_{n_y}(\sqrt{\omega}y)\exp(-\omega(x^2 + y^2)/2)
 \end{align}
 The A is in this case a normalization constant.
 
@@ -73,10 +69,24 @@ As is evident in our calculations later on, we will be using polar coordinates t
 \end{align}
 
 \subsection{Harmonic oscillator basis}
-Based on the Hamiltonian
+Given that we are looking at a harmonic oscillator and are including spin degrees of freedom, we will have a basis where each level has a degenerace corresponding of $d(n)=2n$, where $n$ is the shell we are looking at. Writing out the first few shells, we get
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{c | c | c | c | c}
+		Shell number & $(n,m)$ & Energy & Degeneracy & $N$ \\
+		\hline
+		$1$ & $(0,0)$ & $h\omega$ & $2$ & 2 \\
+		$2$ & $(0,-1)$, $(0,1)$ & $2h\omega$ & $4$ & 6 \\
+		$3$ & $(0,-2)$, $(1,0)$, $(0,2)$ & $3h\omega$ & $6$ & 12 \\
+		$4$ & $(0,-3)$, $(1,-1)$, $(1,1)$, $(0,3)$ & $3h\omega$ & $8$ & 20 \\
+	\end{tabular}
+	\caption{The first few single particle states configurations of a 2D harmonic oscillator in polar coordinates. The energy is calculated using equation \eqref{eq:ho-energy-polar}.}
+	\label{tab:shell-energies}
+\end{table}
 
 \subsection{Hartree-Fock}
-In order to derive the Hartree-Fock equations, we begin by setting up the functional for the ground state energy which we are to minimize,
+Before we start deriving the Hartree-Fock equations, let us restate a few of the approximations and assumptions we make. As already mentioned - the Born-Oppenheimer approximation is assumed. We will also assume that the entire system can be described by a single Slater determinant. We begin by setting up the functional for the ground state energy which we are to minimize,
 \begin{align}
 	E_0 \leq E[\Phi] = \int \Phi^* \hat{H} \Phi d\tau.
 	\label{eq:variational-principle}
@@ -120,16 +130,13 @@ Now that we have massaged the non-interacting Hamiltonian into a more manageable
 \end{align*}
 We now have to do some thinking. We can start by realizing that the $\hat{P}$ operator switches two particles, such that e.g. $\hat{P}\psi_\alpha(\mathbf{r}_1)\psi_\beta(\mathbf{r}_2) = \psi_\alpha(\mathbf{r}_2)\psi_\beta(\mathbf{r}_1)$. If we now write out the sum for the exchanged elements, we get
 \begin{align*}
-	\int \Phi^* H_I \Phi d\tau &= \sum^A_{i<j} \bigg[ (-1)^0 \int \Phi_H^* \frac{1}{r_{ij}} \Phi_H d\tau \\ 
-	&+ (-1)^1 \int \Phi_H^* \frac{1}{r_{ij}} P_{ij} \Phi_H d\tau + \dots \bigg]
+	\int \Phi^* H_I \Phi d\tau &= \sum^A_{i<j} \bigg[ (-1)^0 \int \Phi_H^* \frac{1}{r_{ij}} \Phi_H d\tau + (-1)^1 \int \Phi_H^* \frac{1}{r_{ij}} P_{ij} \Phi_H d\tau + \dots \bigg]
 \end{align*}
 Due to the orthogonality of the wave functions, we will have that only the terms with one permutation and no permutations will survive the summation. Further, we have that only permutations involving particles considered by the potential $V(r_{ij})$, will survive the permutation and orthogonality requirement. This simplifies our expression to
 \begin{align*}
 	\int &\Phi^* H_I \Phi d\tau = \sum^A_{i<j} \int \Phi_H^* \frac{1}{r_{ij}} (1 - P_{ij}) \Phi_H d\tau  \\
-	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
-	&\times (1 - P_{ij}) \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\
-	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \\
-	&\times \frac{1}{r_{ij}} \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} (1 - P_{ij}) \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\
+	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
 	&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg] \\
 	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \left[ \langle\mu\nu|\hat{v}|\mu\nu\rangle - \langle\mu\nu|\hat{v}|\nu\mu\rangle \right] \\
 	&= \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \langle\mu\nu|\hat{v}|\mu\nu\rangle_{AS}
@@ -138,8 +145,7 @@ In the last equation we used Dirac notation similar to what that were seen in \e
 \begin{align}
 	\begin{split}
 		E[\Phi] &= \sum^A_{\mu=1} \int \psi^*_\mu(\mathbf{r}_i) \hat{H_0} \psi_\mu(\mathbf{r}_i) d\mathbf{r}_i \\
-		&+ \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \\ 
-		&\times \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
+		&+ \frac{1}{2}\sum^A_{\mu=1}\sum^A_{\nu=1} \bigg[ \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\mu(\mathbf{r}_i)\psi_\nu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \\ 
 		&- \int \psi_\mu^*(\mathbf{r}_i)\psi_\nu^*(\mathbf{r}_j) \frac{1}{r_{ij}} \psi_\nu(\mathbf{r}_i) \psi_\mu(\mathbf{r}_j) d\mathbf{r}_i d\mathbf{r}_j \bigg]
 	\label{eq:energy-functional}
 	\end{split}
@@ -164,13 +170,13 @@ We can use that the wave functions can be written in a orthogonal basis(see equa
 \begin{align}
 	\begin{split}
 		E[\Phi] &= \sum^A_{i=1} \sum^N_{\alpha\beta} C^*_{i\alpha} C_{i\beta} \epsilon_\alpha \langle\alpha|\hat{h}_0|\beta\rangle \\&+ \frac{1}{2}\sum^A_{ij}\sum^N_{\alpha\beta\gamma\delta} C^*_{i\alpha}C^*_{j\beta}C_{i\gamma}C_{j\delta} \langle \alpha\beta|\hat{v}|\gamma\delta\rangle_{AS}
-		\label{eq:energy-functioinal-basis}
+		\label{eq:energy-functional-basis}
 	\end{split}
 \end{align}
 We now wish to minimize this equation, and we do so by introducing Lagrangian multipliers. We wish the Lagrangian multipliers to adhere to the orthogonality given by two particle states,
 \begin{align*}
-	\langle a | b \rangle &= \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\langle \alpha | \beta \rangle \\&= \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\delta_{\alpha\beta} 
-	\\&= \sum_{\alpha}C_{a\alpha}^*C_{a\alpha}
+	\langle a | b \rangle &= \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\langle \alpha | \beta \rangle = \sum_{\alpha\beta}C_{a\alpha}^*C_{a\beta}\delta_{\alpha\beta} 
+	= \sum_{\alpha}C_{a\alpha}^*C_{a\alpha}
 \end{align*}
 With the Lagrangian multiplier being $\sum_{i=1}^A \epsilon_i$, we get the function we need to minimize to be
 \begin{align*}
@@ -227,16 +233,45 @@ and thus stored as a $N^4$ matrix, with indices corresponding to different singl
 \end{align}
 which we immediately recognize as an Eigenvalue problem. We now have all the ingredients we need to formulate the Hartree-Fock algorithm.
 
+\subsubsection{Density matrix calculation}
+In equation the Hartree-Fock matrix \eqref{eq:hartree-fock-matrix}, we can pre-calculate the $C_{j\gamma}^* C_{j\delta}$. This gives us the density matrix, $\rho$,
+\begin{align}
+	\rho_{\gamma\delta} = \sum_{j=1}^A C_{\gamma j}^* C_{\delta j}
+	\label{eq:rho-matrix}
+\end{align}
+
 \subsubsection{Hartree-Fock ground state energy}
-In order to find the correct expression for the Hartree-Fock ground state energy, we remind ourselves how the $\hat{h}^{HF}$ Hamiltonian 
+In order to find the correct expression for the Hartree-Fock ground state energy, we remind ourselves how the $\hat{h}^{HF}$ Hamiltonian is defined as following,
+\begin{align*}
+	\hat{h}^{HF} = \hat{h}_0 + \hat{u}^{HF},
+\end{align*}
+where $\hat{u}^{HF}$ is the Hartree-Fock potential. From our energy functional \eqref{eq:energy-functional-compact}, we have
+\begin{align*}
+	E_0^{HF} &= \sum^A_{i=1} \langle i |\hat{h}_0| i \rangle + \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \langle ij |\hat{v}| ij \rangle_{AS}
+\end{align*}
+By recalling that $\hat{u}^{HF}$ is defined as 
+\begin{align*}
+	\langle i | \hat{u}^{HF} | i \rangle = \sum_{j=1}^N \langle ij | \hat{v} | ij \rangle_{AS}
+\end{align*}
+Also remembering that $\hat{h}^{HF} = \hat{h}_0 + \hat{u}^{HF}$, we can add and subtract $\hat{u}^{HF}$,
+\begin{align*}
+	E_0^{HF} &= \sum^A_{i=1} \langle i |\hat{h}_0| i \rangle + \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \langle ij |\hat{v}| ij \rangle_{AS} + \sum^A_{i=1} \langle i | \hat{u}^{HF} | i \rangle - \sum^A_{i=1} \langle i | \hat{u}^{HF} | i \rangle \\
+	&= \sum^A_{i=1} \langle i | \hat{h}^{HF} | i \rangle + \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \left[ \langle ij |\hat{v}| ij \rangle_{AS} - \langle ij | \hat{v} | ij \rangle_{AS}\right] \\
+	&= \sum^A_{i=1} \epsilon_i^{HF} - \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \langle ij |\hat{v}| ij \rangle_{AS}
+\end{align*}
+Inserting for the basis transformation as seen in equation \eqref{eq:basis-orthogonality}, we get the following equation for the Hartree-Fock groundstate energy
+\begin{align}
+	E_0^{HF} = \sum^A_{i=1} \epsilon^{HF}_i - \frac{1}{2}\sum^A_{i,j=0}\sum^N_{\alpha\beta\gamma\delta} C^*_{i,\alpha} C^*_{i,\beta}C_{j,\gamma}C_{j,\delta}\langle\alpha\gamma|\hat{v}|\beta\delta\rangle_{AS}
+	\label{eq:hartree-fock-gs-energy}
+\end{align}
 
 \subsubsection{Hartree-Fock algorithm}
 In order to find a energy minimum for the energy functional \eqref{eq:energy-functional-compact}, we have to solve this problem in an iterative way. The algorithm will run till the convergence criteria is met. That is, the previous single particle energies does not change significantly from the previous single particle energy values.
 \begin{align}
-	\frac{\sum_i^N|\epsilon^{n}_i - \epsilon^{n-1}_i|}{N} \leq \lambda
+	\frac{\sum_i^N|\epsilon^{n}_i - \epsilon^{n-1}_i|}{N} \leq \lambda,
 	\label{eq:convergence-criteria}
 \end{align}
-Where $\lambda=10^{-10}$.
+where $\lambda=10^{-10}$ and $n$ symbolises the current Hartree-Fock iteration.
 
 \begin{algorithm}[H]
 \caption{Hartree-Fock. Number of Hartree-Fock iterations given by number of times step 4-6 is repeated.}
@@ -249,12 +284,15 @@ Where $\lambda=10^{-10}$.
 \State Solve the Eigenvalue problem as given by equation \eqref{eq:eigen-value-problem}.
 \State With the new C-matrix found by solving the Eigenvalue problem, recalculate te $\rho$-matrix in equation \eqref{eq:rho-matrix}.
 \State Repeat 4-6 till convergence criteria of equation \eqref{eq:convergence-criteria} is met.
-\State Calculate the Hartree-Fock groundstate energy
 \end{algorithmic}
 \end{algorithm}
 
+When the algorithm has run its due course(and hopefully converged), we can then calculate the Hartree-Fock groundstate energy based of equation \eqref{eq:hartree-fock-gs-energy}.
+
 \section{Implementation}
 For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in C++. The code can be found in at \husk{GitHub}.
+
+\subsection{Unit tests}
 
 \section{Results}
 I perform calculations for primary two different values of $\omega$, $\omega=0.1$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells.
@@ -297,9 +335,7 @@ I perform calculations for primary two different values of $\omega$, $\omega=0.1
 	\label{tab:omega01}
 \end{table}
 
-
 \subsection{Unperturbed results}
-\subsection{Unit tests}
 
 \section{Conclusions and discussions}
 
@@ -396,13 +432,6 @@ Given an basis seen in equation \eqref{eq:basis-orthogonality}, and that $\phi_\
 	&= \sum_{\lambda} C^*_{p\lambda} C_{q\lambda}
 \end{align*}
 And thus we see that the new basis must be orthogonal.
-
-\subsection{Density matrix calculation}
-In equation the Hartree-Fock matrix \eqref{eq:hartree-fock-matrix}, we can pre-calculate the $C_{j\gamma}^* C_{j\delta}$. This gives us the density matrix, $\rho$,
-\begin{align}
-	\rho_{\gamma\delta} = \sum_{j=1}^A C_{\gamma j}^* C_{\delta j}
-	\label{eq:rho-matrix}
-\end{align}
 
 
 \end{document}

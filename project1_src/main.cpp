@@ -26,7 +26,7 @@ int main(int nargs, char *args[])
     int startShell          = 4;
     int maxShell            = 11;
     int maxHFIterations     = 500;
-    double omega            = 0.1;
+    double omega            = 1.0;
     double epsilon          = 1e-10;
     std::string filename    = "../output/HF_results";
 
