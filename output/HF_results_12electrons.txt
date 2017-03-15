@@ -1,9 +1,9 @@
-HF Iterations =    1 | Electrons = 12 | Shells =  3 | Energy = 73.765549
-HF Iterations =   12 | Electrons = 12 | Shells =  4 | Energy = 70.673849
-HF Iterations =   18 | Electrons = 12 | Shells =  5 | Energy = 67.569930
-HF Iterations =   39 | Electrons = 12 | Shells =  6 | Energy = 67.296869 
-HF Iterations =   28 | Electrons = 12 | Shells =  7 | Energy = 66.934745 
-HF Iterations =   43 | Electrons = 12 | Shells =  8 | Energy = 66.923094 
-HF Iterations =   38 | Electrons = 12 | Shells =  9 | Energy = 66.912244
-HF Iterations =   37 | Electrons = 12 | Shells = 10 | Energy = 66.912035 
-HF Iterations =   37 | Electrons = 12 | Shells = 11 | Energy = 66.911365 
+ NElectrons 12 maxShell  3 HFIterations  1 HFEnergy 73.765549
+ NElectrons 12 maxShell  4 HFIterations 12 HFEnergy 70.673849
+ NElectrons 12 maxShell  5 HFIterations 18 HFEnergy 67.569930
+ NElectrons 12 maxShell  6 HFIterations 39 HFEnergy 67.296869 
+ NElectrons 12 maxShell  7 HFIterations 28 HFEnergy 66.934745 
+ NElectrons 12 maxShell  8 HFIterations 43 HFEnergy 66.923094 
+ NElectrons 12 maxShell  9 HFIterations 38 HFEnergy 66.912244
+ NElectrons 12 maxShell 10 HFIterations 37 HFEnergy 66.912035 
+ NElectrons 12 maxShell 11 HFIterations 37 HFEnergy 66.911365 

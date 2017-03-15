@@ -72,6 +72,9 @@ As is evident in our calculations later on, we will be using polar coordinates t
 	\label{eq:ho-energy-polar}
 \end{align}
 
+\subsection{Harmonic oscillator basis}
+Based on the Hamiltonian
+
 \subsection{Hartree-Fock}
 In order to derive the Hartree-Fock equations, we begin by setting up the functional for the ground state energy which we are to minimize,
 \begin{align}
@@ -250,7 +253,7 @@ Where $\lambda=10^{-10}$.
 \end{algorithmic}
 \end{algorithm}
 
-\section{Setup}
+\section{Implementation}
 For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in C++. The code can be found in at \husk{GitHub}.
 
 \section{Results}
@@ -258,22 +261,22 @@ I perform calculations for primary two different values of $\omega$, $\omega=0.1
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{c | c | c | c | c | c}
-		\hline 
-		$A = 2$ 		& $A = 6$ 	& $A = 12$ 	& $A = 12$ 	& Shells 	& Hartree-Fock iterations 	\\ \hline
-		3.16269			& 21.5932 	& 			& 			& 3			&							\\
-		3.16269			& 20.7669	& 			& 			& 4			&							\\
-		3.16192			& 20.7484	& 			& 			& 5			&							\\
-		3.16192			& 			& 			& 			& 6			&							\\
-		3.16191			& 			& 			& 			& 7			&							\\
-		3.16191			& 			& 			& 			& 8			&							\\
-		3.16191			& 			& 			& 			& 9			&							\\
-		3.16191			& 			& 			& 			& 10		&							\\
-		\hline
+	\begin{tabular}{c | c | c | c | c }
+
+		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
+		3		&3.16269	& 4.4357396	& 17.272337	& 			\\
+		4		&3.16269	& 4.0197867	& 15.320991	& 43.30327	\\
+		5		&3.16192	& 3.9631485	& 14.098239	& 38.031297	\\
+		6		&3.16192	& 3.8706166	& 			& 			\\
+		7		&3.16191	& 3.8631345	& 			& 			\\
+		8		&3.16191	& 3.8528799	& 			& 			\\
+		9		&3.16191	& 3.8525909	& 			& 			\\
+		10		&3.16191	& 3.8523927	& 			& 			\\
+		11		&			& 			& 			& 			\\
+
 	\end{tabular}
 	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons.}
 \end{table}
-
 
 \subsection{Unperturbed results}
 \subsection{Unit tests}
