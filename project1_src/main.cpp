@@ -9,8 +9,8 @@
 #include "functions.h"
 #include "quantumdot.h"
 #include "hartreefock.h"
-//#include <mpi.h> // For mac
-#include "mpi/mpi.h" // For ubuntu
+#include <mpi.h> // For mac
+//#include "mpi/mpi.h" // For ubuntu
 
 using namespace std;
 

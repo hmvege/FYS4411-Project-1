@@ -5,7 +5,8 @@
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
 #include <ctime>
-#include "mpi/mpi.h"
+//#include "mpi/mpi.h"
+#include <mpi.h>
 //#include <omp.h>
 
 using std::cout;
