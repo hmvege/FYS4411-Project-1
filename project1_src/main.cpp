@@ -44,7 +44,6 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
-//            if (NElectronsArray[i] < pow(shells,4)) { continue; } // Ensuring that we always have enough shells in our calculations
             quantumDot QMDot(NElectronsArray[i], shells, omega);
             QMDot.setupInteractionMatrixPolar(numprocs, processRank);
             QMDot.setHFLambda(epsilon);
@@ -53,7 +52,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
         }
     }
 
-    MPI_Finalize(); // Done-diddely-done
+    MPI_Finalize();
 
     setupFinish = clock();
     cout << "Program complete. Time used: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
@@ -66,7 +65,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
      * [ ] Add parallelization to integral-finder
      * [ ] Compare with unperturbed energy - unit test
      * [ ] Compare degeneracies before and afte
-     * [ ] Add write-to-file capability(easy)
+     * [ ] Add write-to-file capability(easy). For future project
      */
     return 0;
 }

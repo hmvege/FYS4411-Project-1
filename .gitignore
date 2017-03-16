@@ -6,8 +6,11 @@
 # Ignore binaries
 bin/
 
-#Ignore old datafiles
+# Ignore old datafiles
 output_old/
+
+# Ignore mac related file
+how-to-mpi.txt
 
 # Tex-files
 *.aux
