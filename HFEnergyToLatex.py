@@ -4,30 +4,35 @@ output_folder = 'output'
 omega10 = [] # For omega=1.0
 omega01 = [] # For omega=0.1
 
-for file in os.listdir(output_folder):
-	if not file.split('.')[-1] == 'txt': continue # Ensuring we have a data file
-	if file == 'HF_results1.txt': continue # ensuring only good files are checked
-	if 'omega' in file:
-		electron_number = file.split('_')[-1].split('electrons')[0]
-		for line in open(output_folder + '/' + file,'r'):
-			line_elements = line.split()
-			electrons_stats = {}
-			electrons_stats['electrons'] = electron_number
-			electrons_stats['maxShell'] = line_elements[3]
-			electrons_stats['HFIterations'] = line_elements[5]
-			electrons_stats['HFEnergy'] = line_elements[7]
-			omega01.append(electrons_stats)
+def get_data(target_omega = None):
+	data_list = []
+	for file in os.listdir(output_folder):		
+		if not file.split('.')[-1] == 'txt': continue # Ensuring we have a data file
+		if file == 'HF_results1.txt': continue # ensuring only good files are checked
+		if not 'omega' in file: continue # Ensuring we have omega value in file
+		file_omega = float(file.split('omega')[-1].split('_')[0])
+		if file_omega == target_omega:
+			electron_number = file.split('_')[-1].split('electrons')[0]
+			for line in open(output_folder + '/' + file,'r'):
+				line_elements = line.split()
+				electrons_stats = {}
+				electrons_stats['electrons'] = electron_number
+				electrons_stats['maxShell'] = line_elements[3]
+				electrons_stats['HFIterations'] = line_elements[5]
+				electrons_stats['HFEnergy'] = line_elements[7]
+				data_list.append(electrons_stats)
 
-	else:
-		electron_number = file.split('_')[-1].split('electrons')[0]
-		for line in open(output_folder + '/' + file,'r'):
-			line_elements = line.split()
-			electrons_stats = {}
-			electrons_stats['electrons'] = electron_number
-			electrons_stats['maxShell'] = line_elements[3]
-			electrons_stats['HFIterations'] = line_elements[5]
-			electrons_stats['HFEnergy'] = line_elements[7]
-			omega10.append(electrons_stats)
+		# else:
+		# 	electron_number = file.split('_')[-1].split('electrons')[0]
+		# 	for line in open(output_folder + '/' + file,'r'):
+		# 		line_elements = line.split()
+		# 		electrons_stats = {}
+		# 		electrons_stats['electrons'] = electron_number
+		# 		electrons_stats['maxShell'] = line_elements[3]
+		# 		electrons_stats['HFIterations'] = line_elements[5]
+		# 		electrons_stats['HFEnergy'] = line_elements[7]
+		# 		data_list.append(electrons_stats)
+	return data_list
 
 
 def convert_to_latex(list_dictionary):
@@ -52,5 +57,7 @@ def convert_to_latex(list_dictionary):
 		
 	print latex_string
 
-convert_to_latex(omega10)
-convert_to_latex(omega01)
+omega01_data = get_data(1.0)
+print omega01
+convert_to_latex(omega01_data)
+convert_to_latex(get_data(0.1))

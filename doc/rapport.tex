@@ -11,7 +11,8 @@
 \usepackage{color}
 \usepackage{float}
 \usepackage{hyperref}
-
+\usepackage{relsize}
+% \usepackage{xspace}
 
 \usepackage{algorithm}
 \usepackage{algorithmicx}
@@ -22,6 +23,9 @@
 
 \newcommand{\husk}[1]{\color{red} #1 \color{black}}
 \newcommand{\expect}[1]{\langle{#1}\rangle}
+
+\newcommand{\CC}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
+\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
 
 \title{Project 1 in FYS4411: Computational Physics 2}
 \author{}
@@ -290,7 +294,7 @@ where $\lambda=10^{-10}$ and $n$ symbolises the current Hartree-Fock iteration.
 When the algorithm has run its due course(and hopefully converged), we can then calculate the Hartree-Fock groundstate energy based of equation \eqref{eq:hartree-fock-gs-energy}.
 
 \section{Implementation}
-For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in C++. The code can be found in at \husk{GitHub}.
+For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub adress given in the reference section \cite.
 
 \subsection{Unit tests}
 

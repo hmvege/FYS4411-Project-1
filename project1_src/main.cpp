@@ -23,17 +23,17 @@ int main(int nargs, char *args[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int startShell          = 4;
-    int maxShell            = 11;
+    int startShell          = 6;
+    int maxShell            = 7;
     int maxHFIterations     = 500;
-    double omega            = 1.0;
+    double omega            = 0.1;
     double epsilon          = 1e-10;
     std::string filename    = "../output/HF_results";
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    for (int i = 1; i < NElectronArrElems-2; i++)
+    for (int i = 2; i < NElectronArrElems-1; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
@@ -42,7 +42,7 @@ int main(int nargs, char *args[])
             QMDot.setupInteractionMatrixPolar();
             QMDot.setHFLambda(epsilon);
             QMDot.runHartreeFock(maxHFIterations);
-            QMDot.storeResults(filename);
+//            QMDot.storeResults(filename);
         }
     }
     setupFinish = clock();
