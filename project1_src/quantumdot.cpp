@@ -5,8 +5,8 @@
 #include "hartreefock.h"
 #include "Coulomb_Functions.h"
 #include <ctime>
+#include "mpi/mpi.h"
 //#include <omp.h>
-//#include "mpi/mpi.h"
 
 using std::cout;
 using std::endl;
@@ -78,7 +78,7 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
-void quantumDot::setupInteractionMatrixPolar()
+void quantumDot::setupInteractionMatrixPolar(int numprocs, int processRank)
 {
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
@@ -89,8 +89,27 @@ void quantumDot::setupInteractionMatrixPolar()
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
+//    cout << "N_SPS " << N_SPS << endl;
+//    cout << "interactionMatrixLength " << interactionMatrixLength << endl;
+
+    int indexPerProcessor = N_SPS / numprocs;
+    int startIndex = processRank*indexPerProcessor;
+    int stopIndex = (processRank + 1)*indexPerProcessor;
+    if (processRank == numprocs-1) { stopIndex += N_SPS % numprocs - 1; } // Distributes left over indices to last processor
+
+    if (processRank == 0) { printf("Indexes per processor: %d\n", indexPerProcessor); }
+    printf("Rank %d StartIndex %d StopIndex %d\n", processRank, startIndex, stopIndex);
+
+    double * subInteractionMatrix = new double[interactionMatrixLength];
+    for (int i = 0; i < interactionMatrixLength; i++) { subInteractionMatrix[i] = 0; }
+
+//    MPI_Scatter(interactionMatrix, indexPerProcessor, MPI_DOUBLE, subInteractionMatrix, indexPerProcessor, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Scatter(interactionMatrix, N_SPS, MPI_DOUBLE, subInteractionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+
     double interactionValue = 0;
-    for (int alpha = 0; alpha < N_SPS; alpha++)
+//    for (int alpha = 0; alpha < N_SPS; alpha++)
+    for (int alpha = startIndex; alpha < stopIndex; alpha++)
     {
         int n1 = basis.getState(alpha)->getN();
         int ml1 = basis.getState(alpha)->getM();
@@ -110,8 +129,11 @@ void quantumDot::setupInteractionMatrixPolar()
                     if ((basis.getState(alpha)->getSpin() + basis.getState(gamma)->getSpin()) !=
                             (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
                     {
-                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+
+                        subInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+                        subInteractionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
 
 //                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = 0;
 //                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = 0;
@@ -119,9 +141,12 @@ void quantumDot::setupInteractionMatrixPolar()
                     else
                     {
                         interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
-                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
-                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
 
+//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
+//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
+
+                        subInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
+                        subInteractionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
 
 //                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = interaxctionValue;
 //                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = interactionValue;
@@ -130,9 +155,13 @@ void quantumDot::setupInteractionMatrixPolar()
             }
         }
     }
+    MPI_Gather(subInteractionMatrix, N_SPS, MPI_DOUBLE, interactionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     antiSymmetrizeMatrix();
     setupFinish = clock();
-    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    if (processRank == 0)
+    {
+        cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    }
 }
 
 void quantumDot::antiSymmetrizeMatrix()

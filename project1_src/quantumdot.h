@@ -31,7 +31,7 @@ public:
     void antiSymmetrizeMatrix();
     void setupInteractionMatrixFromFile(const std::string& filename);
     void setupInteractionMatrix(int integrationPoints);
-    void setupInteractionMatrixPolar();
+    void setupInteractionMatrixPolar(int numprocs, int processRank);
     void printInteractionMatrix(int NPrintPoints);
     void storeResults(const std::string& filename);
 
