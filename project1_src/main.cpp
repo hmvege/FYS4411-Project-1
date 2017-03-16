@@ -23,21 +23,21 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int magicNumberIndex    = 3; // 0,1,2,3
-    int startShell          = 5;
-    int maxShell            = 6;
+    int magicNumberIndex    = 0; // 0,1,2,3
+    int startShell          = 3;
+    int maxShell            = 4;
     int maxHFIterations     = 500;
-    double omega            = 1.0;
+    double omega            = 0.5;
     double epsilon          = 1e-10;
     std::string filename    = "../output/HF_results";
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-    int numprocs, processRank;
-    MPI_Init (&numberOfArguments, &cmdLineArguments);
-    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
+//    int numprocs, processRank;
+//    MPI_Init (&numberOfArguments, &cmdLineArguments);
+//    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+//    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
 //    for (int i = 0; i < NElectronArrElems; i++)
@@ -45,14 +45,17 @@ int main(int numberOfArguments, char *cmdLineArguments[])
         for (int shells = startShell; shells < maxShell; shells++)
         {
             quantumDot QMDot(NElectronsArray[i], shells, omega);
-            QMDot.setupInteractionMatrixPolar(numprocs, processRank);
+            QMDot.setupInteractionMatrixPolar();
+//            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
             QMDot.setHFLambda(epsilon);
+//            QMDot.runHartreeFock(maxHFIterations);
+//            QMDot.setOmega(0.5);
             QMDot.runHartreeFock(maxHFIterations);
-//            QMDot.storeResults(filename);
+    //            QMDot.storeResults(filename);
         }
     }
 
-    MPI_Finalize();
+//    MPI_Finalize();
 
     setupFinish = clock();
     cout << "Program complete. Time used: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;

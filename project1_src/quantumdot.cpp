@@ -79,7 +79,7 @@ void quantumDot::setupInteractionMatrix(int integrationPoints)
     cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
-void quantumDot::setupInteractionMatrixPolar(int numprocs, int processRank)
+void quantumDot::setupInteractionMatrixPolar()
 {
     /*
      * Setting up the interaction matrix with contigious memory for polar coordinates
@@ -90,8 +90,61 @@ void quantumDot::setupInteractionMatrixPolar(int numprocs, int processRank)
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-//    cout << "N_SPS " << N_SPS << endl;
-//    cout << "interactionMatrixLength " << interactionMatrixLength << endl;
+    double interactionValue = 0;
+    for (int alpha = 0; alpha < N_SPS; alpha++)
+    {
+        int n1 = basis.getState(alpha)->getN();
+        int ml1 = basis.getState(alpha)->getM();
+        for (int gamma = alpha; gamma < N_SPS; gamma++)
+        {
+            int n2 = basis.getState(gamma)->getN();
+            int ml2 = basis.getState(gamma)->getM();
+            for (int beta = 0; beta < N_SPS; beta++)
+            {
+                int n3 = basis.getState(beta)->getN();
+                int ml3 = basis.getState(beta)->getM();
+                for (int delta = 0; delta < N_SPS; delta++)
+                {
+                    int n4 = basis.getState(delta)->getN();
+                    int ml4 = basis.getState(delta)->getM();
+
+                    if ((basis.getState(alpha)->getSpin() + basis.getState(gamma)->getSpin()) !=
+                            (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
+                    {
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
+
+//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = 0;
+//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = 0;
+                    }
+                    else
+                    {
+                        interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
+                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
+
+//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = interaxctionValue;
+//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = interactionValue;
+                    }
+                }
+            }
+        }
+    }
+    antiSymmetrizeMatrix();
+    setupFinish = clock();
+    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+}
+
+void quantumDot::setupInteractionMatrixPolarParalell(int numprocs, int processRank)
+{
+    /*
+     * Setting up the interaction matrix with contigious memory for polar coordinates
+     * Notation: < alpha gamma |v| beta delta >
+     */
+    interactionMatrix = new double[interactionMatrixLength];
+
+    clock_t setupStart, setupFinish;
+    setupStart = clock();
 
     int indexPerProcessor = N_SPS / numprocs;
     int startIndex = processRank*indexPerProcessor;
@@ -101,12 +154,20 @@ void quantumDot::setupInteractionMatrixPolar(int numprocs, int processRank)
     if (processRank == 0) { printf("Indexes per processor: %d\n", indexPerProcessor); }
     printf("Rank %d StartIndex %d StopIndex %d\n", processRank, startIndex, stopIndex);
 
-    double * subInteractionMatrix = new double[interactionMatrixLength];
-    for (int i = 0; i < interactionMatrixLength; i++) { subInteractionMatrix[i] = 0; }
+    int subInteractionMatrixLength = (stopIndex - startIndex)*pow(N_SPS,3);
+    double * subInteractionMatrix = new double[subInteractionMatrixLength];
+    for (int i = 0; i < subInteractionMatrixLength; i++) { subInteractionMatrix[i] = 0; }
 
-//    MPI_Scatter(interactionMatrix, indexPerProcessor, MPI_DOUBLE, subInteractionMatrix, indexPerProcessor, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Scatter(interactionMatrix, N_SPS, MPI_DOUBLE, subInteractionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    cout << "RANK: " << processRank << "subInteractionMatrixLength: " << subInteractionMatrixLength << endl;
+    cout << "interactionMatrixLength: " << interactionMatrixLength << endl;
 
+    MPI_Scatter(interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
+                subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
+                0, MPI_COMM_WORLD);
+
+//    MPI_Scatter(interactionMatrix, N_SPS, MPI_DOUBLE,
+//                subInteractionMatrix, N_SPS, MPI_DOUBLE,
+//                0, MPI_COMM_WORLD); // Only works when sending out matrices of equal length
 
     double interactionValue = 0;
 //    for (int alpha = 0; alpha < N_SPS; alpha++)
@@ -156,7 +217,10 @@ void quantumDot::setupInteractionMatrixPolar(int numprocs, int processRank)
             }
         }
     }
-    MPI_Gather(subInteractionMatrix, N_SPS, MPI_DOUBLE, interactionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+//    MPI_Gather(subInteractionMatrix, N_SPS, MPI_DOUBLE, interactionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
+               interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
+               0, MPI_COMM_WORLD);
     antiSymmetrizeMatrix();
     setupFinish = clock();
     if (processRank == 0)
@@ -208,7 +272,6 @@ void quantumDot::antiSymmetrizeMatrix()
     delete [] tempInteractionMatrix;
 }
 
-
 void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // NOT FULLY IMPLEMENTED
 {
     //intMatrixFromFile = HF.loadInteractionMatrix(filename);
@@ -254,6 +317,11 @@ void quantumDot::storeResults(const std::string& filename)
     cout << "" << endl;//UGLY HACK??!? WHY NO PRINTINGS
 }
 
+void quantumDot::setOmega(double newOmega)
+{
+     omega = newOmega;
+     HF.setOmega(omega);
+}
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)
 {

@@ -1,6 +1,7 @@
 #ifndef HARTREEFOCK_H
 #define HARTREEFOCK_H
 
+#include <cmath>
 #include <armadillo>
 #include "basis.h"
 #include "hermitepolynomials.h"
@@ -13,6 +14,7 @@ private:
     int N_Electrons;
     int HFCounter = 0;
     double lambda = 1e-5;
+    double sqrtOmega = 1;
     double * interactionMatrix;
     arma::vec SPS_Energies;
     arma::mat densityMatrix;
@@ -40,6 +42,7 @@ public:
     // Setters
     void setConvergence(double newLambda) { lambda = newLambda; }
     void setInteractionMatrix(double * newInteractionMatrix);
+    void setOmega(double newOmega) { sqrtOmega = sqrt(newOmega); std::cout<<sqrtOmega<<std::endl; }
 };
 
 #endif // HARTREEFOCK_H

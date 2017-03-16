@@ -31,12 +31,14 @@ public:
     void antiSymmetrizeMatrix();
     void setupInteractionMatrixFromFile(const std::string& filename);
     void setupInteractionMatrix(int integrationPoints);
-    void setupInteractionMatrixPolar(int numprocs, int processRank);
+    void setupInteractionMatrixPolar();
+    void setupInteractionMatrixPolarParalell(int numprocs, int processRank);
     void printInteractionMatrix(int NPrintPoints);
     void storeResults(const std::string& filename);
 
     // Setters
     void setHFLambda(double newLambda) { HF.setConvergence(newLambda); }
+    void setOmega(double newOmega);
     void setPotential(double (*newV)(double x1, double x2, double y1, double y2));
 
     // Getters
