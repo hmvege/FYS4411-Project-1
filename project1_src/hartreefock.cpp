@@ -119,7 +119,7 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
     return HFElement;
 }
 
-int HartreeFock::runHF(int maxHFIterations)
+int HartreeFock::runHF(int maxHFIterations) // testOrthogonality if optional
 {
     /*
      * Hartree-Fock algorithm. For loop will run till max HF iteration is reached, or we get a convergence in energies.
@@ -152,6 +152,11 @@ int HartreeFock::runHF(int maxHFIterations)
 
         // Updating the density matrix
         updateDensityMatrix();
+
+        if (orthogonalityTest == true)
+        {
+            testCOrthogonality();
+        }
 
         // When if we have convergence, rather than checking everyone, find the max element
         minimaStart = clock();
@@ -276,10 +281,20 @@ void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
             }
         }
     }
-    if (processRank == 0)
-    {
-        printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
-    }
+    printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
     HFEnergyResults = energy;
     HFIterationsResults = HFCounter;
+}
+
+int HartreeFock::testCOrthogonality()
+{
+    if ((arma::sum(arma::sum(C.t() * C)) - N_SPS) > lambda)
+    {
+        cout << "ERROR: Orthogonality not preserved." << endl;
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }

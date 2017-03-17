@@ -220,6 +220,18 @@ void quantumDot::setupInteractionMatrixPolarParalell(int numprocs, int processRa
     }
 }
 
+void quantumDot::setupEmptyInteractionMatrix()
+{
+    /*
+     * Useful when testing for the non-interacting case.
+     */
+    interactionMatrix = new double[interactionMatrixLength];
+    for (int i = 0; i < interactionMatrixLength; i++)
+    {
+        interactionMatrix[i] = 0;
+    }
+}
+
 void quantumDot::antiSymmetrizeMatrix()
 {
     double * tempInteractionMatrix = new double[interactionMatrixLength];

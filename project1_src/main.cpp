@@ -26,9 +26,9 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 
     int magicNumberIndex    = 3; // 0,1,2,3
     int startShell          = 3;
-    int maxShell            = 5;
+    int maxShell            = 12;
     int maxHFIterations     = 500;
-    double omega            = 0.5;
+    double omega            = 1.0;
     double epsilon          = 1e-10;
     std::string filename    = "../output3/HF_results";
 
@@ -46,14 +46,19 @@ int main(int numberOfArguments, char *cmdLineArguments[])
         for (int shells = startShell; shells < maxShell; shells++)
         {
             quantumDot QMDot(NElectronsArray[i], shells, omega);
-            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { cout<<"test"<<endl;continue; }
+            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
             QMDot.initializeHF();
 //            QMDot.setupInteractionMatrixPolar();
-            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
-            QMDot.setHFLambda(epsilon);
+//            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            QMDot.setupEmptyInteractionMatrix();
 //            QMDot.setOmega(0.5);
-            QMDot.runHartreeFock(maxHFIterations);
-//            QMDot.storeResults(filename);
+            if (processRank == 0)
+            {
+                QMDot.setHFLambda(epsilon);
+//                QMDot.setTestOrthogonoality(true); // Orthogonality test
+                QMDot.runHartreeFock(maxHFIterations);
+//                QMDot.storeResults(filename);
+            }
         }
     }
 
@@ -70,9 +75,9 @@ int main(int numberOfArguments, char *cmdLineArguments[])
      * [x] Clean up hartreefock.cpp
      * [x] Precalculate the antisymmetric integrals
      * [x] Add possibility for looping over several electrons(easy)
-     * [ ] Add parallelization to integral-finder
+     * [x] Add parallelization to integral-setup
      * [ ] Compare with unperturbed energy - unit test
-     * [ ] Compare degeneracies before and afte
+     * [ ] Compare degeneracies before and after
      * [ ] Add write-to-file capability(easy). For future project
      */
     return 0;

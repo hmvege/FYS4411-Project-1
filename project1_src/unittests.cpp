@@ -165,3 +165,18 @@ void testIntegratorFunction(int NIntPoints, double eps=1e-10)
         printf("  TEST FAILED \n");
     }
 }
+
+void testOrthogonality()
+{
+
+}
+
+void testDegeneracy()
+{
+
+}
+
+void testUnperturbedHF()
+{
+
+}

@@ -19,6 +19,7 @@ private:
     arma::vec SPS_Energies;
     arma::mat densityMatrix;
     arma::mat C;
+    bool orthogonalityTest = false;
 
     Basis *basis = nullptr;
 
@@ -34,6 +35,7 @@ public:
     double calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin);
     void writeToFile();
     void getHFEnergy(double &HFEnergyResults, int &HFIterationsResults);
+    int testCOrthogonality();
 
     // Printers
     void printHFMatrix(arma::mat HFMatrix);
@@ -43,6 +45,7 @@ public:
     void setConvergence(double newLambda) { lambda = newLambda; }
     void setInteractionMatrix(double * newInteractionMatrix);
     void setOmega(double newOmega) { sqrtOmega = sqrt(newOmega); std::cout<<sqrtOmega<<std::endl; }
+    void setTestOrthogonality(bool boolTest) { orthogonalityTest = boolTest; }
 };
 
 #endif // HARTREEFOCK_H

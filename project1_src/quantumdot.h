@@ -31,6 +31,7 @@ public:
     void initializeHF();
     void antiSymmetrizeMatrix();
     void setupInteractionMatrixFromFile(const std::string& filename);
+    void setupEmptyInteractionMatrix();
     void setupInteractionMatrix(int integrationPoints);
     void setupInteractionMatrixPolar();
     void setupInteractionMatrixPolarParalell(int numprocs, int processRank);
@@ -41,6 +42,7 @@ public:
     void setHFLambda(double newLambda) { HF.setConvergence(newLambda); }
     void setOmega(double newOmega);
     void setPotential(double (*newV)(double x1, double x2, double y1, double y2));
+    void setTestOrthogonoality(bool testBool) { HF.setTestOrthogonality(testBool); }
 
     // Getters
     int getInteractionMatrixLength() { return interactionMatrixLength; }
