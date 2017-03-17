@@ -298,7 +298,20 @@ When the algorithm has run its due course(and hopefully converged), we can then 
 \section{Implementation}
 For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub adress given in the reference section \husk{cite}.
 
-\subsection{Unit tests}
+\subsection{Unit tests and verification}
+In order to verify our results, three different unit tests were performed.
+
+\subsubsection{Hartree-Fock method for unperturbed Hamiltonian}
+For this unit test, we are checking that the Hartree-Fock algorithm returns the unperturbed result if the Coulomb interaction is zero.
+\husk{SKRIV}
+
+\subsubsection{Preservation of degeneracy}
+The test performed here is to check that degeneracies are preserved throughout the Hartree-Fock method. That is, allthough the states becomes mixed through the Hartree-Fock method, we still have degenerate states.
+\husk{SKRIV}
+
+\subsubsection{Preservation of unitarity}
+Here we are checking that the $C$-matrix remains unitary throughout the calculations.
+\husk{SKRIV}
 
 \section{Results}
 I perform calculations for primary two different values of $\omega$, $\omega=0.1$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells.
@@ -343,11 +356,10 @@ I perform calculations for primary two different values of $\omega$, $\omega=0.1
 	\label{tab:omega01}
 \end{table}
 
-\subsection{Unperturbed results}
-
 \section{Conclusions and discussions}
 
 \section{Appendix A: mathematical formulas}
+
 \subsection{Slater determinants}
 A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $A$ particles, we have 
 \begin{align}
