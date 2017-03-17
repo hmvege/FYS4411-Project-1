@@ -8,6 +8,7 @@ bin/
 
 # Ignore old datafiles
 output_old/
+output3
 
 # Ignore mac related file
 how-to-mpi.txt

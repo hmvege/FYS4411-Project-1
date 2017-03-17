@@ -1,10 +1,10 @@
-import numpy as np, matplotlib.pyplot as plt, os, sys
+import numpy as np, matplotlib.pyplot as plt, os, sys, subprocess
 
-output_folder = 'output'
-omega10 = [] # For omega=1.0
-omega01 = [] # For omega=0.1
+# output_folder = 'output'
+# omega10 = [] # For omega=1.0
+# omega01 = [] # For omega=0.1
 
-def get_data(target_omega = None):
+def get_data(output_folder, target_omega = None):
 	data_list = []
 	for file in os.listdir(output_folder):		
 		if not file.split('.')[-1] == 'txt': continue # Ensuring we have a data file
@@ -36,7 +36,7 @@ def get_data(target_omega = None):
 
 
 def convert_to_latex(list_dictionary):
-	'Shells  & $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ \\ \hline'
+	#'Shells  & $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ \\ \hline'
 	string_to_build = '%10.10s & %10.10s & %10.10s & %10.10s & %10.10s  \\\ \n'
 	latex_string = ''
 	start_shell = 3
@@ -55,9 +55,26 @@ def convert_to_latex(list_dictionary):
 		latex_string += string_to_build % (shell, HFE2, HFE6, HFE12, HFE20)
 			# latex_string += stat_list['HFEnergy'] + ' & '
 		
-	print latex_string
+	return latex_string
 
-omega01_data = get_data(1.0)
-print omega01
-convert_to_latex(omega01_data)
-convert_to_latex(get_data(0.1))
+def runInTerminal(cmd):
+	# Function for running commands in terminal
+	print 'Running command: ', cmd
+	subprocess.call(cmd, shell=True)
+
+def main():
+	# runInTerminal('./project1_src/project1') # For automating the data gathering
+
+	output_folder = 'output3'
+	omega10_data = get_data(output_folder, 1.0)
+	omega028_data = get_data(output_folder, 0.5)
+	omega05_data = get_data(output_folder, 0.28)
+	print 'Omega = 0.28'
+	print convert_to_latex(omega028_data)
+	print 'Omega = 0.5'
+	print convert_to_latex(omega05_data)
+	print 'Omega = 1.0'
+	print convert_to_latex(omega10_data)
+
+if __name__ == '__main__':
+	main()

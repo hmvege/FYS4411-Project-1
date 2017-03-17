@@ -28,6 +28,7 @@ public:
     ~quantumDot() { }
 
     double runHartreeFock(int maxHFIteration);
+    void initializeHF();
     void antiSymmetrizeMatrix();
     void setupInteractionMatrixFromFile(const std::string& filename);
     void setupInteractionMatrix(int integrationPoints);
@@ -43,6 +44,8 @@ public:
 
     // Getters
     int getInteractionMatrixLength() { return interactionMatrixLength; }
+    int getN_SPS() { return N_SPS; }
+    int getN_Electrons() { return N_Electrons; }
     Basis getBasis() { return basis; }
 };
 

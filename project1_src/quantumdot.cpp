@@ -20,6 +20,11 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     basis.initializeBasis(maxShell, newOmega);
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
+//    HF.initializeHF(N_Electrons, N_SPS, &basis);
+}
+
+void quantumDot::initializeHF()
+{
     HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
 
@@ -132,7 +137,7 @@ void quantumDot::setupInteractionMatrixPolar()
     }
     antiSymmetrizeMatrix();
     setupFinish = clock();
-    cout << "Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    cout << "    Matrix setup complete. Setup time: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
 }
 
 void quantumDot::setupInteractionMatrixPolarParalell(int numprocs, int processRank)
@@ -151,26 +156,19 @@ void quantumDot::setupInteractionMatrixPolarParalell(int numprocs, int processRa
     int stopIndex = (processRank + 1)*indexPerProcessor;
     if (processRank == numprocs-1) { stopIndex += N_SPS % numprocs - 1; } // Distributes left over indices to last processor
 
-    if (processRank == 0) { printf("Indexes per processor: %d\n", indexPerProcessor); }
-    printf("Rank %d StartIndex %d StopIndex %d\n", processRank, startIndex, stopIndex);
+    double * subInteractionMatrix = new double[interactionMatrixLength];
+    for (int i = 0; i < interactionMatrixLength; i++) { subInteractionMatrix[i] = 0; }
 
-    int subInteractionMatrixLength = (stopIndex - startIndex)*pow(N_SPS,3);
-    double * subInteractionMatrix = new double[subInteractionMatrixLength];
-    for (int i = 0; i < subInteractionMatrixLength; i++) { subInteractionMatrix[i] = 0; }
-
-    cout << "RANK: " << processRank << "subInteractionMatrixLength: " << subInteractionMatrixLength << endl;
-    cout << "interactionMatrixLength: " << interactionMatrixLength << endl;
-
-    MPI_Scatter(interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
-                subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
-                0, MPI_COMM_WORLD);
+//    MPI_Scatter(interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
+//                subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
+//                0, MPI_COMM_WORLD);
 
 //    MPI_Scatter(interactionMatrix, N_SPS, MPI_DOUBLE,
 //                subInteractionMatrix, N_SPS, MPI_DOUBLE,
 //                0, MPI_COMM_WORLD); // Only works when sending out matrices of equal length
 
     double interactionValue = 0;
-//    for (int alpha = 0; alpha < N_SPS; alpha++)
+
     for (int alpha = startIndex; alpha < stopIndex; alpha++)
     {
         int n1 = basis.getState(alpha)->getN();
@@ -191,36 +189,29 @@ void quantumDot::setupInteractionMatrixPolarParalell(int numprocs, int processRa
                     if ((basis.getState(alpha)->getSpin() + basis.getState(gamma)->getSpin()) !=
                             (basis.getState(beta)->getSpin() + basis.getState(delta)->getSpin()))
                     {
-//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
-//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
-
                         subInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = 0;
                         subInteractionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = 0;
-
-//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = 0;
-//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = 0;
                     }
                     else
                     {
                         interactionValue = Coulomb_HO(basis.omega, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
-
-//                        interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
-//                        interactionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
-
                         subInteractionMatrix[index(alpha, gamma, beta, delta, N_SPS)] = interactionValue;
                         subInteractionMatrix[index(gamma, alpha, delta, beta, N_SPS)] = interactionValue;
-
-//                        interactionMatrix[index(alpha, delta, beta, gamma, N_SPS)] = interaxctionValue;
-//                        interactionMatrix[index(beta, gamma, alpha, delta, N_SPS)] = interactionValue;
                     }
                 }
             }
         }
     }
-//    MPI_Gather(subInteractionMatrix, N_SPS, MPI_DOUBLE, interactionMatrix, N_SPS, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Gather(subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
-               interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
-               0, MPI_COMM_WORLD);
+
+//    MPI_Gather(subInteractionMatrix, subInteractionMatrixLength, MPI_DOUBLE,
+//               interactionMatrix, interactionMatrixLength, MPI_DOUBLE,
+//               0, MPI_COMM_WORLD);
+
+    MPI_Reduce(subInteractionMatrix, interactionMatrix, interactionMatrixLength, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // Freeing memory
+    delete [] subInteractionMatrix;
+
     antiSymmetrizeMatrix();
     setupFinish = clock();
     if (processRank == 0)
@@ -306,6 +297,7 @@ void quantumDot::storeResults(const std::string& filename)
      * Function for storing Hartree-Fock results
      */
     int fileWidth = 8;
+    std::string fname = filename + "_omega" + std::to_string(omega) +  "_" + std::to_string(N_Electrons) + "electrons.txt";
     std::ofstream file(filename + "_omega" + std::to_string(omega) +  "_" + std::to_string(N_Electrons) + "electrons.txt", std::ios_base::app | std::ios_base::out);
     file << "  NElectrons "   << std::setw(fileWidth) << N_Electrons;
     file << "  maxShell "     << std::setw(fileWidth) << maxShell;
@@ -314,7 +306,7 @@ void quantumDot::storeResults(const std::string& filename)
     file << "  HFEnergy "     << std::setw(fileWidth) << std::setprecision(8) << HFEnergyResults;
     file << endl;
     file.close();
-    cout << "" << endl;//UGLY HACK??!? WHY NO PRINTINGS
+//    cout << "    " << fname << " written.\n" << endl;
 }
 
 void quantumDot::setOmega(double newOmega)

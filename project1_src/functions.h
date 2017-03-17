@@ -17,4 +17,7 @@ double solveGaussianHermiteQuadrature(int n,
                                       double (*Hx4)(double x4),
                                       double (*Hy4)(double y4),
                                       double (*V)(double x1, double x2, double y1, double y2));
+
+bool checkElectronShellNumber(int electrons, int shell);
+
 #endif // FUNCTION_H

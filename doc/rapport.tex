@@ -14,6 +14,8 @@
 \usepackage{relsize}
 % \usepackage{xspace}
 
+\usepackage{tabularx}
+
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
@@ -294,17 +296,18 @@ where $\lambda=10^{-10}$ and $n$ symbolises the current Hartree-Fock iteration.
 When the algorithm has run its due course(and hopefully converged), we can then calculate the Hartree-Fock groundstate energy based of equation \eqref{eq:hartree-fock-gs-energy}.
 
 \section{Implementation}
-For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub adress given in the reference section \cite.
+For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub adress given in the reference section \husk{cite}.
 
 \subsection{Unit tests}
 
 \section{Results}
 I perform calculations for primary two different values of $\omega$, $\omega=0.1$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells.
 
-\begin{table}[H]
+\begin{table}[ht]
 	\centering
-	\begin{tabular}{c | c | c | c | c }
-
+	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons.}
+	\begin{tabular}{c c c c c}
+		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
          3 &    3.16269 &    21.5932 &  73.765549 &          0  \\ 
          4 &    3.16269 &    20.7669 &  70.673849 &   177.9633  \\ 
@@ -315,15 +318,16 @@ I perform calculations for primary two different values of $\omega$, $\omega=0.1
          9 &    3.16191 &    20.7192 &  66.912244 &  128.78095  \\ 
         10 &    3.16191 &    20.7192 &  66.912035 &  158.01767  \\ 
         11 &          0 &    20.7192 &  66.911365 &  158.01028  \\ 
+        \hline \hline
 	\end{tabular}
-	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons.}
 	\label{tab:omega10}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[ht]
 	\centering
+	\caption{Results for $\omega = 0.1$. First four columns show energies for different numbers of electrons.}
 	\begin{tabular}{c | c | c | c | c }
-
+		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
          3 & 0.52690277 &  4.4357396 &  17.272337 &          0  \\ 
          4 & 0.52690277 &  4.0197867 &  15.320991 &   43.30327  \\ 
@@ -334,8 +338,8 @@ I perform calculations for primary two different values of $\omega$, $\omega=0.1
          9 & 0.52563475 &  3.8525909 &  2.2137941 &  3.1205042  \\ 
         10 & 0.52563475 &  3.8523927 &  1.2779387 & 0.32567241  \\ 
         11 &          0 &          0 &          0 &          0  \\ 
+        \hline \hline
 	\end{tabular}
-	\caption{Results for $\omega = 0.1$. First four columns show energies for different numbers of electrons.}
 	\label{tab:omega01}
 \end{table}
 

@@ -11,6 +11,7 @@
 #include "hartreefock.h"
 #include <mpi.h> // For mac
 //#include "mpi/mpi.h" // For ubuntu
+//#include <libiomp/omp.h>
 
 using namespace std;
 
@@ -24,40 +25,45 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[3]      = 20;
 
     int magicNumberIndex    = 3; // 0,1,2,3
-    int startShell          = 4;
-    int maxShell            = 10;
+    int startShell          = 3;
+    int maxShell            = 5;
     int maxHFIterations     = 500;
-    double omega            = 0.28;
+    double omega            = 0.5;
     double epsilon          = 1e-10;
-    std::string filename    = "../output2/HF_results";
+    std::string filename    = "../output3/HF_results";
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
 
-//    int numprocs, processRank;
-//    MPI_Init (&numberOfArguments, &cmdLineArguments);
-//    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-//    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
+    int numprocs, processRank;
+    MPI_Init (&numberOfArguments, &cmdLineArguments);
+    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
-//    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
-    for (int i = 0; i < NElectronArrElems; i++)
+    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
+//    for (int i = 0; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
             quantumDot QMDot(NElectronsArray[i], shells, omega);
-            QMDot.setupInteractionMatrixPolar();
-//            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { cout<<"test"<<endl;continue; }
+            QMDot.initializeHF();
+//            QMDot.setupInteractionMatrixPolar();
+            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
             QMDot.setHFLambda(epsilon);
 //            QMDot.setOmega(0.5);
             QMDot.runHartreeFock(maxHFIterations);
-            QMDot.storeResults(filename);
+//            QMDot.storeResults(filename);
         }
     }
 
-//    MPI_Finalize();
+    MPI_Finalize();
 
     setupFinish = clock();
-    cout << "Program complete. Time used: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    if (processRank == 0)
+    {
+        cout << "Program complete. Time used: " << ((setupFinish - setupStart)/((double)CLOCKS_PER_SEC)) << endl;
+    }
     /*
      * TODO:
      * [x] Clean up code quantumdot.cpp

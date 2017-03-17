@@ -166,3 +166,15 @@ double potentialV(double x1, double x2, double y1, double y2)
         return 0.0;
 //    return 1.0/sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
+
+bool checkElectronShellNumber(int N_SPS, int electrons)
+{
+    if (N_SPS < electrons)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}

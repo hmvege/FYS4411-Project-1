@@ -177,7 +177,7 @@ int HartreeFock::runHF(int maxHFIterations)
     if (HFCounter == 0)
     {
         HFCounter = maxHFIterations;
-        cout << "Max HF iterations reached." << endl;
+        cout << "    Max HF iterations reached." << endl;
     }
 
     // Printing out average time per loop element
@@ -276,7 +276,10 @@ void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
             }
         }
     }
-    printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
+    if (processRank == 0)
+    {
+        printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
+    }
     HFEnergyResults = energy;
     HFIterationsResults = HFCounter;
 }
