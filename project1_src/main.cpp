@@ -23,13 +23,13 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int magicNumberIndex    = 0; // 0,1,2,3
-    int startShell          = 3;
-    int maxShell            = 4;
+    int magicNumberIndex    = 3; // 0,1,2,3
+    int startShell          = 4;
+    int maxShell            = 10;
     int maxHFIterations     = 500;
-    double omega            = 0.5;
+    double omega            = 0.28;
     double epsilon          = 1e-10;
-    std::string filename    = "../output/HF_results";
+    std::string filename    = "../output2/HF_results";
 
     clock_t setupStart, setupFinish;
     setupStart = clock();
@@ -39,8 +39,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 //    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
 //    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
-    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
-//    for (int i = 0; i < NElectronArrElems; i++)
+//    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
+    for (int i = 0; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
@@ -48,10 +48,9 @@ int main(int numberOfArguments, char *cmdLineArguments[])
             QMDot.setupInteractionMatrixPolar();
 //            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
             QMDot.setHFLambda(epsilon);
-//            QMDot.runHartreeFock(maxHFIterations);
 //            QMDot.setOmega(0.5);
             QMDot.runHartreeFock(maxHFIterations);
-    //            QMDot.storeResults(filename);
+            QMDot.storeResults(filename);
         }
     }
 

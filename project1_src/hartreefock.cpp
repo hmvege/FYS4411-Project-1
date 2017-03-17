@@ -112,7 +112,7 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
             if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
             {
                 // Brute-forcey method, not removed the extra deltaFunction for spin
-                HFElement += densityMatrix(gamma,delta) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
             }
         }
     }
@@ -268,7 +268,8 @@ void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
                     {
                         for (int delta= 0; delta < N_SPS; delta++)
                         {
-                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+//                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
                         }
                     }
                 }
