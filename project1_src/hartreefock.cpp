@@ -98,6 +98,9 @@ void HartreeFock::updateHFMatrix(arma::mat &HFMatrix)
 
 double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin)
 {
+    /*
+     * Funciton for calculating the inner-most HF matrix elements.
+     */
     double HFElement = 0;
     for (int gamma = 0; gamma < N_SPS; gamma++)
     {
@@ -112,7 +115,8 @@ double HartreeFock::calculateInnerHFMatrixElement(int alpha, int alpha_ml, int a
             if ((alpha_ml + gamma_ml == beta_ml + delta_ml) && (alphaSpin + gammaSpin == betaSpin + deltaSpin))
             {
                 // Brute-forcey method, not removed the extra deltaFunction for spin
-                HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+//                HFElement += densityMatrix(gamma,delta) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                HFElement += densityMatrix(gamma,delta) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
             }
         }
     }
@@ -162,7 +166,6 @@ int HartreeFock::runHF(int maxHFIterations) // testOrthogonality if optional
         minimaStart = clock();
         if ((arma::sum(arma::abs(singleParticleEnergies - oldEnergies)))/N_SPS < lambda)
         {
-//            cout << "Done after " << HFIteration << " Hartree Fock iteration." << endl;
             HFCounter = HFIteration;
             break;
         }
@@ -273,28 +276,33 @@ void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
                     {
                         for (int delta= 0; delta < N_SPS; delta++)
                         {
-                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
-//                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+//                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
+                            energy += - 0.5 * C(alpha,i) * C(beta,i) * C(gamma,j) * C(delta,j) * sqrtOmega * interactionMatrix[index(alpha, gamma, beta, delta, N_SPS)];
                         }
                     }
                 }
             }
         }
     }
-    printf("HF Iterations = %4d | Electrons = %2d | Shells = %2d | Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), energy);
+    printf("HFIterations = %4d Electrons = %2d Shells = %2d Omega = %d Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), sqrtOmega*sqrtOmega, energy);
     HFEnergyResults = energy;
     HFIterationsResults = HFCounter;
 }
 
-int HartreeFock::testCOrthogonality()
+void HartreeFock::testCOrthogonality()
 {
+    /*
+     * Function for testing the orthogonality of the C-matrix. Sets orthogonality results to false if triggered.
+     */
     if ((arma::sum(arma::sum(C.t() * C)) - N_SPS) > lambda)
     {
+        orthogonalityResults = false;
         cout << "ERROR: Orthogonality not preserved." << endl;
-        return 1;
     }
-    else
-    {
-        return 0;
-    }
+}
+
+void HartreeFock::setOmega(double newOmega)
+{
+    basis->setOmega(newOmega);
+    sqrtOmega = sqrt(newOmega);
 }

@@ -33,6 +33,8 @@ public:
     void printBasisSize();
     void printBasis(bool polar=false);
 
+    // Setters
+    void setOmega(double newOmega);
 };
 
 #endif // BASIS_H

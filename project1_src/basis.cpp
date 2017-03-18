@@ -141,3 +141,14 @@ void Basis::printBasis(bool polar)
         state->printSystem(polar);
     }
 }
+
+void Basis::setOmega(double newOmega)
+{
+    omega = newOmega;
+    for (SingleState * state : statesArray)
+    {
+        state->setOmega(omega);
+    }
+}
+
+

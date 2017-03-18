@@ -4,6 +4,8 @@
 #include <cmath>
 #include <vector>
 #include <math.h>
+#include <mpi.h>
+#include "quantumdot.h"
 #include "hermitepolynomials.h"
 #include "gaussianhermitequadrature.h"
 #include "functions.h"
@@ -16,11 +18,11 @@ using std::vector;
 
 int runHermiteTimer(int N, double X)
 {
-    /* Benchmarking for the Hermitian polynom retriever.
+    /*
+     * Benchmarking for the Hermitian polynom retriever.
      * N: number of iterations
      * X: value to insert into the Hermitian polynoms
      */
-
     HermitePolynomials herm;
 
     clock_t startHardCoded, finishHardCoded;
@@ -58,7 +60,6 @@ int checkCorrectHermitePolynoms(int maxHermite)
     /*
      * Checks that the different methods are equal
      */
-
     if (maxHermite > 10)
     {
         maxHermite = 10;
@@ -75,7 +76,7 @@ int checkCorrectHermitePolynoms(int maxHermite)
     {
         for (double x = 0; x < 10; x = x + 0.1)
         {
-            if (abs(Hermite.getPolynomRecursive(x,i) - Hermite.getPolynom(i)(x)) < eps)
+            if (std::abs(Hermite.getPolynomRecursive(x,i) - Hermite.getPolynom(i)(x)) < eps)
             {
                 correct++;
             }
@@ -98,21 +99,33 @@ int checkCorrectHermitePolynoms(int maxHermite)
 
 double testFunction(double x)
 {
+    /*
+     * Function used to test Gaussian quadrature
+     */
     return 4*x*x;
 }
 
 double emptyFunction(double x)
 {
+    /*
+     * Empty function used to test Gaussian quadrature
+     */
     return 1;
 }
 
 double emptyPotentialFunction(double x1, double x2, double x3, double x4)
 {
+    /*
+     * Empty function used to test Gaussian quadrature
+     */
     return 1;
 }
 
 double testIntegrand(double x1, double x2, double x3, double x4)
 {
+    /*
+     * Function used to test the integrator class.
+     */
     return testFunction(x1);
 }
 
@@ -146,7 +159,6 @@ void testIntegratorFunction(int NIntPoints, double eps=1e-10)
     /*
      * Small function for testing my integration function
      */
-
     double analyticalSolution = 2*M_PI*M_PI;
 
     // Not a pretty method
@@ -166,9 +178,58 @@ void testIntegratorFunction(int NIntPoints, double eps=1e-10)
     }
 }
 
-void testOrthogonality()
+void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
 {
+    /*
+     * Function for testing the orthogonality in the Hartree-Fock method
+     */
+    int numprocs, processRank;
+    MPI_Init (&numberOfArguments, &cmdLineArguments);
+    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
+    if (processRank == 0) { cout << "Running orthogonality unit test for C matrix" << endl; }
+
+    int passed = 0; // Counts number of anomalies
+    int NElectronArrElems   = 4;
+    int NElectronsArray[NElectronArrElems];
+    NElectronsArray[0]      = 2;
+    NElectronsArray[1]      = 6;
+    NElectronsArray[2]      = 12;
+    NElectronsArray[3]      = 20;
+    int startShell          = 3;
+    int maxShell            = 6;
+    int maxHFIterations     = 500;
+    double omega            = 1.0;
+    double epsilon          = 1e-10;
+
+
+    for (int i = 0; i < NElectronArrElems; i++)
+    {
+        for (int shells = startShell; shells < maxShell; shells++)
+        {
+            quantumDot QMDot(NElectronsArray[i], shells, omega);
+            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
+            QMDot.initializeHF();
+            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            if (processRank == 0)
+            {
+                QMDot.setOmega(0.5);
+                QMDot.setHFLambda(epsilon);
+                QMDot.setTestOrthogonoality(true); // Orthogonality test
+                QMDot.runHartreeFock(maxHFIterations);
+                passed = QMDot.getOrthonormalityResults();
+            }
+        }
+    }
+
+    MPI_Finalize();
+
+    if (processRank == 0)
+    {
+        if (passed) { cout << "TEST PASSED: Orthogonality preserved." << endl; }
+        else { cout << "TEST FAILED: Orthogonality not preserved." << endl; }
+    }
 }
 
 void testDegeneracy()

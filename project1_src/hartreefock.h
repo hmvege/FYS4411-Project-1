@@ -19,7 +19,8 @@ private:
     arma::vec SPS_Energies;
     arma::mat densityMatrix;
     arma::mat C;
-    bool orthogonalityTest = false;
+    bool orthogonalityTest = false;     // Bool to set if orthogonality test are to be performed
+    bool orthogonalityResults = true;   // Bool to store test results in
 
     Basis *basis = nullptr;
 
@@ -35,16 +36,19 @@ public:
     double calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin);
     void writeToFile();
     void getHFEnergy(double &HFEnergyResults, int &HFIterationsResults);
-    int testCOrthogonality();
+    void testCOrthogonality();
 
     // Printers
     void printHFMatrix(arma::mat HFMatrix);
     void printSPEnergies();
 
+    // Getters
+    bool getOrthonormalityResults() { return orthogonalityResults; }
+
     // Setters
     void setConvergence(double newLambda) { lambda = newLambda; }
     void setInteractionMatrix(double * newInteractionMatrix);
-    void setOmega(double newOmega) { sqrtOmega = sqrt(newOmega); std::cout<<sqrtOmega<<std::endl; }
+    void setOmega(double newOmega);
     void setTestOrthogonality(bool boolTest) { orthogonalityTest = boolTest; }
 };
 

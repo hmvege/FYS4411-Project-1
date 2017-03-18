@@ -45,6 +45,7 @@ public:
     void setTestOrthogonoality(bool testBool) { HF.setTestOrthogonality(testBool); }
 
     // Getters
+    bool getOrthonormalityResults() { return HF.getOrthonormalityResults(); }
     int getInteractionMatrixLength() { return interactionMatrixLength; }
     int getN_SPS() { return N_SPS; }
     int getN_Electrons() { return N_Electrons; }
