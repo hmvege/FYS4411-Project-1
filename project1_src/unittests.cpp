@@ -232,12 +232,59 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
     }
 }
 
-void testDegeneracy()
+void testDegeneracy(int numberOfArguments, char *cmdLineArguments[])
 {
 
 }
 
-void testUnperturbedHF()
+void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
 {
+    /*
+     * Function for testing that the Hartree-Fock method converges after one iterations if the Hamiltonian is unperturbed.
+     */
+    int numprocs, processRank;
+    MPI_Init (&numberOfArguments, &cmdLineArguments);
+    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
+    if (processRank == 0) { cout << "Running orthogonality unit test for C matrix" << endl; }
+
+    int passed = 0; // Counts number of anomalies
+    int NElectronArrElems   = 4;
+    int NElectronsArray[NElectronArrElems];
+    NElectronsArray[0]      = 2;
+    NElectronsArray[1]      = 6;
+    NElectronsArray[2]      = 12;
+    NElectronsArray[3]      = 20;
+    int startShell          = 3;
+    int maxShell            = 7;
+    int maxHFIterations     = 500;
+    double omega            = 1.0;
+    double epsilon          = 1e-10;
+
+
+    for (int i = 0; i < NElectronArrElems; i++)
+    {
+        for (int shells = startShell; shells < maxShell; shells++)
+        {
+            quantumDot QMDot(NElectronsArray[i], shells, omega);
+            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
+            QMDot.initializeHF();
+            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            if (processRank == 0)
+            {
+                QMDot.setOmega(0.5);
+                QMDot.setHFLambda(epsilon);
+                QMDot.runHartreeFock(maxHFIterations);
+            }
+        }
+    }
+
+    MPI_Finalize();
+
+    if (processRank == 0)
+    {
+        if (passed) { cout << "TEST PASSED: Orthogonality preserved." << endl; }
+        else { cout << "TEST FAILED: Orthogonality not preserved." << endl; }
+    }
 }

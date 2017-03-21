@@ -35,7 +35,7 @@ public:
     void updateHFMatrix(arma::mat &HFMatrix);
     double calculateInnerHFMatrixElement(int alpha, int alpha_ml, int alphaSpin, int beta, int beta_ml, int betaSpin);
     void writeToFile();
-    void getHFEnergy(double &HFEnergyResults, int &HFIterationsResults);
+    void getHFEnergy(double &HFEnergyResults, int &HFIterationsResults, arma::mat &HFReturnMatrix, arma::vec &HFSPSEnergiesReturnVector);
     void testCOrthogonality();
 
     // Printers

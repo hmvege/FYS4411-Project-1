@@ -256,7 +256,7 @@ void HartreeFock::writeToFile()
     cout << filename << " written" << endl;
 }
 
-void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
+void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults, arma::mat &HFReturnMatrix, arma::vec &HFSPSEnergiesReturnVector)
 {
     /*
      * Function for retrieving the Hartree-Fock ground state energy
@@ -284,9 +284,11 @@ void HartreeFock::getHFEnergy(double &HFEnergyResults, int &HFIterationsResults)
             }
         }
     }
-    printf("HFIterations = %4d Electrons = %2d Shells = %2d Omega = %d Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), sqrtOmega*sqrtOmega, energy);
+    printf("HFIterations = %4d Electrons = %2d Shells = %2d Omega = %3.2f Energy = %3.6f \n", HFCounter, N_Electrons, basis->getMaxShell(), sqrtOmega*sqrtOmega, energy);
     HFEnergyResults = energy;
     HFIterationsResults = HFCounter;
+    HFReturnMatrix = C;
+    HFSPSEnergiesReturnVector = SPS_Energies;
 }
 
 void HartreeFock::testCOrthogonality()

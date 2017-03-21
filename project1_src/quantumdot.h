@@ -23,6 +23,9 @@ private:
     // Variables for storing Hartree-Fock results
     double HFEnergyResults = 0;
     int HFIterationsResults = 0;
+    arma::vec HFSPEnergies;
+    arma::mat HFMatrix;
+
 public:
     quantumDot(int newNElectrons, int newMaxShell, double newOmega);
     ~quantumDot() { }
@@ -49,6 +52,7 @@ public:
     int getInteractionMatrixLength() { return interactionMatrixLength; }
     int getN_SPS() { return N_SPS; }
     int getN_Electrons() { return N_Electrons; }
+    arma::mat getHSPSEnergies();
     Basis getBasis() { return basis; }
 };
 

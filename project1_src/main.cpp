@@ -18,9 +18,8 @@ using namespace std;
 
 int main(int numberOfArguments, char *cmdLineArguments[])
 {
-    testOrthogonality(numberOfArguments, cmdLineArguments);
-    exit(1);
-    cout<<"error"<<endl;
+//    testOrthogonality(numberOfArguments, cmdLineArguments);
+//    exit(1);
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems]; // Ugly setup
     NElectronsArray[0]      = 2;
@@ -28,7 +27,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int magicNumberIndex    = 3; // 0,1,2,3
+    int magicNumberIndex    = 1; // 0,1,2,3
     int startShell          = 3;
     int maxShell            = 6;
     int maxHFIterations     = 500;
@@ -50,8 +49,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 
     if (processRank == 0) { cout << "Starting up..." << endl; }
 
-//    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
-    for (int i = 0; i < NElectronArrElems; i++)
+    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
+//    for (int i = 0; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
@@ -63,12 +62,12 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 //            QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
             {
-                for (int j = 1; j < noOmegas; j++)
+                for (int j = 0; j < noOmegas; j++)
                 {
                     QMDot.setOmega(omega[j]);
                     QMDot.setHFLambda(epsilon);
                     QMDot.runHartreeFock(maxHFIterations);
-                    QMDot.storeResults(filename);
+//                    QMDot.storeResults(filename);
                 }
             }
         }

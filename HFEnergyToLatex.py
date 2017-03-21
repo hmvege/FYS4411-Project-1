@@ -37,10 +37,10 @@ def get_data(output_folder, target_omega = None):
 
 def convert_to_latex(list_dictionary):
 	#'Shells  & $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ \\ \hline'
-	string_to_build = '%10.10s & %10.10s & %10.10s & %10.10s & %10.10s  \\\ \n'
+	string_to_build = '%10.d & %10.6f & %10.6f & %10.6f & %10.6f  \\\ \n'
 	latex_string = ''
-	start_shell = 3
-	stop_shell = 11
+	start_shell = 4
+	stop_shell = 9
 	for shell in xrange(start_shell, stop_shell+1):
 		HFE2 = 0
 		HFE6 = 0
@@ -52,7 +52,7 @@ def convert_to_latex(list_dictionary):
 			if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell: HFE12 = stat_list['HFEnergy']
 			if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy']
 
-		latex_string += string_to_build % (shell, HFE2, HFE6, HFE12, HFE20)
+		latex_string += string_to_build % (int(shell), float(HFE2), float(HFE6), float(HFE12), float(HFE20))
 			# latex_string += stat_list['HFEnergy'] + ' & '
 		
 	return latex_string
@@ -65,7 +65,7 @@ def runInTerminal(cmd):
 def main():
 	# runInTerminal('./project1_src/project1') # For automating the data gathering
 
-	output_folder = 'output3'
+	output_folder = 'output2'
 	omega10_data = get_data(output_folder, 1.0)
 	omega028_data = get_data(output_folder, 0.5)
 	omega05_data = get_data(output_folder, 0.28)

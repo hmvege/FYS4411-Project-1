@@ -298,7 +298,7 @@ double quantumDot::runHartreeFock(int maxHFIteration)
      */
     HF.setInteractionMatrix(interactionMatrix);
     HF.runHF(maxHFIteration);
-    HF.getHFEnergy(HFEnergyResults, HFIterationsResults);
+    HF.getHFEnergy(HFEnergyResults, HFIterationsResults, HFMatrix, HFSPEnergies);
 
     return HFEnergyResults;
 }
@@ -326,6 +326,8 @@ void quantumDot::setOmega(double newOmega)
      omega = newOmega;
      HF.setOmega(omega);
 }
+
+//arma::mat getHSPSEnergies();
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)
 {

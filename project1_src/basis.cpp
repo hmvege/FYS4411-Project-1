@@ -84,7 +84,6 @@ int Basis::getTotalDegeneracy()
     return statesArray.size();
 }
 
-
 double Basis::getShellEnergy(int shellNumber)
 {
     int energy = 0;
