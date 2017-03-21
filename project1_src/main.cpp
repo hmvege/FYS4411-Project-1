@@ -19,7 +19,9 @@ using namespace std;
 int main(int numberOfArguments, char *cmdLineArguments[])
 {
 //    testOrthogonality(numberOfArguments, cmdLineArguments);
-//    exit(1);
+//    testDegeneracy(numberOfArguments, cmdLineArguments);
+    testUnperturbedHF(numberOfArguments, cmdLineArguments);
+    exit(1);
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems]; // Ugly setup
     NElectronsArray[0]      = 2;
@@ -57,8 +59,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
             quantumDot QMDot(NElectronsArray[i], shells, omega[0]);
             if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
             QMDot.initializeHF();
-//            QMDot.setupInteractionMatrixPolar();
             QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+//            QMDot.setupInteractionMatrixPolar();
 //            QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
             {

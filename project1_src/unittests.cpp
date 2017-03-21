@@ -188,7 +188,7 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
     MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
-    if (processRank == 0) { cout << "Running orthogonality unit test for C matrix" << endl; }
+    if (processRank == 0) { cout << "UNIT TEST: Running orthogonality unit test for C matrix" << endl; }
 
     int passed = 0; // Counts number of anomalies
     int NElectronArrElems   = 4;
@@ -234,7 +234,46 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
 
 void testDegeneracy(int numberOfArguments, char *cmdLineArguments[])
 {
+    /*
+     * Function for testing if the degeneracy is preserved in the Hartree-Fock method.
+     */
+    int numprocs, processRank;
+    MPI_Init (&numberOfArguments, &cmdLineArguments);
+    MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
+    if (processRank == 0) { cout << "UNIT TEST: Comparing degeneracies before and after HF-algorithm." << endl; }
+
+    int NElectronArrElems   = 4;
+    int NElectronsArray[NElectronArrElems];
+    NElectronsArray[0]      = 2;
+    NElectronsArray[1]      = 6;
+    NElectronsArray[2]      = 12;
+    NElectronsArray[3]      = 20;
+
+    int startShell          = 3;
+    int maxShell            = 4;
+    int maxHFIterations     = 500;
+    double omega            = 1.0;
+    double epsilon          = 1e-10;
+
+    for (int i = 0; i < NElectronArrElems; i++)
+    {
+        for (int shells = startShell; shells < maxShell; shells++)
+        {
+            quantumDot QMDot(NElectronsArray[i], shells, omega);
+            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
+            QMDot.initializeHF();
+            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            QMDot.setOmega(omega);
+            if (processRank == 0)
+            {
+                QMDot.setHFLambda(epsilon);
+                QMDot.runHartreeFock(maxHFIterations);
+                QMDot.compareDegenerateStates();
+            }
+        }
+    }
 }
 
 void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
@@ -247,9 +286,9 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
-    if (processRank == 0) { cout << "Running orthogonality unit test for C matrix" << endl; }
+    if (processRank == 0) { cout << "UNIT TEST: Ensuring unperturbed Hartree-Fock potential converges after 1 HF-iteration." << endl; }
 
-    int passed = 0; // Counts number of anomalies
+    bool passed = true; // Counts number of anomalies
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems];
     NElectronsArray[0]      = 2;
@@ -257,11 +296,10 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
     int startShell          = 3;
-    int maxShell            = 7;
+    int maxShell            = 9;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
-
 
     for (int i = 0; i < NElectronArrElems; i++)
     {
@@ -270,21 +308,23 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
             quantumDot QMDot(NElectronsArray[i], shells, omega);
             if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
             QMDot.initializeHF();
-            QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
+            QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
             {
-                QMDot.setOmega(0.5);
                 QMDot.setHFLambda(epsilon);
                 QMDot.runHartreeFock(maxHFIterations);
+                if (QMDot.getHFIterations() != 1) // Breaks if we do not have convergence after 1 HF iteration.
+                {
+                    passed = false;
+                }
             }
         }
     }
-
     MPI_Finalize();
 
     if (processRank == 0)
     {
-        if (passed) { cout << "TEST PASSED: Orthogonality preserved." << endl; }
-        else { cout << "TEST FAILED: Orthogonality not preserved." << endl; }
+        if (passed) { cout << "TEST PASSED: Correct number of iterations for the unperturbed HF potential." << endl; }
+        else { cout << "TEST FAILED: inncorrect result for unperturbed HF potential." << endl; }
     }
 }

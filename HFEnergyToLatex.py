@@ -34,9 +34,28 @@ def get_data(output_folder, target_omega = None):
 		# 		data_list.append(electrons_stats)
 	return data_list
 
+def check_iterations(iterations, max_iterations):
+	if iterations == max_iterations:
+		return '*'
+	else:
+		return ''
 
-def convert_to_latex(list_dictionary):
-	#'Shells  & $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ \\ \hline'
+def convert_to_latex(list_dictionary, max_iter):
+	# string_to_build = '%10.d & %10.6f & %10.6f & %10.6f & %10.6f  \\\ \n'
+	# latex_string = ''
+	# start_shell = 4
+	# stop_shell = 9
+	# for shell in xrange(start_shell, stop_shell+1):
+	# 	HFE2 = 0
+	# 	HFE6 = 0
+	# 	HFE12 = 0
+	# 	HFE20 = 0
+	# 	for stat_list in list_dictionary:
+	# 		if int(stat_list['electrons']) == 2 and int(stat_list['maxShell']) == shell: HFE2 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
+	# 		if int(stat_list['electrons']) == 6 and int(stat_list['maxShell']) == shell: HFE6 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
+	# 		if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell: HFE12 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
+	# 		if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
+
 	string_to_build = '%10.d & %10.6f & %10.6f & %10.6f & %10.6f  \\\ \n'
 	latex_string = ''
 	start_shell = 4
@@ -53,7 +72,6 @@ def convert_to_latex(list_dictionary):
 			if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy']
 
 		latex_string += string_to_build % (int(shell), float(HFE2), float(HFE6), float(HFE12), float(HFE20))
-			# latex_string += stat_list['HFEnergy'] + ' & '
 		
 	return latex_string
 
@@ -64,17 +82,17 @@ def runInTerminal(cmd):
 
 def main():
 	# runInTerminal('./project1_src/project1') # For automating the data gathering
-
+	max_iter = 500
 	output_folder = 'output2'
 	omega10_data = get_data(output_folder, 1.0)
 	omega028_data = get_data(output_folder, 0.5)
 	omega05_data = get_data(output_folder, 0.28)
 	print 'Omega = 0.28'
-	print convert_to_latex(omega028_data)
+	print convert_to_latex(omega028_data, max_iter)
 	print 'Omega = 0.5'
-	print convert_to_latex(omega05_data)
+	print convert_to_latex(omega05_data, max_iter)
 	print 'Omega = 1.0'
-	print convert_to_latex(omega10_data)
+	print convert_to_latex(omega10_data, max_iter)
 
 if __name__ == '__main__':
 	main()

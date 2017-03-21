@@ -20,11 +20,14 @@ quantumDot::quantumDot(int newNElectrons, int newMaxShell, double newOmega)
     basis.initializeBasis(maxShell, newOmega);
     N_SPS = basis.getTotalParticleNumber();
     interactionMatrixLength = (int) pow(N_SPS,4);
-//    HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
 
 void quantumDot::initializeHF()
 {
+    /*
+     * Seperate function for initializing the Hartree-Fock method, as this gives us more flexibility to set
+     * it up multiple times with different e.g. omegas
+     */
     HF.initializeHF(N_Electrons, N_SPS, &basis);
 }
 
@@ -234,6 +237,9 @@ void quantumDot::setupEmptyInteractionMatrix()
 
 void quantumDot::antiSymmetrizeMatrix()
 {
+    /*
+     * Function for antisymmetrizing after the interaction matrix has been set up.
+     */
     double * tempInteractionMatrix = new double[interactionMatrixLength];
     int alphaSpin = 0;
     int betaSpin = 0;
@@ -323,14 +329,19 @@ void quantumDot::storeResults(const std::string& filename)
 
 void quantumDot::setOmega(double newOmega)
 {
-     omega = newOmega;
-     HF.setOmega(omega);
+    /*
+     * Function which sets a new omega in the Hartree-Fock object as well as for the quantumDot object.
+     * The Hartree-Fock method updates the basis-omega as well.
+     */
+    omega = newOmega;
+    HF.setOmega(omega);
 }
-
-//arma::mat getHSPSEnergies();
 
 void quantumDot::printInteractionMatrix(int NPrintPoints)
 {
+    /*
+     * Small function for printing the interaction matrix. Used in bug-squashing.
+     */
     for (int i = 0; i < NPrintPoints; i++)
     {
         double intMatrix = interactionMatrix[i];
@@ -338,5 +349,16 @@ void quantumDot::printInteractionMatrix(int NPrintPoints)
         {
             printf("%.10f \n", interactionMatrix[i]);
         }
+    }
+}
+
+void quantumDot::compareDegenerateStates()
+{
+    /*
+     * Naive comparison of the degeneracy
+     */
+    for (int i = 0; i < N_SPS; i++)
+    {
+        printf("Unperturbed: %10.10f  Perturbed: %10.10f \n", basis.getState(i)->getEnergy(), HFSPEnergies(i));
     }
 }

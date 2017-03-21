@@ -40,6 +40,7 @@ public:
     void setupInteractionMatrixPolarParalell(int numprocs, int processRank);
     void printInteractionMatrix(int NPrintPoints);
     void storeResults(const std::string& filename);
+    void compareDegenerateStates();
 
     // Setters
     void setHFLambda(double newLambda) { HF.setConvergence(newLambda); }
@@ -52,6 +53,7 @@ public:
     int getInteractionMatrixLength() { return interactionMatrixLength; }
     int getN_SPS() { return N_SPS; }
     int getN_Electrons() { return N_Electrons; }
+    int getHFIterations() { return HFIterationsResults; }
     arma::mat getHSPSEnergies();
     Basis getBasis() { return basis; }
 };

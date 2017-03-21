@@ -25,21 +25,7 @@ void Basis::initializeBasis(int initMaxShell, double initOmega)
     // Retrieving all possible states up until a cutoff-shell
     omega = initOmega;
     maxShell = initMaxShell;
-//    for (int i = 0; i < maxShell; i++) // Running over variations of nx
-//    {
-//        for (int j = 0; j < maxShell; j++) // Running over variations of ny
-//        {
-//            for (double k = -0.5; k < 1; k++) // Running over the two possible spin configurations
-//            {
-//                if (i+j < maxShell) // If-test to prevent counting outside of the shell
-//                {
-//                    SingleState * state = new SingleState();
-//                    state->set(i, j, k, omega);
-//                    statesArray.push_back(state);
-//                }
-//            }
-//        }
-//    }
+
     for (int shellInt = 0; shellInt < maxShell; shellInt++) // Ensuring we are adding the right shell
     {
         for (int i = 0; i < maxShell; i++) // Running over variations of nx
