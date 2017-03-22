@@ -198,7 +198,7 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
     int startShell          = 3;
-    int maxShell            = 6;
+    int maxShell            = 7;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -219,6 +219,7 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
                 QMDot.runHartreeFock(maxHFIterations);
                 passed = QMDot.getOrthonormalityResults();
             }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
@@ -250,8 +251,8 @@ void testDegeneracy(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
 
-    int startShell          = 3;
-    int maxShell            = 4;
+    int startShell          = 2;
+    int maxShell            = 6;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -271,6 +272,7 @@ void testDegeneracy(int numberOfArguments, char *cmdLineArguments[])
                 QMDot.runHartreeFock(maxHFIterations);
                 QMDot.compareDegenerateStates();
             }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 }
@@ -295,7 +297,7 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
     int startShell          = 3;
-    int maxShell            = 6;
+    int maxShell            = 9;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -304,24 +306,21 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
-//            cout << "beginning for electrons = " << NElectronsArray[i] << " shell = " << shells << endl;
             quantumDot QMDot(NElectronsArray[i], shells, omega);
             if (checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons()) == false) { continue; }
-            cout << "electrons = " << NElectronsArray[i] << " shell = " << shells << "  passed: " << processRank << endl;
             QMDot.initializeHF();
             QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
             {
                 QMDot.setHFLambda(epsilon);
                 QMDot.runHartreeFock(maxHFIterations);
-                if (QMDot.getHFIterations() != 1) // Breaks if we do not have convergence after 1 HF iteration.
+                if (QMDot.getHFIterations() != 1)
                 {
                     passed = false;
                 }
             }
             MPI_Barrier(MPI_COMM_WORLD);
         }
-//        MPI_Barrier(MPI_COMM_WORLD);
     }
     MPI_Finalize();
 

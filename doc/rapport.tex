@@ -302,97 +302,110 @@ For solving this many-body problem, I implemented the Hartree-Fock algorithm \re
 In order to verify our results, three different unit tests were performed.
 
 \subsubsection{Hartree-Fock method for unperturbed Hamiltonian}
-For this unit test, we are checking that the Hartree-Fock algorithm returns the unperturbed result if the Coulomb interaction is zero.
-\husk{SKRIV}
+For this unit test, we are checking that the Hartree-Fock algorithm returns the unperturbed result if the Coulomb interaction is zero. The programmed convered after a single Hartree-Fock iterations for all values tested. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $8$ and $\omega=1.0$.
 
 \subsubsection{Preservation of degeneracy}
-The test performed here is to check that degeneracies are preserved throughout the Hartree-Fock method. That is, allthough the states becomes mixed through the Hartree-Fock method, we still have degenerate states.
-\husk{SKRIV}
+The test performed here is to check that degeneracies are preserved throughout the Hartree-Fock method. That is, allthough the states becomes mixed through the Hartree-Fock method, we still have degenerate states. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $6$ and $\omega=1.0$.
 
 \subsubsection{Preservation of unitarity}
 Here we are checking that the $C$-matrix remains unitary throughout the calculations. Tests were performed with $\omega = 1.0$.
 
 \section{Results}
-I perform calculations for primary three different values of $\omega$, $\omega=0.28$, $\omega=0.5$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells.
+I perform calculations for primary three different values of $\omega$, $\omega=0.28$, $\omega=0.5$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells. The maximum Hartree-Fock iterations allowed were set to be 500.
 
-\begin{table}[ht]
+\begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons.}
+	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
 	\begin{tabular}{c c c c c}
 		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
          3 &    3.16269 &    21.5932 &  73.765549 &          0  \\ 
-         4 &    3.16269 &    20.7669 &  70.673849 &   177.9633  \\ 
-         5 &    3.16192 &    20.7484 &  67.569930 &   159.9726  \\ 
-         6 &    3.16192 &    20.7203 &  67.296869 &  161.33972  \\ 
-         7 &    3.16191 &    20.7201 &  66.934745 &  159.95872  \\ 
-         8 &    3.16191 &    20.7192 &  66.923094 &  158.40017  \\ 
-         9 &    3.16191 &    20.7192 &  66.912244 &  128.78095  \\ 
+         4 & $  3.162691$ & $ 20.766919$ & $ 70.673849$ & $177.963300^\dagger$  \\ 
+         5 & $  3.161921$ & $ 20.748402$ & $ 67.569930$ & $159.972600^*$  \\ 
+         6 & $  3.161921$ & $ 20.720257$ & $ 67.296869$ & $161.339720$  \\ 
+         7 & $  3.161909$ & $ 20.720132$ & $ 66.934745$ & $159.958720$  \\ 
+         8 & $  3.161909$ & $ 20.719248$ & $ 66.923094$ & $158.400170$  \\ 
+         9 & $  3.161909$ & $ 20.719248$ & $ 66.912244$ & $128.780950^*$  \\ 
         10 &    3.16191 &    20.7192 &  66.912035 &  158.01767  \\ 
         11 &          0 &    20.7192 &  66.911365 &  158.01028  \\ 
-
         \hline \hline
 	\end{tabular}
 	\label{tab:omega10}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 0.5$. First four columns show energies for different numbers of electrons.}
-	\begin{tabular}{c | c | c | c | c }
+	\caption{Results for $\omega = 0.5$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\begin{tabular}{c c c c c}
 		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         4 &   1.141775 &   8.139719 &  29.621422 &  79.220310  \\ 
-         5 &   1.141741 &   8.095876 &  27.596111 &  72.011644  \\ 
-         6 &   1.141741 &   8.021956 &  23.616786 &  67.907357  \\ 
-         7 &   1.141717 &   8.020571 &  21.148806 &  52.492447  \\ 
-         8 &   1.141717 &   8.019625 &  17.713336 &  30.422769  \\ 
-         9 &   1.141713 &   8.019611 &  16.710103 &  21.086059  \\ 
+         4 & $  1.141775$ & $  8.139719$ & $ 29.621422$ & $ 79.220310^\dagger$  \\ 
+         5 & $  1.141741$ & $  8.095876$ & $ 27.596111$ & $ 72.011644$  \\ 
+         6 & $  1.141741$ & $  8.021956$ & $ 23.616786^*$ & $ 67.907357$  \\ 
+         7 & $  1.141717$ & $  8.020571$ & $ 21.148806^*$ & $ 52.492447^*$  \\ 
+         8 & $  1.141717$ & $  8.019625$ & $ 17.713336^*$ & $ 30.422769^*$  \\ 
+         9 & $  1.141713$ & $  8.019611$ & $ 16.710103^*$ & $ 21.086059^*$  \\ 
+        \hline \hline
+	\end{tabular}
+	\label{tab:omega05}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Results for $\omega = 0.28$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\begin{tabular}{c c c c c}
+		\\ \hline \hline
+		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
+         4 & $  1.799856$ & $ 12.357471$ & $ 43.422400$ & $113.412650^\dagger$  \\ 
+         5 & $  1.799748$ & $ 12.325128$ & $ 41.108851$ & $ 99.747163^*$  \\ 
+         6 & $  1.799748$ & $ 12.271499$ & $ 40.750512$ & $ 99.754600$  \\ 
+         7 & $  1.799745$ & $ 12.271375$ & $ 40.302719$ & $ 84.490335^*$  \\ 
+         8 & $  1.799745$ & $ 12.271361$ & $ 40.263752$ & $ 57.308726^*$  \\ 
+         9 & $  1.799743$ & $ 12.271337$ & $ 40.216688$ & $ 45.346529^*$  \\ 
+        \hline \hline
+	\end{tabular}
+	\label{tab:omega028}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Results for $\omega = 0.1$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\begin{tabular}{c c c c c}
+		\\ \hline \hline
+		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
+         3 & 0.52690277 &  4.4357396 &  $17.272337^\dagger$ &          0  \\ 
+         4 & $  0.526903$ & $  4.019787$ & $ 15.320991$ & $ 43.303270^\dagger$  \\ 
+         5 & $  0.525666$ & $  3.963148$ & $ 14.098239$ & $ 38.031297$  \\ 
+         6 & $  0.525666$ & $  3.870617$ & $ 10.537292^*$ & $ 32.681662^*$  \\ 
+         7 & $  0.525635$ & $  3.863135$ & $  8.239137^*$ & $ 22.924841^*$  \\ 
+         8 & $  0.525635$ & $  3.852880$ & $  3.910698^*$ & $ 10.445496^*$  \\ 
+         9 & $  0.525635$ & $  3.852591$ & $  2.213794^*$ & $  3.120504^*$  \\ 
+        10 & 0.525635 &  3.8523927 &  $1.2779387^*$ & $0.32567241^*$  \\ 
         \hline \hline
 	\end{tabular}
 	\label{tab:omega01}
 \end{table}
 
-\begin{table}[ht]
+\subsubsection{Unit tests and verifaction}
+The unit tests for having an unperturbed Hartree-Fock Hamiltonian and checking the preservation of unity in $C$-matrix both passed. An example of the results for the preservation of degeneracy can be seen in table \ref{tab:sps-energies} for the first few 
+
+\begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 0.28$. First four columns show energies for different numbers of electrons.}
-	\begin{tabular}{c | c | c | c | c }
+	\caption{Single particle states for $\omega=$ and \husk{N} electrons.}
+	\begin{tabular}{c c}
 		\\ \hline \hline
-		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         4 &   1.799856 &  12.357471 &  43.422400 & 113.412650  \\ 
-         5 &   1.799748 &  12.325128 &  41.108851 &  99.747163  \\ 
-         6 &   1.799748 &  12.271499 &  40.750512 &  99.754600  \\ 
-         7 &   1.799745 &  12.271375 &  40.302719 &  84.490335  \\ 
-         8 &   1.799745 &  12.271361 &  40.263752 &  57.308726  \\ 
-         9 &   1.799743 &  12.271337 &  40.216688 &  45.346529  \\ 
+		Before & After \\ \hline
         \hline \hline
 	\end{tabular}
-	\label{tab:omega01}
+	\label{tab:sps-energies}
 \end{table}
 
-\begin{table}[ht]
-	\centering
-	\caption{Results for $\omega = 0.1$. First four columns show energies for different numbers of electrons.}
-	\begin{tabular}{c | c | c | c | c }
-		\\ \hline \hline
-		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         3 & 0.52690277 &  4.4357396 &  17.272337 &          0  \\ 
-         4 & 0.52690277 &  4.0197867 &  15.320991 &   43.30327  \\ 
-         5 & 0.52566619 &  3.9631485 &  14.098239 &  38.031297  \\ 
-         6 & 0.52566619 &  3.8706166 &  10.537292 &  32.681662  \\ 
-         7 & 0.52563535 &  3.8631345 &  8.2391371 &  22.924841  \\ 
-         8 & 0.52563535 &  3.8528799 &  3.9106977 &  10.445496  \\ 
-         9 & 0.52563475 &  3.8525909 &  2.2137941 &  3.1205042  \\ 
-        10 & 0.52563475 &  3.8523927 &  1.2779387 & 0.32567241  \\ 
-        \hline \hline
-	\end{tabular}
-	\label{tab:omega01}
-\end{table}
 
 \section{Conclusions and discussions}
 
-\section{Appendix A: mathematical formulas}
 
+
+\section{Appendix A: mathematical formulas}
 \subsection{Slater determinants}
 A Slater determinant is an expression describing a multi-fermionic system in accordance to the Pauli principle. For system of $A$ particles, we have 
 \begin{align}

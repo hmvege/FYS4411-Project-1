@@ -19,9 +19,10 @@ using namespace std;
 int main(int numberOfArguments, char *cmdLineArguments[])
 {
 //    testOrthogonality(numberOfArguments, cmdLineArguments);
-//    testDegeneracy(numberOfArguments, cmdLineArguments);
+    testDegeneracy(numberOfArguments, cmdLineArguments);
 //    testUnperturbedHF(numberOfArguments, cmdLineArguments);
-//    exit(1);
+    exit(1);
+
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems]; // Ugly setup
     NElectronsArray[0]      = 2;
@@ -70,6 +71,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 //                    QMDot.storeResults(filename);
                 }
             }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 

@@ -1,9 +1,5 @@
 import numpy as np, matplotlib.pyplot as plt, os, sys, subprocess
 
-# output_folder = 'output'
-# omega10 = [] # For omega=1.0
-# omega01 = [] # For omega=0.1
-
 def get_data(output_folder, target_omega = None):
 	data_list = []
 	for file in os.listdir(output_folder):		
@@ -21,58 +17,37 @@ def get_data(output_folder, target_omega = None):
 				electrons_stats['HFIterations'] = line_elements[5]
 				electrons_stats['HFEnergy'] = line_elements[7]
 				data_list.append(electrons_stats)
-
-		# else:
-		# 	electron_number = file.split('_')[-1].split('electrons')[0]
-		# 	for line in open(output_folder + '/' + file,'r'):
-		# 		line_elements = line.split()
-		# 		electrons_stats = {}
-		# 		electrons_stats['electrons'] = electron_number
-		# 		electrons_stats['maxShell'] = line_elements[3]
-		# 		electrons_stats['HFIterations'] = line_elements[5]
-		# 		electrons_stats['HFEnergy'] = line_elements[7]
-		# 		data_list.append(electrons_stats)
 	return data_list
 
 def check_iterations(iterations, max_iterations):
 	if iterations == max_iterations:
-		return '*'
+		return '^*'
+	elif iterations == 1:
+		return '^\dagger'
 	else:
 		return ''
 
 def convert_to_latex(list_dictionary, max_iter):
-	# string_to_build = '%10.d & %10.6f & %10.6f & %10.6f & %10.6f  \\\ \n'
-	# latex_string = ''
-	# start_shell = 4
-	# stop_shell = 9
-	# for shell in xrange(start_shell, stop_shell+1):
-	# 	HFE2 = 0
-	# 	HFE6 = 0
-	# 	HFE12 = 0
-	# 	HFE20 = 0
-	# 	for stat_list in list_dictionary:
-	# 		if int(stat_list['electrons']) == 2 and int(stat_list['maxShell']) == shell: HFE2 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
-	# 		if int(stat_list['electrons']) == 6 and int(stat_list['maxShell']) == shell: HFE6 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
-	# 		if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell: HFE12 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
-	# 		if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy'] + check_iterations(int(stat_list['HFIterations']),max_iter)
-
-	string_to_build = '%10.d & %10.6f & %10.6f & %10.6f & %10.6f  \\\ \n'
+	string_to_build = '%10.d & $%s$ & $%s$ & $%s$ & $%s$  \\\ \n'
 	latex_string = ''
 	start_shell = 4
 	stop_shell = 9
+	bare_string = '%10.6f%s'
 	for shell in xrange(start_shell, stop_shell+1):
-		HFE2 = 0
-		HFE6 = 0
-		HFE12 = 0
-		HFE20 = 0
+		HFE2 = '%10.6f%s'
+		HFE6 = '%10.6f%s'
+		HFE12 = '%10.6f%s'
+		HFE20 = '%10.6f%s'
 		for stat_list in list_dictionary:
-			if int(stat_list['electrons']) == 2 and int(stat_list['maxShell']) == shell: HFE2 = stat_list['HFEnergy']
-			if int(stat_list['electrons']) == 6 and int(stat_list['maxShell']) == shell: HFE6 = stat_list['HFEnergy']
-			if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell: HFE12 = stat_list['HFEnergy']
-			if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell: HFE20 = stat_list['HFEnergy']
-
-		latex_string += string_to_build % (int(shell), float(HFE2), float(HFE6), float(HFE12), float(HFE20))
-		
+			if int(stat_list['electrons']) == 2 and int(stat_list['maxShell']) == shell and HFE2 == bare_string:
+				HFE2 = HFE2 % (float(stat_list['HFEnergy']), check_iterations(int(stat_list['HFIterations']),max_iter))
+			if int(stat_list['electrons']) == 6 and int(stat_list['maxShell']) == shell and HFE6 == bare_string:
+				HFE6 = HFE6 % (float(stat_list['HFEnergy']), check_iterations(int(stat_list['HFIterations']),max_iter))
+			if int(stat_list['electrons']) == 12 and int(stat_list['maxShell']) == shell and HFE12 == bare_string:
+				HFE12 = HFE12 % (float(stat_list['HFEnergy']), check_iterations(int(stat_list['HFIterations']),max_iter));
+			if int(stat_list['electrons']) == 20 and int(stat_list['maxShell']) == shell and HFE20 == bare_string:
+				HFE20 = HFE20 % (float(stat_list['HFEnergy']), check_iterations(int(stat_list['HFIterations']),max_iter))		
+		latex_string += string_to_build % (int(shell), HFE2, HFE6, HFE12, HFE20)
 	return latex_string
 
 def runInTerminal(cmd):
@@ -83,10 +58,13 @@ def runInTerminal(cmd):
 def main():
 	# runInTerminal('./project1_src/project1') # For automating the data gathering
 	max_iter = 500
-	output_folder = 'output2'
+	output_folder = 'output'
 	omega10_data = get_data(output_folder, 1.0)
+	omega01_data = get_data(output_folder, 0.1)
 	omega028_data = get_data(output_folder, 0.5)
 	omega05_data = get_data(output_folder, 0.28)
+	print 'Omega = 0.1'
+	print convert_to_latex(omega01_data, max_iter)
 	print 'Omega = 0.28'
 	print convert_to_latex(omega028_data, max_iter)
 	print 'Omega = 0.5'
