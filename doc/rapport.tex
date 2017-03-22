@@ -30,21 +30,20 @@
 \def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
 
 \title{Project 1 in FYS4411: Computational Physics 2}
-\author{}
+\author{Mathias M. Vege}
 
 \date{\today}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-NAN
+In the exploration of a quantum dot system consisting of electrons in a two-dimensional harmonic oscillator, we have found the ground state energy $E^{HF}_0$ of a many-body system using the Hartree-Fock method. By including spin-degrees of freedom, we've aquired additional degeneracies for each filled shell in the harmonic oscillator. By including spin d.o.f., we find that the number of electrons for each filled shell correspond to \textit{magic numbers}, $A = 2, 6, 12, 20$ and so on - which is the number of electrons we've run our simulation for. When comparing with other papers on the topic which have used different approaches and methods \cite{PhysRevB.84.115302}, we find our numbers to converge for similar values. Further, instabilities in the Hartree-Fock method are discussed. Overall, the program developed \cite{github} methods used should be suitable for future projects.
 \end{abstract}
 
 \section{Introduction}
 For this project our main task was to explore interacting systems of electrons in two dimensions, quantum dots. Such systems have a wide range of applications, as they can  For exploring such systems, we were to employ the Hartree-Fock method. The Hartree-Fock method allows us to find the ground state of a given Hamiltonian for a many particle system. As for our case, we have looked at electrons confined in a harmonic oscillator potential where every shell up to a chosen limit has been filled. By doing this, we have that the number of electrons confine to \textit{magic numbers}, $A = 2, 6, 12, 20, 30$ and so on. With different electron numbers, we will explore composite systems of electrons with different single particle state energies, $\omega$.
 
-In order to present my results, I will begin repeating the physics and mathematics involved in this project, and finally go through the Hartree-Fock algorithm. The journey will start with the Hamiltonian
-
+In order to present my results, I will begin repeating the physics and mathematics involved in this project, and finally go through the Hartree-Fock algorithm. Much of the theory presented will can also be found in the compendium used as lecture notes \cite{komp2015}. The journey will start with the Hamiltonian.
 
 \section{Theory}
 The full Hamiltonian for our quantum dot system is on the form
@@ -54,7 +53,7 @@ The full Hamiltonian for our quantum dot system is on the form
 	&= \sum^A_{i=1} \hat{h}_{i,0} + \sum^A_{i<j}V(r_{ij}),
 	\label{eq:full-hamiltonian}
 \end{align}
-with natural units $\hbar = c = e = m_e = 1$. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $A$. For our usage will $A$ indicate particles below the Fermi level. We will be using the Born-Oppenheimer approximation, which means we will for all intents and purposes ignoring the nucleus in our calculations.
+with atomic units $\hbar = c = e = m_e = 1$. The energy results will be denoted as a.u. The first part $H_0$ is the unperturbed Hamiltonian, consisting of the kinetic energy and the harmonic oscillator potential. The $r_{ij}$ is defined as $r_{ij} = \sqrt{\mathbf{r}_1 - \mathbf{r}_2}$, while the $r_i$ is defined as $r_i = \sqrt{r^2_{i_x} + r^2_{i_y}}$. The harmonic oscillator potential has a oscillator frequency $\omega$. The sums run over all particles $A$. For our usage will $A$ indicate particles below the Fermi level. We will be using the Born-Oppenheimer approximation, which means we will for all intents and purposes ignoring the nucleus in our calculations.
 
 An unperturbed two dimensional harmonic oscillator have energies given as
 \begin{align}
@@ -75,7 +74,7 @@ As is evident in our calculations later on, we will be using polar coordinates t
 \end{align}
 
 \subsection{Harmonic oscillator basis}
-Given that we are looking at a harmonic oscillator and are including spin degrees of freedom, we will have a basis where each level has a degenerace corresponding of $d(n)=2n$, where $n$ is the shell we are looking at. Writing out the first few shells, we get
+Given that we are looking at a harmonic oscillator and are including spin degrees of freedom, we will have a basis where each level has a degeneracy corresponding of $d(n)=2n$, where $n$ is the shell we are looking at. Writing out the first few shells, we get
 
 \begin{table}[H]
 	\centering
@@ -265,7 +264,7 @@ Also remembering that $\hat{h}^{HF} = \hat{h}_0 + \hat{u}^{HF}$, we can add and 
 	&= \sum^A_{i=1} \langle i | \hat{h}^{HF} | i \rangle + \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \left[ \langle ij |\hat{v}| ij \rangle_{AS} - \langle ij | \hat{v} | ij \rangle_{AS}\right] \\
 	&= \sum^A_{i=1} \epsilon_i^{HF} - \frac{1}{2}\sum^A_{i=1}\sum^A_{j=1} \langle ij |\hat{v}| ij \rangle_{AS}
 \end{align*}
-Inserting for the basis transformation as seen in equation \eqref{eq:basis-orthogonality}, we get the following equation for the Hartree-Fock groundstate energy
+Inserting for the basis transformation as seen in equation \eqref{eq:basis-orthogonality}, we get the following equation for the Hartree-Fock ground state energy
 \begin{align}
 	E_0^{HF} = \sum^A_{i=1} \epsilon^{HF}_i - \frac{1}{2}\sum^A_{i,j=0}\sum^N_{\alpha\beta\gamma\delta} C^*_{i,\alpha} C^*_{i,\beta}C_{j,\gamma}C_{j,\delta}\langle\alpha\gamma|\hat{v}|\beta\delta\rangle_{AS}
 	\label{eq:hartree-fock-gs-energy}
@@ -277,7 +276,7 @@ In order to find a energy minimum for the energy functional \eqref{eq:energy-fun
 	\frac{\sum_i^N|\epsilon^{n}_i - \epsilon^{n-1}_i|}{N} \leq \lambda,
 	\label{eq:convergence-criteria}
 \end{align}
-where $\lambda=10^{-10}$ and $n$ symbolises the current Hartree-Fock iteration.
+where $\lambda=10^{-10}$ and $n$ symbolizes the current Hartree-Fock iteration.
 
 \begin{algorithm}[H]
 \caption{Hartree-Fock. Number of Hartree-Fock iterations given by number of times step 4-6 is repeated.}
@@ -293,33 +292,33 @@ where $\lambda=10^{-10}$ and $n$ symbolises the current Hartree-Fock iteration.
 \end{algorithmic}
 \end{algorithm}
 
-When the algorithm has run its due course(and hopefully converged), we can then calculate the Hartree-Fock groundstate energy based of equation \eqref{eq:hartree-fock-gs-energy}.
+When the algorithm has run its due course(and hopefully converged), we can then calculate the Hartree-Fock ground state energy based of equation \eqref{eq:hartree-fock-gs-energy}.
 
 \section{Implementation}
-For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub adress given in the reference section \husk{cite}.
+For solving this many-body problem, I implemented the Hartree-Fock algorithm \ref{alg:hf-algorithm} in \CC. The code can be found by following the GitHub address given in the reference section \cite{github}.
 
 \subsection{Unit tests and verification}
 In order to verify our results, three different unit tests were performed.
 
 \subsubsection{Hartree-Fock method for unperturbed Hamiltonian}
-For this unit test, we are checking that the Hartree-Fock algorithm returns the unperturbed result if the Coulomb interaction is zero. The programmed convered after a single Hartree-Fock iterations for all values tested. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $8$ and $\omega=1.0$.
+For this unit test, we are checking that the Hartree-Fock algorithm returns the unperturbed result if the Coulomb interaction is zero. The programmed converged after a single Hartree-Fock iterations for all values tested. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $8$ and $\omega=1.0$ a.u.
 
 \subsubsection{Preservation of degeneracy}
-The test performed here is to check that degeneracies are preserved throughout the Hartree-Fock method. That is, allthough the states becomes mixed through the Hartree-Fock method, we still have degenerate states. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $6$ and $\omega=1.0$.
+The test performed here is to check that degeneracies are preserved throughout the Hartree-Fock method. That is, although the states becomes mixed through the Hartree-Fock method, we still have degenerate states. The test was run for electron numbers of $2,6,12$ and $20$, shells from $3$ to $6$ and $\omega=1.0$ a.u.
 
 \subsubsection{Preservation of unitarity}
-Here we are checking that the $C$-matrix remains unitary throughout the calculations. Tests were performed with $\omega = 1.0$.
+Here we are checking that the $C$-matrix remains unitary throughout the calculations. Tests were performed with $\omega = 1.0$ a.u., electron numbers of $2, 6, 12$ and $20$ and 3 up to 7 shells.
 
 \section{Results}
-I perform calculations for primary three different values of $\omega$, $\omega=0.28$, $\omega=0.5$ and $\omega=1.0$. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells. The maximum Hartree-Fock iterations allowed were set to be 500.
+I perform calculations for primary three different values of $\omega$, $\omega=0.28$ a.u., $\omega=0.5$ a.u. and $\omega=1.0$ a.u. The number of atoms equal filled up shells, that is they follow so-called \textit{magic numbers}, $A = 2, 6, 12, 20$. Further, we run for different number of shells. The maximum Hartree-Fock iterations allowed were set to be 500.
 
 \begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 1.0$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\caption{Results for $\omega = 1.0$ a.u. The first four columns show energies for different numbers of electrons. $^\dagger$ the method converged after one iteration. $^*$ the method reached maximum Hartree-Fock iterations. All values are in atomic units a.u.}
 	\begin{tabular}{c c c c c}
 		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         3 &    3.16269 &    21.5932 &  73.765549 &          0  \\ 
+         3 &    3.16269 &    21.5932 &  73.765549 &            \\ 
          4 & $  3.162691$ & $ 20.766919$ & $ 70.673849$ & $177.963300^\dagger$  \\ 
          5 & $  3.161921$ & $ 20.748402$ & $ 67.569930$ & $159.972600^*$  \\ 
          6 & $  3.161921$ & $ 20.720257$ & $ 67.296869$ & $161.339720$  \\ 
@@ -327,7 +326,7 @@ I perform calculations for primary three different values of $\omega$, $\omega=0
          8 & $  3.161909$ & $ 20.719248$ & $ 66.923094$ & $158.400170$  \\ 
          9 & $  3.161909$ & $ 20.719248$ & $ 66.912244$ & $128.780950^*$  \\ 
         10 &    3.16191 &    20.7192 &  66.912035 &  158.01767  \\ 
-        11 &          0 &    20.7192 &  66.911365 &  158.01028  \\ 
+        11 &            &    20.7192 &  66.911365 &  158.01028  \\ 
         \hline \hline
 	\end{tabular}
 	\label{tab:omega10}
@@ -335,24 +334,7 @@ I perform calculations for primary three different values of $\omega$, $\omega=0
 
 \begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 0.5$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
-	\begin{tabular}{c c c c c}
-		\\ \hline \hline
-		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         4 & $  1.141775$ & $  8.139719$ & $ 29.621422$ & $ 79.220310^\dagger$  \\ 
-         5 & $  1.141741$ & $  8.095876$ & $ 27.596111$ & $ 72.011644$  \\ 
-         6 & $  1.141741$ & $  8.021956$ & $ 23.616786^*$ & $ 67.907357$  \\ 
-         7 & $  1.141717$ & $  8.020571$ & $ 21.148806^*$ & $ 52.492447^*$  \\ 
-         8 & $  1.141717$ & $  8.019625$ & $ 17.713336^*$ & $ 30.422769^*$  \\ 
-         9 & $  1.141713$ & $  8.019611$ & $ 16.710103^*$ & $ 21.086059^*$  \\ 
-        \hline \hline
-	\end{tabular}
-	\label{tab:omega05}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\caption{Results for $\omega = 0.28$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\caption{Results for $\omega = 0.5$ a.u. The first four columns show energies for different numbers of electrons. $^\dagger$ the method converged after one iteration. $^*$ the method reached maximum Hartree-Fock iterations. All values are in atomic units a.u.}
 	\begin{tabular}{c c c c c}
 		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
@@ -364,46 +346,85 @@ I perform calculations for primary three different values of $\omega$, $\omega=0
          9 & $  1.799743$ & $ 12.271337$ & $ 40.216688$ & $ 45.346529^*$  \\ 
         \hline \hline
 	\end{tabular}
+	\label{tab:omega05}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Results for $\omega = 0.28$ a.u. The first four columns show energies for different numbers of electrons. $^\dagger$ the method converged after one iteration. $^*$ the method reached maximum Hartree-Fock iterations. All values are in atomic units a.u.}
+	\begin{tabular}{c c c c c}
+		\\ \hline \hline
+		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
+         4 & $  1.141775$ & $  8.139719$ & $ 29.621422$ &   $ 79.220310^\dagger$  \\ 
+         5 & $  1.141741$ & $  8.095876$ & $ 27.596111$ &   $ 72.011644$  \\ 
+         6 & $  1.141741$ & $  8.021956$ & $ 23.616786^*$ & $ 67.907357$  \\ 
+         7 & $  1.141717$ & $  8.020571$ & $ 21.148806^*$ & $ 52.492447^*$  \\ 
+         8 & $  1.141717$ & $  8.019625$ & $ 17.713336^*$ & $ 30.422769^*$  \\ 
+         9 & $  1.141713$ & $  8.019611$ & $ 16.710103^*$ & $ 21.086059^*$  \\ 
+        \hline \hline
+	\end{tabular}
 	\label{tab:omega028}
 \end{table}
 
 \begin{table}[H]
 	\centering
-	\caption{Results for $\omega = 0.1$. First four columns show energies for different numbers of electrons. $^\dagger$ the method convered after one iteration. $^*$ the method reached maximum Hartree-Fock iterations.}
+	\caption{Results for $\omega = 0.1$ a.u. The first four columns show energies for different numbers of electrons. $^\dagger$ the method converged after one iteration. $^*$ the method reached maximum Hartree-Fock iterations. All values are in atomic units a.u.}
 	\begin{tabular}{c c c c c}
 		\\ \hline \hline
 		Shells 	& $A = 2$	& $A = 6$ 	& $A = 12$ 	& $A = 20$ 	\\ \hline
-         3 & 0.52690277 &  4.4357396 &  $17.272337^\dagger$ &          0  \\ 
-         4 & $  0.526903$ & $  4.019787$ & $ 15.320991$ & $ 43.303270^\dagger$  \\ 
-         5 & $  0.525666$ & $  3.963148$ & $ 14.098239$ & $ 38.031297$  \\ 
-         6 & $  0.525666$ & $  3.870617$ & $ 10.537292^*$ & $ 32.681662^*$  \\ 
-         7 & $  0.525635$ & $  3.863135$ & $  8.239137^*$ & $ 22.924841^*$  \\ 
-         8 & $  0.525635$ & $  3.852880$ & $  3.910698^*$ & $ 10.445496^*$  \\ 
-         9 & $  0.525635$ & $  3.852591$ & $  2.213794^*$ & $  3.120504^*$  \\ 
-        10 & 0.525635 &  3.8523927 &  $1.2779387^*$ & $0.32567241^*$  \\ 
+         3 &    0.526903 &     4.435740  &  $17.272337^\dagger$ &            \\ 
+         4 & $  0.526903$ & $  4.019787$ & $ 15.320991$ 	& $ 43.303270^\dagger$  \\ 
+         5 & $  0.525666$ & $  3.963148$ & $ 14.098239$ 	& $ 38.031297$  \\ 
+         6 & $  0.525666$ & $  3.870617$ & $ 10.537292^*$ 	& $ 32.681662^*$  \\ 
+         7 & $  0.525635$ & $  3.863135$ & $  8.239137^*$ 	& $ 22.924841^*$  \\ 
+         8 & $  0.525635$ & $  3.852880$ & $  3.910698^*$ 	& $ 10.445496^*$  \\ 
+         9 & $  0.525635$ & $  3.852591$ & $  2.213794^*$ 	& $  3.120504^*$  \\ 
+        10 &    0.525635  &    3.852393  &   $1.277939^*$ 	&   $0.325672^*$  \\ 
         \hline \hline
 	\end{tabular}
 	\label{tab:omega01}
 \end{table}
 
-\subsubsection{Unit tests and verifaction}
-The unit tests for having an unperturbed Hartree-Fock Hamiltonian and checking the preservation of unity in $C$-matrix both passed. An example of the results for the preservation of degeneracy can be seen in table \ref{tab:sps-energies} for the first few 
+\subsection{Unit tests and verification}
+The unit tests for having an unperturbed Hartree-Fock Hamiltonian and checking the preservation of unity in $C$-matrix both passed. An example of the results for the preservation of degeneracy can be seen in table \ref{tab:sps-energies} for six electrons and three shells.
 
 \begin{table}[H]
 	\centering
-	\caption{Single particle states for $\omega=$ and \husk{N} electrons.}
+	\caption{Single particle state energies $\epsilon_i^n$ for $\omega=1.0$ a.u., three shells and 6 electrons before convergence $\epsilon^0_i$ and after convergence $\epsilon^f_i$. The Hartree-Fock method converged after 9 iterations.}
 	\begin{tabular}{c c}
 		\\ \hline \hline
-		Before & After \\ \hline
+		Before $\epsilon^0_i$ [a.u.] & After $\epsilon^f_i$ [a.u.] \\ \hline
+		1.0 & 4.87879 \\
+		1.0 & 4.87879 \\
+		2.0 & 5.71988 \\
+		2.0 & 5.71988 \\
+		2.0 & 5.71988 \\
+		2.0 & 5.71988 \\
+		3.0 & 6.86513 \\ 
+		3.0 & 6.86513 \\ 
+		3.0 & 6.86513 \\ 
+		3.0 & 6.86513 \\ 
+		3.0 & 7.24094 \\
+		3.0 & 7.24094 \\
         \hline \hline
 	\end{tabular}
 	\label{tab:sps-energies}
 \end{table}
 
-
 \section{Conclusions and discussions}
+The results that have been obtained in the tables for $\omega=0.28$ a.u. (see \ref{tab:omega028}), $\omega=0.5$ a.u. (see \ref{tab:omega05}) and $\omega=1.0$ a.u. (see \ref{tab:omega10}) can be compared with results in the article by M. Pedersen Lohne et al. \cite{PhysRevB.84.115302} Upon doing so, we discover that our results appear to coincide rather well with the results obtained through diffusion Monte Carlo, although the results presented for the Hartree-Fock energies appear to be slightly larger. The cause of this is not necessarily that the program used contain errors, but rather the fact that it is a crude of the model.
 
+The crudeness of the model is somewhat highlighted by the fact that we observe that the Hartree-Fock algorithm becomes unstable for low oscillator frequencies $\omega$ and large electron numbers. As seen in the tables for different $\omega$-values(see table \ref{tab:omega10}, \ref{tab:omega05}, \ref{tab:omega028} and \ref{tab:omega01}), we fail to reach convergence within the maximum of 500 Hartree-Fock iterations we have set. One reason for this may be that we oscillate between different local minima, which prohibit any quick convergence. Otherwise, we performed unit tests to check that our method is correctly implemented.
 
+We also observe that when we have an equal number of states as particles, we have that the Hartree-Fock algorithm converges after only one iteration. This is to be expected, as we should only have the need for a single iteration to "displace" the electron states.
+
+Given that the Hartree-Fock potential is zero - that is there is no interaction, we should get convergence after a single Hartree-Fock iteration. This criteria is fulfilled for $2,6,12$ and $20$ electrons, shells from $3$ to $8$ and $\omega=1.0$ a.u. Similar, our $C$-matrix test for unitarity were also passed. We have because of this and the similarity to the values obtained by the M. Pedersen Lohne et al. article \cite{PhysRevB.84.115302} no reason not to think that the method is correctly implemented. For all values tested, the tests was passed.
+
+From table \ref{tab:sps-energies} we see that we gain degenerate energy levels, although in a symmetric manner. An equal amount of energy levels are degenerate if you "split" the ground state energy level list in two by the middle of it. The number of energy states at each new shell or state never less than two, which is to be expected as we have included spin degrees of fredom. The reason for the symmetry in the degeneracy is something I would have liked to explore further, given there was time.
+
+Reason for high rate of instability seen when the number of electrons increases as well for low $\omega$ values (see $E^{HF}_0$ for 12 and 20 electrons in table \ref{tab:omega01} and \ref{tab:omega028}) is something I would have liked to investigate if time was endless.
+
+In the end, the goal for this project was to develop a program that can calculate the ground state energy for a quantum dot system consisting of electrons confined in a harmonic oscillator. Not only that, we are now also capable of retrieving the wave functions and their energies for the different states. Although the method has instabilities for certain configurations, it should hopefully be robust enough to be usable in later projects.
 
 \section{Appendix A: mathematical formulas}
 \subsection{Slater determinants}
@@ -499,5 +520,7 @@ Given an basis seen in equation \eqref{eq:basis-orthogonality}, and that $\phi_\
 \end{align*}
 And thus we see that the new basis must be orthogonal.
 
+\bibliography{refs}{}
+\bibliographystyle{plain}
 
 \end{document}

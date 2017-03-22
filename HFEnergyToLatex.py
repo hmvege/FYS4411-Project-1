@@ -59,10 +59,11 @@ def main():
 	# runInTerminal('./project1_src/project1') # For automating the data gathering
 	max_iter = 500
 	output_folder = 'output'
+	output_folder2 = 'output2'
 	omega10_data = get_data(output_folder, 1.0)
 	omega01_data = get_data(output_folder, 0.1)
-	omega028_data = get_data(output_folder, 0.5)
-	omega05_data = get_data(output_folder, 0.28)
+	omega028_data = get_data(output_folder2, 0.28)
+	omega05_data = get_data(output_folder2, 0.5)
 	print 'Omega = 0.1'
 	print convert_to_latex(omega01_data, max_iter)
 	print 'Omega = 0.28'

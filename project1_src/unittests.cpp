@@ -198,7 +198,7 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
     int startShell          = 3;
-    int maxShell            = 7;
+    int maxShell            = 8;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;

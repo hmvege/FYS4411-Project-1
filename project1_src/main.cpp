@@ -19,9 +19,9 @@ using namespace std;
 int main(int numberOfArguments, char *cmdLineArguments[])
 {
 //    testOrthogonality(numberOfArguments, cmdLineArguments);
-    testDegeneracy(numberOfArguments, cmdLineArguments);
+//    testDegeneracy(numberOfArguments, cmdLineArguments);
 //    testUnperturbedHF(numberOfArguments, cmdLineArguments);
-    exit(1);
+//    exit(1);
 
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems]; // Ugly setup
@@ -52,8 +52,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 
     if (processRank == 0) { cout << "Starting up..." << endl; }
 
-    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
-//    for (int i = 0; i < NElectronArrElems; i++)
+//    for (int i = magicNumberIndex; i < magicNumberIndex+1; i++)
+    for (int i = 0; i < NElectronArrElems; i++)
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
@@ -68,7 +68,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
                     QMDot.setOmega(omega[j]);
                     QMDot.setHFLambda(epsilon);
                     QMDot.runHartreeFock(maxHFIterations);
-//                    QMDot.storeResults(filename);
+                    QMDot.storeResults(filename);
                 }
             }
             MPI_Barrier(MPI_COMM_WORLD);
@@ -84,13 +84,7 @@ int main(int numberOfArguments, char *cmdLineArguments[])
     }
     /*
      * TODO:
-     * [x] Clean up code quantumdot.cpp
-     * [x] Clean up hartreefock.cpp
-     * [x] Precalculate the antisymmetric integrals
-     * [x] Add possibility for looping over several electrons(easy)
-     * [x] Add parallelization to integral-setup
-     * [x] Compare with unperturbed energy - unit test
-     * [x] Compare degeneracies before and after
+     * [ ] Increase comment density
      * [ ] Add write-to-file capability(easy). For future project
      */
     return 0;

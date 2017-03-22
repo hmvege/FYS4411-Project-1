@@ -28,7 +28,7 @@ private:
 
 public:
     quantumDot(int newNElectrons, int newMaxShell, double newOmega);
-    ~quantumDot() { }
+    ~quantumDot() { delete [] interactionMatrix; } // IS THIS OKAY?
 
     void runHartreeFock(int maxHFIteration);
     void initializeHF();
