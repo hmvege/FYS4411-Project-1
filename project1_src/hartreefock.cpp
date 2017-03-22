@@ -39,11 +39,6 @@ void HartreeFock::initializeCMatrix()
     }
 }
 
-HartreeFock::~HartreeFock()
-{
-    delete [] interactionMatrix;
-}
-
 void HartreeFock::updateDensityMatrix()
 {
     /*

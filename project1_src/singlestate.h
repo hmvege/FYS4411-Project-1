@@ -21,6 +21,7 @@ private:
 public:
     SingleState();
     SingleState(int initN_x, int initN_y, double initSpin, double initEnergy);
+    ~SingleState() { }
 
     // Setters for Cartesian quantum numbers
     void setN_x(int newN_x) { n_x = newN_x; }

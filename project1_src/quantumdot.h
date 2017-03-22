@@ -30,7 +30,7 @@ public:
     quantumDot(int newNElectrons, int newMaxShell, double newOmega);
     ~quantumDot() { }
 
-    double runHartreeFock(int maxHFIteration);
+    void runHartreeFock(int maxHFIteration);
     void initializeHF();
     void antiSymmetrizeMatrix();
     void setupInteractionMatrixFromFile(const std::string& filename);

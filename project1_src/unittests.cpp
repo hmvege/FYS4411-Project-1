@@ -214,7 +214,6 @@ void testOrthogonality(int numberOfArguments, char *cmdLineArguments[])
             QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
             if (processRank == 0)
             {
-                QMDot.setOmega(0.5);
                 QMDot.setHFLambda(epsilon);
                 QMDot.setTestOrthogonoality(true); // Orthogonality test
                 QMDot.runHartreeFock(maxHFIterations);
@@ -296,7 +295,7 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     NElectronsArray[2]      = 12;
     NElectronsArray[3]      = 20;
     int startShell          = 3;
-    int maxShell            = 9;
+    int maxShell            = 6;
     int maxHFIterations     = 500;
     double omega            = 1.0;
     double epsilon          = 1e-10;
@@ -305,8 +304,10 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
     {
         for (int shells = startShell; shells < maxShell; shells++)
         {
+//            cout << "beginning for electrons = " << NElectronsArray[i] << " shell = " << shells << endl;
             quantumDot QMDot(NElectronsArray[i], shells, omega);
-            if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
+            if (checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons()) == false) { continue; }
+            cout << "electrons = " << NElectronsArray[i] << " shell = " << shells << "  passed: " << processRank << endl;
             QMDot.initializeHF();
             QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
@@ -318,7 +319,9 @@ void testUnperturbedHF(int numberOfArguments, char *cmdLineArguments[])
                     passed = false;
                 }
             }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
+//        MPI_Barrier(MPI_COMM_WORLD);
     }
     MPI_Finalize();
 

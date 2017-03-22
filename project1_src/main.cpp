@@ -20,8 +20,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
 {
 //    testOrthogonality(numberOfArguments, cmdLineArguments);
 //    testDegeneracy(numberOfArguments, cmdLineArguments);
-    testUnperturbedHF(numberOfArguments, cmdLineArguments);
-    exit(1);
+//    testUnperturbedHF(numberOfArguments, cmdLineArguments);
+//    exit(1);
     int NElectronArrElems   = 4;
     int NElectronsArray[NElectronArrElems]; // Ugly setup
     NElectronsArray[0]      = 2;
@@ -60,8 +60,6 @@ int main(int numberOfArguments, char *cmdLineArguments[])
             if (false == checkElectronShellNumber(QMDot.getN_SPS(), QMDot.getN_Electrons())) { continue; }
             QMDot.initializeHF();
             QMDot.setupInteractionMatrixPolarParalell(numprocs, processRank);
-//            QMDot.setupInteractionMatrixPolar();
-//            QMDot.setupEmptyInteractionMatrix();
             if (processRank == 0)
             {
                 for (int j = 0; j < noOmegas; j++)
@@ -89,8 +87,8 @@ int main(int numberOfArguments, char *cmdLineArguments[])
      * [x] Precalculate the antisymmetric integrals
      * [x] Add possibility for looping over several electrons(easy)
      * [x] Add parallelization to integral-setup
-     * [ ] Compare with unperturbed energy - unit test
-     * [ ] Compare degeneracies before and after
+     * [x] Compare with unperturbed energy - unit test
+     * [x] Compare degeneracies before and after
      * [ ] Add write-to-file capability(easy). For future project
      */
     return 0;

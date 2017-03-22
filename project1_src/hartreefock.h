@@ -29,7 +29,7 @@ private:
 public:
     HartreeFock();
     HartreeFock(int NElectrons, int singleParticleStates);
-    ~HartreeFock();
+    ~HartreeFock() { }
     void initializeHF(int NElectrons, int singleParticleStates, Basis *newBasis);
     int runHF(int maxHFIterations);
     void updateHFMatrix(arma::mat &HFMatrix);

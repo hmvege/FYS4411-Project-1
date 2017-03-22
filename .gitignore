@@ -6,6 +6,9 @@
 # Ignore binaries
 bin/
 
+# Ignoring citation files
+doc/cites/
+
 # Ignore old datafiles
 output_old/
 output3

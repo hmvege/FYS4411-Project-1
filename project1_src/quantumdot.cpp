@@ -297,7 +297,7 @@ void quantumDot::setupInteractionMatrixFromFile(const std::string& filename) // 
     }
 }
 
-double quantumDot::runHartreeFock(int maxHFIteration)
+void quantumDot::runHartreeFock(int maxHFIteration)
 {
     /*
      * Function for running the Hartree-Fock algorithm
@@ -305,8 +305,6 @@ double quantumDot::runHartreeFock(int maxHFIteration)
     HF.setInteractionMatrix(interactionMatrix);
     HF.runHF(maxHFIteration);
     HF.getHFEnergy(HFEnergyResults, HFIterationsResults, HFMatrix, HFSPEnergies);
-
-    return HFEnergyResults;
 }
 
 void quantumDot::storeResults(const std::string& filename)
