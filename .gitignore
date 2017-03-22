@@ -23,6 +23,10 @@ how-to-mpi.txt
 *.gz
 *.fls
 *.fdb_latexmk
+*.bbl
+*.blg
+*.dvi
+*.bib
 
 # Datafiles
 *.dat
